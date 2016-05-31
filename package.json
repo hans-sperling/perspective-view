@@ -1,0 +1,26 @@
+{
+    "name"        : "perspective-view",
+    "version"     : "0.1.0",
+    "description" : "",
+    "keywords" : [
+        "javascript"
+    ],
+    "repository" : {
+        "type": "git",
+        "url": "https://github.com/hans-sperling/perspective-view"
+    },
+    "devDependencies" : {
+        "grunt"                : "1.x.x",
+        "grunt-cli"            : "1.2.x",
+        "grunt-contrib-uglify" : "latest",
+        "grunt-contrib-concat" : "latest"
+    },
+    "bugs" : {
+        "url"   : "https://github.com/hans-sperling/urlSplit/perspective-view",
+        "email" : "info@bluejade.de"
+    },
+    "contributors" : [{
+        "name"  : "Danny Grübl",
+        "email" : "info@bluejade.de"
+    }]
+}
