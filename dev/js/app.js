@@ -58,19 +58,22 @@ jQuery(document).ready(function() {
             [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
             [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
         ],
-        $canvas      = $('#PerspectiveView'),
-        canvas       = $canvas[0],
+        canvas       = document.getElementById('myCanvas'),
         context      = canvas.getContext('2d');
 
     canvas.width  = canvas.offsetWidth;
     canvas.height = canvas.offsetHeight;
 
 
-    var config = {
-        canvas:         $canvas,
-        context:        context,
-        //depth:          0.05,
-        //renderMode:     'specified',
+    var pv = new PerspectiveView();
+
+    console.log(pv);
+
+    pv.setConfig({
+        canvas:         document.getElementById('myCanvas'),
+        context:        document.getElementById('myCanvas').getContext('2d'),
+        depth:          0.05,
+        renderMode:     'specified',
         //renderMode:     'flat',
         //renderMode:     'unitary',
         map:            realisticMap,
@@ -78,10 +81,9 @@ jQuery(document).ready(function() {
         //map:            heightMap,
         unitSize:       {x: 40,  y: 40},
         vanishingPoint: {x: 260, y: 180}
-    };
+    });
 
-    var ppv = new PerspectiveView(config);
+    pv.getModule('color').setTime(12);
 
-    console.dir(ppv);
-
+    pv.render();
 });
