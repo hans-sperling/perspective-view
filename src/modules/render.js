@@ -12,6 +12,10 @@
         unitSize     = { x : 1, y : 1},
         unitShift    = { x : 0, y : 0},
         unitScale    = 1,
+        location     = {
+            tile  : { x : 0, y : 0 },
+            shift : { x : 0, y : 0 }
+        },
         renderOrder  = [];
 
     // -----------------------------------------------------------------------------------------------------------------
@@ -34,7 +38,18 @@
 
 
     function update() {
+        location    = mod_Location.getMapLocation();
         unitSize    = mod_Map.getUnitSize();
+
+        // Wie groß muss die Map sein?
+
+        var mapX = Math.ceil(canvas[0].width  / ((unitSize.x * unitScale) + unitShift.x));
+        var mapY = Math.ceil(canvas[0].height / ((unitSize.y * unitScale) + unitShift.y));
+
+        // var xLeft = (Math.ceil(mapX/2) + 1)
+
+        console.log(mapX, mapY);
+
         map         = mod_Map.getMapArea(0,0,8,8);
         mapSize     = { x : map[0].length, y : map.length };
         renderOrder = getRenderOrder();

@@ -79,9 +79,10 @@ jQuery(document).ready(function() {
 
 
     var config = {
-        canvas  : $canvas,
-        context : context,
-        map     : dummyMap
+        canvas      : $canvas,
+        context     : context,
+        map         : dummyMap,
+        currentTile : { x : 4, y : 4 }
     };
 
     var ppv = new PerspectiveView(config);

@@ -4,7 +4,8 @@
     var unitSize       = { x : 1, y : 1 },
         unitScale      = 1,
         unitShift      = { x : 0, y : 0 },
-        vanishingPoint = { x : 1, y : 1 };
+        vanishingPoint = { x : 1, y : 1},
+        currentTile    = { x : 1, y : 1};
 
     // -----------------------------------------------------------------------------------------------------------------
 
@@ -13,14 +14,28 @@
         unitScale      = config.unitScale;
         unitShift      = config.unitShift;
         vanishingPoint = config.vanishingPoint;
+        currentTile    = config.currentTile;
     }
 
 
     function run() {
-
+        console.log(getMapLocation());
     }
 
     // -----------------------------------------------------------------------------------------------------------------
+
+    function getMapLocation() {
+        /*
+           Immer wenn man die Karte so weit verschoben hat, wie unitScale * unitSize groß ist, muss ein tile hinzu
+           oder abgezogen werden.
+         */
+
+        return {
+            tile  : { x : 4, y : 4 },
+            shift : { x : 0, y : 0 }
+        };
+    }
+
 
     function getVanishingTile() {
         var tile = {};
@@ -49,7 +64,8 @@
     ppv.appendModule({ location : {
         init             : init,
         run              : run,
-        getVanishingTile : getVanishingTile
+        getVanishingTile : getVanishingTile,
+        getMapLocation   : getMapLocation
     }});
 
 })(window.PPV);

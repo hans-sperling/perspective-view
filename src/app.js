@@ -19,7 +19,8 @@ window.PPV = (function() {
             unitScale      : 10,
             unitSize       : { x : 1, y : 1 },
             unitShift      : { x : 0, y : 0 },
-            vanishingPoint : { x : 0, y : 0 }
+            vanishingPoint : { x : 0, y : 0 },
+            currentTile    : { x : 0, y : 0 }
         };
 
     // -----------------------------------------------------------------------------------------------------------------
