@@ -16,11 +16,10 @@ window.PPV = (function() {
             canvas         : null,
             context        : null,
             map            : [],
-            unitSize       : { x : 1, y : 1},
             unitScale      : 10,
-            unitShift      : { x : 0, y : 0},
-            startTile      : { x : 4, y : 4},
-            vanishingPoint : { x : 0, y : 0}
+            unitSize       : { x : 1, y : 1 },
+            unitShift      : { x : 0, y : 0 },
+            vanishingPoint : { x : 0, y : 0 }
         };
 
     // -----------------------------------------------------------------------------------------------------------------
@@ -75,6 +74,9 @@ window.PPV = (function() {
 
     function init(config) {
         cfg = mod.merge.deep(defaults, config);
+
+        cfg.vanishingPoint.x = cfg.canvas.width / 2;
+        cfg.vanishingPoint.y = cfg.canvas.height / 2;
 
         initModules(cfg);
         runModules();

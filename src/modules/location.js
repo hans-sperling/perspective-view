@@ -1,10 +1,10 @@
 ;(function location(ppv) {
     'use strict';
 
-    var unitSize       = { x : 1, y : 1},
+    var unitSize       = { x : 1, y : 1 },
         unitScale      = 1,
-        unitShift      = { x : 0, y : 0},
-        vanishingPoint = { x : 1, y : 1};
+        unitShift      = { x : 0, y : 0 },
+        vanishingPoint = { x : 1, y : 1 };
 
     // -----------------------------------------------------------------------------------------------------------------
 
