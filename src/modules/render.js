@@ -1,30 +1,42 @@
 ;(function render(ppv) {
     'use strict';
 
-    var canvas      = null,
-        context     = null,
-        map         = [[0]],
-        mapSize     = { x : 1, y : 1},
-        unitSize    = { x : 1, y : 1},
-        renderOrder = [];
+    var mod_Location = null,
+        mod_Map      = null,
+        mod_Color    = null,
+
+        canvas       = null,
+        context      = null,
+        map          = [[0]],
+        mapSize      = { x : 1, y : 1},
+        unitSize     = { x : 1, y : 1},
+        renderOrder  = [];
 
     // -----------------------------------------------------------------------------------------------------------------
 
     function init(config) {
+        mod_Location = ppv.modules.location;
+        mod_Map      = ppv.modules.map;
+        mod_Color    = ppv.modules.color;
+
         canvas   = config.canvas;
         context  = config.context;
-        unitSize = config.unitSize;
+    }
+
+
+    function run() {
+        update();
+    }
+
+
+    function update() {
+        unitSize    = mod_Map.getUnitSize();
+        map         = mod_Map.getMapArea(0,0,17,17);
+        mapSize     = { x : map[0].length, y : map.length };
+        renderOrder = getRenderOrder();
     }
 
     // -----------------------------------------------------------------------------------------------------------------
-
-    function update(config) {
-        unitSize    = config.unitSize;
-        map         = config.map;
-        renderOrder = getRenderOrder();
-        mapSize     = { x : map[0].length, y : map.length };
-    }
-
 
     function getRenderOrder() {
         var vanishingCell = ppv.modules.location.getVanishingTile(),
@@ -75,11 +87,10 @@
         for (y = 0; y < mapSize.y; y++){
             for (x = 0; x < mapSize.x; x++) {
                 if (map[y][x] > 0) {
-                    context.fillStyle = 'rgb(50,50,50)';
+                    context.fillStyle = mod_Color.getBaseColor();
                 }
                 else {
-                    //context.fillStyle = 'rgb(255,255,255)';
-                    context.fillStyle = 'rgba(0,0,0,0.0)';
+                    context.fillStyle = mod_Color.getSpaceColor();
                 }
                 context.fillRect(
                     (x * unitSize.x),
@@ -98,10 +109,9 @@
     // Append module with public methods and properties
     ppv.appendModule({ render : {
         init       : init,
+        run        : run,
         update     : update,
         render     : render
     }});
-
-    // -----------------------------------------------------------------------------------------------------------------
 
 })(window.PPV);

@@ -2,13 +2,27 @@
     'use strict';
 
     var map      = [],
+        unitSize = { x : 1, y : 1 },
         defaults = {
             mapItem : 0
         };
 
+    // -----------------------------------------------------------------------------------------------------------------
 
-    function init(configuration) {
-        map = configuration.map
+    function init(config) {
+        map      = config.map;
+        unitSize = config.unitSize;
+    }
+
+
+    function run() {
+
+    }
+
+    // -----------------------------------------------------------------------------------------------------------------
+
+    function getUnitSize() {
+        return unitSize;
     }
 
 
@@ -30,7 +44,7 @@
                     mapArea[b][a] = defaults.mapItem;
                 }
                 else {
-                    mapArea[b][a] = mapArray[y][x];
+                    mapArea[b][a] = map[y][x];
                 }
             }
         }
@@ -38,13 +52,14 @@
         return mapArea;
     }
 
-
     // -----------------------------------------------------------------------------------------------------------------
 
     // Append module with public methods and properties
     ppv.appendModule({ map : {
-        init       : init,
-        getMapArea : getMapArea
+        init        : init,
+        run         : run,
+        getMapArea  : getMapArea,
+        getUnitSize : getUnitSize
     }});
 
 })(window.PPV);

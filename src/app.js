@@ -44,23 +44,37 @@ window.PPV = (function() {
 
     // -----------------------------------------------------------------------------------------------------------------
 
-    function initModules(configuration) {
+    function initModules(config) {
         var i;
 
         for (i in mod) {
             if (mod.hasOwnProperty(i)) {
                 if (typeof mod[i].init === 'function') {
-                    mod[i].init(configuration);
+                    mod[i].init(config);
                 }
             }
         }
     }
 
 
-    function init(configuration) {
-        cfg = mod.merge.deep(defaults, configuration);
+    function runModules() {
+        var i;
 
-        initModules(configuration);
+        for (i in mod) {
+            if (mod.hasOwnProperty(i)) {
+                if (typeof mod[i].run === 'function') {
+                    mod[i].run();
+                }
+            }
+        }
+    }
+
+
+    function init(config) {
+        cfg = mod.merge.deep(defaults, config);
+
+        initModules(config);
+        runModules();
 
         return {
             render : render

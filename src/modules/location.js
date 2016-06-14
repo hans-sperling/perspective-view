@@ -11,6 +11,11 @@
         vanishingPoint = config.vanishingPoint;
     }
 
+
+    function run() {
+
+    }
+
     // -----------------------------------------------------------------------------------------------------------------
 
     function getVanishingTile() {
@@ -29,9 +34,8 @@
     // Append module with public methods and properties
     ppv.appendModule({ location : {
         init             : init,
+        run              : run,
         getVanishingTile : getVanishingTile
     }});
-
-    // -----------------------------------------------------------------------------------------------------------------
 
 })(window.PPV);
