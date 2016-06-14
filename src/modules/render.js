@@ -10,6 +10,7 @@
         map          = [],
         mapSize      = { x : 1, y : 1},
         unitSize     = { x : 1, y : 1},
+        unitShift    = { x : 0, y : 0},
         unitScale    = 1,
         renderOrder  = [];
 
@@ -22,6 +23,7 @@
 
         canvas    = config.canvas;
         context   = config.context;
+        unitShift = config.unitShift;
         unitScale = config.unitScale;
     }
 
@@ -94,9 +96,10 @@
                 else {
                     context.fillStyle = mod_Color.getSpaceColor();
                 }
+
                 context.fillRect(
-                    (x * (unitSize.x * unitScale)),
-                    (y * (unitSize.y * unitScale)),
+                    (x * (unitSize.x * unitScale)) + unitShift.x,
+                    (y * (unitSize.y * unitScale)) + unitShift.y,
                     (unitSize.x * unitScale),
                     (unitSize.y * unitScale)
                 );

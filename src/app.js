@@ -7,7 +7,7 @@ window.PPV = (function() {
 
     var mod      = {},
         cfg      = {},
-        dev      = {
+        DEV      = {
             enable       : true,
             abortOnError : false,
             util         : {}
@@ -18,6 +18,8 @@ window.PPV = (function() {
             map            : [],
             unitSize       : { x : 1, y : 1},
             unitScale      : 10,
+            unitShift      : { x : 0, y : 0},
+            startTile      : { x : 4, y : 4},
             vanishingPoint : { x : 0, y : 0}
         };
 
@@ -26,15 +28,15 @@ window.PPV = (function() {
     function appendModule(module) {
         var id;
 
-        if (dev.enable) {
+        if (DEV.enable) {
             if ((!module) || (typeof module !== 'object')) {
                 console.error('Parameter <module> is not a valid PerspectiveView module :: ', '{' , typeof module, '} :: ', module);
-                if (dev.abortOnError) { throw new Error('Script abort'); }
+                if (DEV.abortOnError) { throw new Error('Script abort'); }
             }
         }
 
         for (id in module) {
-            if (mod.hasOwnProperty(id)) {
+            if (module.hasOwnProperty(id) && mod.hasOwnProperty(id)) {
                 console.error('There already exists a module named \'' + id + '\'');
             }
             else {
@@ -92,6 +94,7 @@ window.PPV = (function() {
     // -----------------------------------------------------------------------------------------------------------------
 
     return {
+        DEV           : DEV,
         configuration : cfg,
         appendModule  : appendModule,
         public        : init,
