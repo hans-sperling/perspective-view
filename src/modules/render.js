@@ -7,9 +7,10 @@
 
         canvas       = null,
         context      = null,
-        map          = [[0]],
+        map          = [],
         mapSize      = { x : 1, y : 1},
         unitSize     = { x : 1, y : 1},
+        unitScale    = 1,
         renderOrder  = [];
 
     // -----------------------------------------------------------------------------------------------------------------
@@ -19,8 +20,9 @@
         mod_Map      = ppv.modules.map;
         mod_Color    = ppv.modules.color;
 
-        canvas   = config.canvas;
-        context  = config.context;
+        canvas    = config.canvas;
+        context   = config.context;
+        unitScale = config.unitScale;
     }
 
 
@@ -31,7 +33,7 @@
 
     function update() {
         unitSize    = mod_Map.getUnitSize();
-        map         = mod_Map.getMapArea(0,0,17,17);
+        map         = mod_Map.getMapArea(0,0,8,8);
         mapSize     = { x : map[0].length, y : map.length };
         renderOrder = getRenderOrder();
     }
@@ -93,10 +95,10 @@
                     context.fillStyle = mod_Color.getSpaceColor();
                 }
                 context.fillRect(
-                    (x * unitSize.x),
-                    (y * unitSize.y),
-                    unitSize.x,
-                    unitSize.y
+                    (x * (unitSize.x * unitScale)),
+                    (y * (unitSize.y * unitScale)),
+                    (unitSize.x * unitScale),
+                    (unitSize.y * unitScale)
                 );
                 context.fill();
             }

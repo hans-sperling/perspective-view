@@ -58,6 +58,16 @@ jQuery(document).ready(function() {
             [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
             [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
         ],
+        dummyMap     = [
+            [11, 0,  31, 0,  51, 0,  71,  0],
+            [ 0, 22,  0, 42,  0, 62,  0, 82],
+            [13,  0, 33,  0, 53,  0, 73,  0],
+            [ 0, 24,  0, 44,  0, 64,  0, 84],
+            [15,  0, 35,  0, 55,  0, 75,  0],
+            [ 0, 26,  0, 46,  0, 66,  0, 86],
+            [17,  0, 37,  0, 57,  0, 77,  0],
+            [ 0, 28,  0, 48,  0, 68,  0, 88]
+        ],
         $canvas      = $('#PerspectiveView'),
         canvas       = $canvas[0],
         context      = canvas.getContext('2d');
@@ -73,11 +83,14 @@ jQuery(document).ready(function() {
         //renderMode:     'specified',
         //renderMode:     'flat',
         //renderMode:     'unitary',
-        map:            realisticMap,
+        //map:            realisticMap,
+        map:            dummyMap,
         //map:            simpleMap,
         //map:            heightMap,
-        unitSize:       {x: 40,  y: 40},
-        vanishingPoint: {x: 260, y: 180}
+        //unitSize       : {x: 1,  y: 1},
+        //unitScale      : 40
+        //vanishingPoint : {x: 260, y: 180}
+        vanishingPoint : {x: canvas.width/2, y: canvas.height/2}
     };
 
     var ppv = new PerspectiveView(config);

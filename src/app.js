@@ -15,8 +15,9 @@ window.PPV = (function() {
         defaults = {
             canvas         : null,
             context        : null,
-            map            : [[0]],
+            map            : [],
             unitSize       : { x : 1, y : 1},
+            unitScale      : 10,
             vanishingPoint : { x : 0, y : 0}
         };
 
@@ -73,7 +74,7 @@ window.PPV = (function() {
     function init(config) {
         cfg = mod.merge.deep(defaults, config);
 
-        initModules(config);
+        initModules(cfg);
         runModules();
 
         return {
@@ -84,10 +85,7 @@ window.PPV = (function() {
     // -----------------------------------------------------------------------------------------------------------------
 
     function render() {
-        mod.render.update({
-            unitSize : cfg.unitSize,
-            map      : cfg.map
-        });
+        mod.render.update();
         mod.render.render()
     }
 

@@ -27,19 +27,16 @@
 
 
     function getMapArea(startX, startY, endX, endY) {
-        var mapArea = [[]],
-            a = -1,
-            b = -1,
+        var mapArea = [],
+            a       = 0,
+            b       = 0,
             x, y;
 
-        for (y = startY; y < endY; y++) {
-            b++;
-            a = -1;
+        for (y = startY; y < endY; y++, b++) {
+            a          = 0;
             mapArea[b] = [];
 
-            for (x = startX; x < endX; x++) {
-                a++;
-
+            for (x = startX; x < endX; x++, a++) {
                 if (y < 0 || x < 0) {
                     mapArea[b][a] = defaults.mapItem;
                 }
