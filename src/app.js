@@ -42,74 +42,39 @@ window.PPV = (function() {
         }
     }
 
+    // -----------------------------------------------------------------------------------------------------------------
 
-    function getVanishingCell() {
-        var cell = {};
+    function initModules(configuration) {
+        var i;
 
-        if (cfg.unitSize.x > 0 && cfg.unitSize.y > 0) {
-            cell.x = Math.floor(Number(cfg.vanishingPoint.x) / cfg.unitSize.x);
-            cell.y = Math.floor(Number(cfg.vanishingPoint.y) / cfg.unitSize.y);
+        for (i in mod) {
+            if (mod.hasOwnProperty(i)) {
+                if (typeof mod[i].init === 'function') {
+                    mod[i].init(configuration);
+                }
+            }
         }
-
-        return cell;
     }
 
 
-    function getRenderOrder() {
-        var map           = cfg.map,
-            vanishingCell = getVanishingCell(),
-            mapAmountX    = map[0].length,
-            mapAmountY    = map.length,
-            orderX        = [],
-            orderY        = [],
-            orderlist     = [],
-            x, y;
+    function init(configuration) {
+        cfg = mod.merge.deep(defaults, configuration);
 
-        // Get reversed x render order
-        for (x = vanishingCell.x; x < mapAmountX; x++) {
-            orderX.push(x);
+        initModules(configuration);
+
+        return {
+            render : render
         }
-
-        for (x = vanishingCell.x-1; x >= 0 ; x--) {
-            orderX.push(x);
-        }
-
-
-        // Get reversed y render order
-        for (y = vanishingCell.y; y < mapAmountY; y++) {
-            orderY.push(y);
-        }
-
-        for (y = vanishingCell.y - 1; y >= 0 ; y--) {
-            orderY.push(y);
-        }
-
-
-        // Merge the x and y render order
-        for (y = 0; y < mapAmountY; y++) {
-            for (x = 0; x < mapAmountX; x++) {
-                orderlist.push({
-                    x: orderX[x],
-                    y: orderY[y]
-                });
-            }
-        }
-
-        return orderlist;
     }
 
     // -----------------------------------------------------------------------------------------------------------------
 
-    function init(configuration) {
-        cfg = mod.merge.deepmerge(defaults, configuration);
-
-        mod.map.setMap(cfg.map);
-        console.dir(mod);
-        console.log(mod.map.getMapArea());
-
-        return {
-            //dummy : dummy
-        }
+    function render() {
+        mod.render.update({
+            unitSize : cfg.unitSize,
+            map      : cfg.map
+        });
+        mod.render.render()
     }
 
     // -----------------------------------------------------------------------------------------------------------------
@@ -117,7 +82,8 @@ window.PPV = (function() {
     return {
         configuration : cfg,
         appendModule  : appendModule,
-        public        : init
-    }
+        public        : init,
+        modules       : mod
+    };
 
 })();

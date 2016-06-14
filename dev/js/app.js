@@ -82,6 +82,7 @@ jQuery(document).ready(function() {
 
     var ppv = new PerspectiveView(config);
 
+    ppv.render();
     console.dir(ppv);
 
 });

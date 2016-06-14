@@ -1,6 +1,12 @@
-;(function merge(win, doc, ppv) {
+;(function merge(ppv) {
 
-    function deepmerge(target, src) {
+    function init() {
+
+    }
+
+    // -----------------------------------------------------------------------------------------------------------------
+
+    function deep(target, src) {
         var array = Array.isArray(src);
         var dst = array && [] || {};
 
@@ -12,7 +18,7 @@
                     dst[i] = e;
                 }
                 else if (typeof e === 'object') {
-                    dst[i] = deepmerge(target[i], e);
+                    dst[i] = deep(target[i], e);
                 }
                 else {
                     if (target.indexOf(e) === -1) {
@@ -36,7 +42,7 @@
                         dst[key] = src[key];
                     }
                     else {
-                        dst[key] = deepmerge(target[key], src[key]);
+                        dst[key] = deep(target[key], src[key]);
                     }
                 }
             });
@@ -45,7 +51,11 @@
         return dst;
     }
 
+    // -----------------------------------------------------------------------------------------------------------------
 
-
-    ppv.appendModule({merge: { deepmerge: deepmerge } });
-})(window, document, window.PPV);
+    // Append module with public methods and properties
+    ppv.appendModule({ merge: {
+        init : init,
+        deep : deep
+    }});
+})(window.PPV);
