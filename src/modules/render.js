@@ -17,7 +17,9 @@
             tile  : { x : 0, y : 0 },
             shift : { x : 0, y : 0 }
         },
-        renderOrder  = [];
+        renderOrder  = [],
+        unitX = 1,
+        unitY = 1;
 
     // -----------------------------------------------------------------------------------------------------------------
 
@@ -39,23 +41,23 @@
 
 
     function update() {
+        var halfX, halfY, offsetX, offsetY, startX, startY, endX, endY;
+
         location    = mod_Location.getMapLocation();
         unitSize    = mod_Map.getUnitSize();
 
-        // Wie groß muss die Map sein?
+        unitX = unitSize.x * unitScale;
+        unitY = unitSize.y * unitScale;
 
-        var mapX = Math.ceil(canvas[0].width  / ((unitSize.x * unitScale) + unitShift.x));
-        var mapY = Math.ceil(canvas[0].height / ((unitSize.y * unitScale) + unitShift.y));
-        var x = (Math.ceil(mapX/2));
-        var y = (Math.ceil(mapY/2));
-        var startX = location.tile.x - x - bufferTile.x;
-        var startY = location.tile.y - y - bufferTile.y;
-        var endX   = location.tile.x + x + bufferTile.x;
-        var endY   = location.tile.y + y + bufferTile.y;
+        halfX   = Math.ceil(canvas[0].width  / ((unitX + unitShift.x) * 2));
+        halfY   = Math.ceil(canvas[0].height / ((unitY + unitShift.y) * 2));
+        offsetX = location.tile.x + bufferTile.x;
+        offsetY = location.tile.y + bufferTile.y;
+        startX  = halfX - offsetX;
+        startY  = halfY - offsetY;
+        endX    = halfX + offsetX;
+        endY    = halfY + offsetY;
 
-
-        console.log(startX, startY, endX, endY);
-        console.log(unitShift);
         map         = mod_Map.getMapArea(startX, startY, endX, endY);
         mapSize     = { x : map[0].length, y : map.length };
         renderOrder = getRenderOrder();
@@ -107,7 +109,9 @@
 
 
     function render() {
-        var x, y;
+        var x, y,
+            offsetX = unitShift.x - (bufferTile.x * unitX),
+            offsetY = unitShift.y - (bufferTile.y * unitY);
 
         for (y = 0; y < mapSize.y; y++){
             for (x = 0; x < mapSize.x; x++) {
@@ -118,12 +122,7 @@
                     context.fillStyle = mod_Color.getSpaceColor();
                 }
 
-                context.fillRect(
-                    ((x * (unitSize.x * unitScale)) + unitShift.x) - (bufferTile.x * (unitSize.x * unitScale)),
-                    ((y * (unitSize.y * unitScale)) + unitShift.y) - (bufferTile.y * (unitSize.x * unitScale)),
-                    ((unitSize.x * unitScale)),
-                    ((unitSize.y * unitScale))
-                );
+                context.fillRect(((x * unitX) + offsetX), ((y * unitY) + offsetY), (unitX), (unitY));
                 context.fill();
             }
         }
