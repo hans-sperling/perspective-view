@@ -24,6 +24,11 @@
 
     // -----------------------------------------------------------------------------------------------------------------
 
+    function update() {
+
+    }
+
+
     function getMapLocation() {
         /*
            Immer wenn man die Karte so weit verschoben hat, wie unitScale * unitSize groß ist, muss ein tile hinzu
@@ -64,6 +69,7 @@
     ppv.appendModule({ location : {
         init             : init,
         run              : run,
+        update           : update,
         getVanishingTile : getVanishingTile,
         getMapLocation   : getMapLocation
     }});

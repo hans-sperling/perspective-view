@@ -37,7 +37,7 @@
             mapArea[b] = [];
 
             for (x = startX; x < endX; x++, a++) {
-                if (y < 0 || x < 0) {
+                if (y < 0 || x < 0 || y >= map.length || x >=  map[0].length) {
                     mapArea[b][a] = defaults.mapItem;
                 }
                 else {

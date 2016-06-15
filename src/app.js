@@ -79,6 +79,9 @@ window.PPV = (function() {
         cfg.vanishingPoint.x = cfg.canvas.width / 2;
         cfg.vanishingPoint.y = cfg.canvas.height / 2;
 
+        //cfg.unitShift.x = cfg.unitScale / 2;
+        //cfg.unitShift.y = cfg.unitScale / 2;
+
         initModules(cfg);
         runModules();
 

@@ -8,6 +8,7 @@
         canvas       = null,
         context      = null,
         map          = [],
+        bufferTile   = { x : 1, y : 1}, // Amount of tiles out of the canvas
         mapSize      = { x : 1, y : 1},
         unitSize     = { x : 1, y : 1},
         unitShift    = { x : 0, y : 0},
@@ -45,12 +46,17 @@
 
         var mapX = Math.ceil(canvas[0].width  / ((unitSize.x * unitScale) + unitShift.x));
         var mapY = Math.ceil(canvas[0].height / ((unitSize.y * unitScale) + unitShift.y));
+        var x = (Math.ceil(mapX/2));
+        var y = (Math.ceil(mapY/2));
+        var startX = location.tile.x - x - bufferTile.x;
+        var startY = location.tile.y - y - bufferTile.y;
+        var endX   = location.tile.x + x + bufferTile.x;
+        var endY   = location.tile.y + y + bufferTile.y;
 
-        // var xLeft = (Math.ceil(mapX/2) + 1)
 
-        console.log(mapX, mapY);
-
-        map         = mod_Map.getMapArea(0,0,8,8);
+        console.log(startX, startY, endX, endY);
+        console.log(unitShift);
+        map         = mod_Map.getMapArea(startX, startY, endX, endY);
         mapSize     = { x : map[0].length, y : map.length };
         renderOrder = getRenderOrder();
     }
@@ -113,10 +119,10 @@
                 }
 
                 context.fillRect(
-                    (x * (unitSize.x * unitScale)) + unitShift.x,
-                    (y * (unitSize.y * unitScale)) + unitShift.y,
-                    (unitSize.x * unitScale),
-                    (unitSize.y * unitScale)
+                    ((x * (unitSize.x * unitScale)) + unitShift.x) - (bufferTile.x * (unitSize.x * unitScale)),
+                    ((y * (unitSize.y * unitScale)) + unitShift.y) - (bufferTile.y * (unitSize.x * unitScale)),
+                    ((unitSize.x * unitScale)),
+                    ((unitSize.y * unitScale))
                 );
                 context.fill();
             }
