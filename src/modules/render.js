@@ -114,7 +114,7 @@
 
     function render() {
 
-        //renderPaths(100);
+        //renderPaths(50);
 
         // Or
         //*
@@ -126,7 +126,7 @@
 
     function renderPaths(delay) {
         var path = [],
-            a, x, y, i, j;
+            x, y, i, j;
 
 
         for (y = 0; y < mapSize.y; y++) {
@@ -155,6 +155,19 @@
                     context.strokeStyle = mod_Color.getBaseColor();
                     for (j = 1; j < b.length; j++) {
                         context.lineTo(b[j].x, b[j].y);
+                    }
+                    context.closePath();
+                    context.stroke();
+                    context.fill();
+
+                    // North
+                    context.beginPath();
+                    context.moveTo(r[0].x, r[0].y);
+
+                    context.fillStyle   = mod_Color.getTopColor();
+                    context.strokeStyle = mod_Color.getTopColor();
+                    for (j = 1; j < r.length; j++) {
+                        context.lineTo(r[j].x, r[j].y);
                     }
                     context.closePath();
                     context.stroke();
