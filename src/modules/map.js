@@ -2,7 +2,6 @@
     'use strict';
 
     var map      = [],
-        unitSize = { x : 1, y : 1 },
         defaults = {
             mapItem : 0
         };
@@ -11,7 +10,6 @@
 
     function init(config) {
         map      = config.map;
-        unitSize = config.unitSize;
     }
 
 
@@ -20,11 +18,6 @@
     }
 
     // -----------------------------------------------------------------------------------------------------------------
-
-    function getUnitSize() {
-        return unitSize;
-    }
-
 
     function getMapArea(startX, startY, endX, endY) {
         var mapArea = [],
@@ -55,8 +48,7 @@
     ppv.appendModule({ map : {
         init        : init,
         run         : run,
-        getMapArea  : getMapArea,
-        getUnitSize : getUnitSize
+        getMapArea  : getMapArea
     }});
 
 })(window.PPV);

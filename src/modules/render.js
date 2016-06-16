@@ -10,16 +10,14 @@
         map          = [],
         bufferTile   = { x : 1, y : 1}, // Amount of tiles out of the canvas
         mapSize      = { x : 1, y : 1},
-        unitSize     = { x : 1, y : 1},
+        unitSize     = 10,
+        unitDepth    = 2,
         unitShift    = { x : 0, y : 0},
-        unitScale    = 1,
         location     = {
             tile  : { x : 0, y : 0 },
             shift : { x : 0, y : 0 }
         },
-        renderOrder  = [],
-        unitX = 1,
-        unitY = 1;
+        renderOrder  = [];
 
     // -----------------------------------------------------------------------------------------------------------------
 
@@ -31,7 +29,7 @@
         canvas    = config.canvas;
         context   = config.context;
         unitShift = config.unitShift;
-        unitScale = config.unitScale;
+        unitSize  = config.unitSize;
     }
 
 
@@ -44,13 +42,8 @@
         var halfX, halfY, offsetX, offsetY, startX, startY, endX, endY;
 
         location    = mod_Location.getMapLocation();
-        unitSize    = mod_Map.getUnitSize();
-
-        unitX = unitSize.x * unitScale;
-        unitY = unitSize.y * unitScale;
-
-        halfX   = Math.ceil(canvas[0].width  / ((unitX + unitShift.x) * 2));
-        halfY   = Math.ceil(canvas[0].height / ((unitY + unitShift.y) * 2));
+        halfX   = Math.ceil(canvas[0].width  / ((unitSize + unitShift.x) * 2));
+        halfY   = Math.ceil(canvas[0].height / ((unitSize + unitShift.y) * 2));
         offsetX = location.tile.x + bufferTile.x;
         offsetY = location.tile.y + bufferTile.y;
         startX  = halfX - offsetX;
@@ -109,9 +102,15 @@
 
 
     function render() {
+        //renderBase();
+        renderTop();
+    }
+
+
+    function renderBase() {
         var x, y,
-            offsetX = unitShift.x - (bufferTile.x * unitX),
-            offsetY = unitShift.y - (bufferTile.y * unitY);
+            offsetX = unitShift.x - (bufferTile.x * unitSize),
+            offsetY = unitShift.y - (bufferTile.y * unitSize);
 
         for (y = 0; y < mapSize.y; y++){
             for (x = 0; x < mapSize.x; x++) {
@@ -122,7 +121,29 @@
                     context.fillStyle = mod_Color.getSpaceColor();
                 }
 
-                context.fillRect(((x * unitX) + offsetX), ((y * unitY) + offsetY), (unitX), (unitY));
+                context.fillRect(((x * unitSize) + offsetX), ((y * unitSize) + offsetY), unitSize, unitSize);
+                context.fill();
+            }
+        }
+        context.restore();
+    }
+
+
+    function renderTop() {
+        var x, y,
+            offsetX     = unitShift.x - (bufferTile.x * unitSize),
+            offsetY     = unitShift.y - (bufferTile.y * unitSize);
+
+        for (y = 0; y < mapSize.y; y++){
+            for (x = 0; x < mapSize.x; x++) {
+                if (map[y][x] > 0) {
+                    context.fillStyle = mod_Color.getBaseColor();
+                }
+                else {
+                    context.fillStyle = mod_Color.getSpaceColor();
+                }
+
+                context.fillRect(((x * unitSize) + offsetX) * unitDepth, ((y * unitSize) + offsetY) * unitDepth, unitSize * unitDepth, unitSize * unitDepth);
                 context.fill();
             }
         }
@@ -136,7 +157,8 @@
         init       : init,
         run        : run,
         update     : update,
-        render     : render
+        render     : render,
+        renderBase : renderBase
     }});
 
 })(window.PPV);
