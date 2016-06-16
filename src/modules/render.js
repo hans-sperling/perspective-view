@@ -11,13 +11,10 @@
         bufferTile   = { x : 1, y : 1}, // Amount of tiles out of the canvas
         mapSize      = { x : 1, y : 1},
         unitSize     = 10,
-        unitDepth    = 2,
+        unitDepth    = 1,
         unitShift    = { x : 0, y : 0},
-        location     = {
-            tile  : { x : 0, y : 0 },
-            shift : { x : 0, y : 0 }
-        },
-        renderOrder  = [];
+        renderOrder  = [],
+        gridPosition;
 
     // -----------------------------------------------------------------------------------------------------------------
 
@@ -28,7 +25,7 @@
 
         canvas    = config.canvas;
         context   = config.context;
-        unitShift = config.unitShift;
+        // unitShift = config.unitShift;
         unitSize  = config.unitSize;
     }
 
@@ -38,21 +35,35 @@
     }
 
 
-    function update() {
+    function getMapAreaPositions() {
         var halfX, halfY, offsetX, offsetY, startX, startY, endX, endY;
 
-        location    = mod_Location.getMapLocation();
-        halfX   = Math.ceil(canvas[0].width  / ((unitSize + unitShift.x) * 2));
-        halfY   = Math.ceil(canvas[0].height / ((unitSize + unitShift.y) * 2));
-        offsetX = location.tile.x + bufferTile.x;
-        offsetY = location.tile.y + bufferTile.y;
-        startX  = halfX - offsetX;
-        startY  = halfY - offsetY;
-        endX    = halfX + offsetX;
-        endY    = halfY + offsetY;
+        gridPosition = mod_Location.getGridPosition();
 
-        map         = mod_Map.getMapArea(startX, startY, endX, endY);
+        halfX        = Math.ceil(canvas[0].width  / ((unitSize) * 2));
+        halfY        = Math.ceil(canvas[0].height / ((unitSize) * 2));
+        offsetX      = gridPosition.x + bufferTile.x;
+        offsetY      = gridPosition.y + bufferTile.y;
+        startX       = halfX - offsetX;
+        startY       = halfY - offsetY;
+        endX         = halfX + offsetX;
+        endY         = halfY + offsetY;
+
+        return {
+            startX : halfX - offsetX,
+            startY : halfY - offsetY,
+            endX   : halfX + offsetX,
+            endY   : halfY + offsetY
+        }
+    }
+
+
+    function update() {
+        var mapAreaPosition = getMapAreaPositions();
+
+        map         = mod_Map.getMapArea(mapAreaPosition.startX, mapAreaPosition.startY, mapAreaPosition.endX, mapAreaPosition.endY);
         mapSize     = { x : map[0].length, y : map.length };
+
         renderOrder = getRenderOrder();
     }
 
@@ -102,26 +113,92 @@
 
 
     function render() {
-        //renderBase();
-        renderTop();
+
+        //renderPaths(100);
+
+        // Or
+        //*
+        renderBase();
+        renderRoof();
+        /**/
+    }
+
+
+    function renderPaths(delay) {
+        var path = [],
+            a, x, y, i, j;
+
+
+        for (y = 0; y < mapSize.y; y++) {
+            for (x = 0; x < mapSize.x; x++) {
+                if (map[y][x] > 0) {
+                    path.push({
+                        base : getBasePath(x, y),
+                        roof : getRoofPath(x, y)
+                    });
+                }
+            }
+        }
+
+
+        for (i = 0; i < path.length; i++) {
+            (function(i) {
+                setTimeout(function () {
+                    var b = path[i].base;
+                    var r = path[i].roof;
+
+                    // Base
+                    context.beginPath();
+                    context.moveTo(b[0].x, b[0].y);
+
+                    context.fillStyle   = mod_Color.getBaseColor();
+                    context.strokeStyle = mod_Color.getBaseColor();
+                    for (j = 1; j < b.length; j++) {
+                        context.lineTo(b[j].x, b[j].y);
+                    }
+                    context.closePath();
+                    context.stroke();
+                    context.fill();
+/*
+                    // Roof
+                    context.beginPath();
+                    context.moveTo(r[0].x, r[0].y);
+
+                    context.fillStyle   = mod_Color.getTopColor();
+                    context.strokeStyle = mod_Color.getTopColor();
+                    for (j = 1; j < r.length; j++) {
+                        context.lineTo(r[j].x, r[j].y);
+                    }
+                    context.closePath();
+                    context.stroke();
+                    context.fill();
+*/
+                },delay * i);
+            })(i);
+        }
+
     }
 
 
     function renderBase() {
-        var x, y,
-            offsetX = unitShift.x - (bufferTile.x * unitSize),
-            offsetY = unitShift.y - (bufferTile.y * unitSize);
+        var x, y, tileHeight, currentUnitSize, shiftX, shiftY;
 
         for (y = 0; y < mapSize.y; y++){
             for (x = 0; x < mapSize.x; x++) {
-                if (map[y][x] > 0) {
+                tileHeight      = map[y][x];
+                currentUnitSize = unitSize;
+                shiftX          = -(currentUnitSize * bufferTile.x) + unitShift.x;
+                shiftY          = -(currentUnitSize * bufferTile.y) + unitShift.y;
+
+                // Color of the shape
+                if (tileHeight > 0) {
                     context.fillStyle = mod_Color.getBaseColor();
                 }
                 else {
                     context.fillStyle = mod_Color.getSpaceColor();
                 }
 
-                context.fillRect(((x * unitSize) + offsetX), ((y * unitSize) + offsetY), unitSize, unitSize);
+                context.fillRect((x * currentUnitSize) + shiftX, (y * currentUnitSize) + shiftY, currentUnitSize, currentUnitSize);
                 context.fill();
             }
         }
@@ -129,25 +206,69 @@
     }
 
 
-    function renderTop() {
-        var x, y,
-            offsetX     = unitShift.x - (bufferTile.x * unitSize),
-            offsetY     = unitShift.y - (bufferTile.y * unitSize);
+    function renderRoof() {
+        var x, y, tileHeight, currentUnitSize, shiftX, shiftY;
 
         for (y = 0; y < mapSize.y; y++){
             for (x = 0; x < mapSize.x; x++) {
-                if (map[y][x] > 0) {
-                    context.fillStyle = mod_Color.getBaseColor();
+                tileHeight      = map[y][x];
+                currentUnitSize = unitSize + (unitSize * tileHeight * unitDepth);
+                shiftX          = -(currentUnitSize * bufferTile.x) + unitShift.x + (unitShift.x * unitDepth);
+                shiftY          = -(currentUnitSize * bufferTile.y) + unitShift.y + (unitShift.y * unitDepth);
+
+                // Color of the shape
+                if (tileHeight > 0) {
+                    context.fillStyle = mod_Color.getTopColor();
                 }
                 else {
                     context.fillStyle = mod_Color.getSpaceColor();
                 }
 
-                context.fillRect(((x * unitSize) + offsetX) * unitDepth, ((y * unitSize) + offsetY) * unitDepth, unitSize * unitDepth, unitSize * unitDepth);
+                context.fillRect((x * currentUnitSize) + shiftX, (y * currentUnitSize) + shiftY, currentUnitSize, currentUnitSize);
                 context.fill();
             }
         }
         context.restore();
+    }
+
+
+    function getBasePath(x, y) {
+        var pathX, pathY, tileHeight, currentUnitSize, shiftX, shiftY;
+
+        tileHeight      = map[y][x];
+        currentUnitSize = unitSize;
+        shiftX          = -(currentUnitSize * bufferTile.x) + unitShift.x;
+        shiftY          = -(currentUnitSize * bufferTile.y) + unitShift.y;
+        pathX           = (x * currentUnitSize) + shiftX;
+        pathY           = (y * currentUnitSize) + shiftY;
+
+        return [
+            { x : pathX, y : pathY},
+            { x : pathX + currentUnitSize, y : pathY},
+            { x : pathX + currentUnitSize, y : pathY + currentUnitSize},
+            { x : pathX, y : pathY + currentUnitSize}
+        ];
+    }
+
+
+    function getRoofPath(x, y) {
+        var pathX, pathY,
+            tileHeight, currentUnitSize, shiftX, shiftY;
+
+        tileHeight      = map[y][x];
+        currentUnitSize = unitSize + (unitSize * tileHeight * unitDepth);
+        shiftX          = -(currentUnitSize * bufferTile.x) + unitShift.x + (unitShift.x * unitDepth);
+        shiftY          = -(currentUnitSize * bufferTile.y) + unitShift.y + (unitShift.y * unitDepth);
+        pathX           = (x * currentUnitSize) + shiftX;
+        pathY           = (y * currentUnitSize) + shiftY;
+
+        return [
+            { x : pathX, y : pathY},
+            { x : pathX + currentUnitSize, y : pathY},
+            { x : pathX + currentUnitSize, y : pathY + currentUnitSize},
+            { x : pathX, y : pathY + currentUnitSize}
+        ];
+
     }
 
     // -----------------------------------------------------------------------------------------------------------------
@@ -157,8 +278,7 @@
         init       : init,
         run        : run,
         update     : update,
-        render     : render,
-        renderBase : renderBase
+        render     : render
     }});
 
 })(window.PPV);

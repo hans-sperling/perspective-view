@@ -17,7 +17,7 @@
 
 
     function run() {
-        console.log(getMapLocation());
+
     }
 
     // -----------------------------------------------------------------------------------------------------------------
@@ -27,16 +27,8 @@
     }
 
 
-    function getMapLocation() {
-        /*
-           Immer wenn man die Karte so weit verschoben hat, wie unitScale * unitSize groß ist, muss ein tile hinzu
-           oder abgezogen werden.
-         */
-
-        return {
-            tile  : { x : 4, y : 4 },
-            shift : { x : 0, y : 0 }
-        };
+    function getGridPosition() {
+        return { x : 4, y : 4 };
     }
 
 
@@ -65,7 +57,7 @@
         run              : run,
         update           : update,
         getVanishingTile : getVanishingTile,
-        getMapLocation   : getMapLocation
+        getGridPosition  :  getGridPosition
     }});
 
 })(window.PPV);

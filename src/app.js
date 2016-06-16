@@ -16,9 +16,9 @@ window.PPV = (function() {
             canvas         : null,
             context        : null,
             map            : [],
-            unitSize       : 5,
+            unitSize       : 10,
             unitShift      : { x : 0, y : 0 },
-            vanishingPoint : { x : 0, y : 0 },
+            vanishingPoint : { x : 40, y : 40 },
             currentTile    : { x : 0, y : 0 }
         };
 
