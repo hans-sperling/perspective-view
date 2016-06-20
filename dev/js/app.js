@@ -65,7 +65,7 @@ jQuery(document).ready(function() {
 
 
     var config = {
-        canvas      : $canvas,
+        canvas      : canvas,
         context     : context,
         map         : dummyMap1,
         currentTile : { x : 4, y : 4 }

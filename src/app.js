@@ -17,9 +17,9 @@ window.PPV = (function() {
             context        : null,
             map            : [],
             unitSize       : 10,
-            unitShift      : { x : 0, y : 0 },
+            unitShift      : { x :  0, y :  0 },
             vanishingPoint : { x : 40, y : 40 },
-            currentTile    : { x : 0, y : 0 }
+            currentTile    : { x :  0, y :  0 }
         };
 
     // -----------------------------------------------------------------------------------------------------------------
@@ -74,6 +74,7 @@ window.PPV = (function() {
 
     function init(config) {
         cfg = mod.merge.deep(defaults, config);
+
 
         cfg.vanishingPoint.x = cfg.canvas.width / 2;
         cfg.vanishingPoint.y = cfg.canvas.height / 2;

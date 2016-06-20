@@ -40,8 +40,8 @@
 
         gridPosition = mod_Location.getGridPosition();
 
-        halfX        = Math.ceil(canvas[0].width  / ((unitSize) * 2));
-        halfY        = Math.ceil(canvas[0].height / ((unitSize) * 2));
+        halfX        = Math.ceil(canvas.width  / ((unitSize) * 2));
+        halfY        = Math.ceil(canvas.height / ((unitSize) * 2));
         offsetX      = gridPosition.x + bufferTile.x;
         offsetY      = gridPosition.y + bufferTile.y;
         startX       = halfX - offsetX;
@@ -69,13 +69,25 @@
 
     // -----------------------------------------------------------------------------------------------------------------
 
+    // get reversed render order
     function getRenderOrder() {
         var vanishingCell = ppv.modules.location.getVanishingTile(),
             mapAmountX    = map[0].length,
             mapAmountY    = map.length,
             orderX        = [],
             orderY        = [],
-            orderlist     = [],
+            orderlist2     = [],
+            orderlist     = {
+                tl : [],
+                tc : [],
+                tr : [],
+                cl : [],
+                cc : [],
+                cr : [],
+                bl : [],
+                bc : [],
+                br : []
+            },
             x, y;
 
         // Get reversed x render order
@@ -97,14 +109,78 @@
             orderY.push(y);
         }
 
-
         // Merge the x and y render order
         for (y = 0; y < mapAmountY; y++) {
             for (x = 0; x < mapAmountX; x++) {
-                orderlist.push({
+
+                if (orderY[y] < vanishingCell.y) { // Top
+                    if (orderX[x] < vanishingCell.x) { // Top left
+                        orderlist.tl.push({
+                            x: orderX[x],
+                            y: orderY[y]
+                        });
+                    }
+                    else if (orderX[x] == vanishingCell.x) { // Top center
+
+                        orderlist.tc.push({
+                            x: orderX[x],
+                            y: orderY[y]
+                        });
+                    }
+                    else { // Top right - if (orderX[x] > vanishingCell.x)
+                        orderlist.tr.push({
+                            x: orderX[x],
+                            y: orderY[y]
+                        });
+                    }
+                }
+                else if (orderY[y] == vanishingCell.y) { // Top
+                    if (orderX[x] < vanishingCell.x) { // Top left
+                        orderlist.cl.push({
+                            x: orderX[x],
+                            y: orderY[y]
+                        });
+                    }
+                    else if (orderX[x] == vanishingCell.x) { // Top center
+                        orderlist.cc.push({
+                            x: orderX[x],
+                            y: orderY[y]
+                        });
+                    }
+                    else { // Top right - if (orderX[x] > vanishingCell.x)
+                        orderlist.cr.push({
+                            x: orderX[x],
+                            y: orderY[y]
+                        });
+                    }
+                }
+                else { // if (orderY[y] < vanishingCell.y)
+                    if (orderX[x] < vanishingCell.x) { // Top left
+                        orderlist.bl.push({
+                            x: orderX[x],
+                            y: orderY[y]
+                        });
+                    }
+                    else if (orderX[x] == vanishingCell.x) { // Top center
+                        orderlist.bc.push({
+                            x: orderX[x],
+                            y: orderY[y]
+                        });
+                    }
+                    else { // Top right - if (orderX[x] > vanishingCell.x)
+                        orderlist.br.push({
+                            x: orderX[x],
+                            y: orderY[y]
+                        });
+                    }
+                }
+
+                /*
+                orderlist2.push({
                     x: orderX[x],
                     y: orderY[y]
                 });
+                 */
             }
         }
 
@@ -114,78 +190,80 @@
 
     function render() {
 
-        //renderPaths(50);
+        renderPaths(150);
+
+        newRenderLogic(150);
 
         // Or
-        //*
+        /*
         renderBase();
         renderRoof();
         /**/
     }
 
 
+    function renderShape(path) {
+        var i = 0;
+
+        // Base
+        context.beginPath();
+        context.moveTo(path[i].x, path[i].y);
+
+        context.fillStyle   = mod_Color.getBaseColor();
+        context.strokeStyle = mod_Color.getBaseColor();
+
+        for (i = 1; i < path.length; i++) {
+            context.lineTo(path[i].x, path[i].y);
+        }
+
+        context.closePath();
+        context.stroke();
+        context.fill();
+    }
+
+
+    function newRednerLogic(delay) {
+        var objects = [],
+
+            i;
+
+    }
+
+
+
+
     function renderPaths(delay) {
         var path = [],
+            c = renderOrder.length,
             x, y, i, j;
 
 
-        for (y = 0; y < mapSize.y; y++) {
-            for (x = 0; x < mapSize.x; x++) {
-                if (map[y][x] > 0) {
-                    path.push({
-                        base : getBasePath(x, y),
-                        roof : getRoofPath(x, y)
-                    });
-                }
+        // Get paths in render order
+        while (c--) {
+            x = renderOrder[c].x;
+            y = renderOrder[c].y;
+
+            if (map[y][x] > 0) {
+                path.push({
+                    base : getBasePath(x, y),
+                    roof : getRoofPath(x, y)
+                });
             }
         }
 
 
+
+
+        // Render paths into canvas
         for (i = 0; i < path.length; i++) {
             (function(i) {
                 setTimeout(function () {
-                    var b = path[i].base;
-                    var r = path[i].roof;
+                    var basePath = path[i].base,
+                        roofPath = path[i].base;
 
-                    // Base
-                    context.beginPath();
-                    context.moveTo(b[0].x, b[0].y);
+                    renderShape(basePath);
+                    renderShape(roofPath);
 
-                    context.fillStyle   = mod_Color.getBaseColor();
-                    context.strokeStyle = mod_Color.getBaseColor();
-                    for (j = 1; j < b.length; j++) {
-                        context.lineTo(b[j].x, b[j].y);
-                    }
-                    context.closePath();
-                    context.stroke();
-                    context.fill();
-
-                    // North
-                    context.beginPath();
-                    context.moveTo(r[0].x, r[0].y);
-
-                    context.fillStyle   = mod_Color.getTopColor();
-                    context.strokeStyle = mod_Color.getTopColor();
-                    for (j = 1; j < r.length; j++) {
-                        context.lineTo(r[j].x, r[j].y);
-                    }
-                    context.closePath();
-                    context.stroke();
-                    context.fill();
-/*
-                    // Roof
-                    context.beginPath();
-                    context.moveTo(r[0].x, r[0].y);
-
-                    context.fillStyle   = mod_Color.getTopColor();
-                    context.strokeStyle = mod_Color.getTopColor();
-                    for (j = 1; j < r.length; j++) {
-                        context.lineTo(r[j].x, r[j].y);
-                    }
-                    context.closePath();
-                    context.stroke();
-                    context.fill();
-*/
                 },delay * i);
             })(i);
         }
