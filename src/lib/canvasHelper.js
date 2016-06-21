@@ -65,13 +65,6 @@
 
     // -----------------------------------------------------------------------------------------------------------------
 
-    /**
-     * Clean the complete canvas and resets it.
-     *
-     * @private
-     * @memberof canvasHelper
-     * @return {void}
-     */
     function clean() {
         _context.save();
         _context.setTransform(1, 0, 0, 1, 0, 0);
@@ -81,28 +74,6 @@
     }
 
 
-    /**
-     * Draws the camera size and position.
-     *
-     * @public
-     * @memberof canvasHelper
-     * @param  {object} camera            - Properties of the camera
-     * @param  {number} camera.width      - Width of the camera/canvas in px
-     * @param  {number} camera.height     - Height of the camera/canvas in px
-     * @param  {object} camera.position   - Position of the camera/canvas center
-     * @param  {number} camera.position.x - X-Position of the camera in px
-     * @param  {number} camera.position.y - Y-Position of the camera in px
-     * @return {object} canvasHelper      - Returns emitter, so calls can be chained
-     * @example
-     *  canvasHelper.drawCamera({
-    *     width: 800,
-    *     height: 600,
-    *     position: {
-    *         x: 400,
-    *         y: 300
-    *     }
-    *  });
-     */
     function drawCamera(camera) {
         _context.save();
 
@@ -131,43 +102,16 @@
         _context.stroke();
 
         _context.restore();
-
-        
     }
 
 
-    /**
-     * Draws a grid referred to the camera center position
-     *
-     * @public
-     * @memberof canvasHelper
-     * @param  {object} camera            - Properties of the camera
-     * @param  {number} camera.width      - Width of the camera/canvas in px
-     * @param  {number} camera.height     - Height of the camera/canvas in px
-     * @param  {object} camera.position   - Position of the camera/canvas center
-     * @param  {number} camera.position.x - X-Position of the camera in px
-     * @param  {number} camera.position.y - Y-Position of the camera in px
-     * @param  {object} unit              - Properties of an unit/tile
-     * @param  {number} unit.width        - Width of an unit/tile in px
-     * @param  {number} unit.height       - Height of an unit/tile in px
-     * @return {object} canvasHelper      - Returns emitter, so calls can be chained
-     * @example
-     *  canvasHelper.drawGrid({
-    *     width: 800,
-    *     height: 600,
-    *     position: {
-    *         x: 400,
-    *         y: 300
-    *     }
-    *  }, {
-    *      width: 100,
-    *      height: 100
-    *  });
-     */
+
     function drawGrid(camera, unit, drift) {
         var startX = (camera.position.x % unit.width)  - (unit.width  * 1.5) - drift.x,
             startY = (camera.position.y % unit.height) - (unit.height * 1.5) - drift.y,
             x, y;
+
+        console.log(startX, startY);
 
         _context.save();
         _context.strokeStyle = _config.grid.color;
@@ -185,8 +129,6 @@
         _context.closePath();
         _context.stroke();
         _context.restore();
-
-        
     }
 
 
@@ -208,8 +150,6 @@
             height
         );
         _context.restore();
-
-        
     }
 
 

@@ -62,7 +62,7 @@ jQuery(document).ready(function() {
             [2, 0, 1, 0, 2, 0, 1, 0, 2, 0, 1, 0, 2, 0, 1, 0],
             [0, 2, 0, 1, 0, 2, 0, 1, 0, 2, 0, 1, 0, 2, 0, 1]
         ],
-        dummy4 = [
+        dummyMap4 = [
             [1]
         ],
         $canvas      = $('#PerspectiveView'),
@@ -74,17 +74,21 @@ jQuery(document).ready(function() {
 
 
     var config = {
-        canvas         : canvas,
-        context        : context,
-        map            : dummyMap0,
-        vanishingPoint : { x : 50, y : 50 },
-        currentTile    : { x : 2, y : 2 },
-        unitShift      : { x : 0, y : 0 }
+        canvas   : canvas,
+        context  : context,
+        map      : dummyMap4,
+        unitSize : 20,
+        camera   : {
+            width    : canvas.width,
+            height   : canvas.height,
+            position : {
+                x : canvas.width  / 2,
+                y : canvas.height / 2
+            }
+        }
     };
 
     var ppv = new PerspectiveView(config);
 
     ppv.render();
-    console.dir(ppv);
-
 });

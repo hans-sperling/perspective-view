@@ -18,8 +18,14 @@ window.PPV = (function() {
             map            : [],
             unitSize       : 20,
             unitShift      : { x : 0, y : 0 },
-            vanishingPoint : { x : 0, y : 0 },
-            currentTile    : { x : 0, y : 0 }
+            camera   : {
+                width    : 1,
+                height   : 1,
+                position : {
+                    x : 1,
+                    y : 1
+                }
+            }
         };
 
     // -----------------------------------------------------------------------------------------------------------------
@@ -75,10 +81,6 @@ window.PPV = (function() {
     function init(config) {
         cfg = mod.merge.deep(defaults, config);
 
-
-        cfg.vanishingPoint.x = cfg.canvas.width / 2;
-        cfg.vanishingPoint.y = cfg.canvas.height / 2;
-s
         initModules(cfg);
         runModules();
 
@@ -90,20 +92,8 @@ s
     // -----------------------------------------------------------------------------------------------------------------
 
     function render() {
-        var camera = {
-            width    : cfg.canvas.width,
-            height   : cfg.canvas.height,
-            position : {
-                x : cfg.vanishingPoint.x,
-                y : cfg.vanishingPoint.y
-            }
-        };
-
-        //mod.render.update();
-        //mod.render.render();
-
-        mod.canvasHelper.drawCamera(camera);
-        mod.canvasHelper.drawGrid(camera, { width: cfg.unitSize, height : cfg.unitSize}, {x:0,y:0});
+        mod.render.update();
+        mod.render.render();
     }
 
     // -----------------------------------------------------------------------------------------------------------------

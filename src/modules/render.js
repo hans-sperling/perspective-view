@@ -1,9 +1,10 @@
 ;(function render(ppv) {
     'use strict';
 
-    var mod_Location = null,
-        mod_Map      = null,
-        mod_Color    = null,
+    var mod_Location     = null,
+        mod_Map          = null,
+        mod_Color        = null,
+        mod_canvasHelper = null,
 
         canvas       = null,
         context      = null,
@@ -14,17 +15,19 @@
         unitDepth    = 1,
         unitShift    = { x : 0, y : 0},
         renderOrder  = [],
+        camera       =  { width : 1, height : 1, position : { x : 1, y : 1 }},
         gridPosition;
 
     // -----------------------------------------------------------------------------------------------------------------
 
     function init(config) {
-        mod_Location = ppv.modules.location;
-        mod_Map      = ppv.modules.map;
-        mod_Color    = ppv.modules.color;
+        mod_Map          = ppv.modules.map;
+        mod_Color        = ppv.modules.color;
+        mod_canvasHelper = ppv.modules.canvasHelper;
 
         canvas    = config.canvas;
         context   = config.context;
+        camera    = config.camera;
         unitSize  = config.unitSize;
         unitShift = config.unitShift;
     }
@@ -38,7 +41,6 @@
     function update() {
         var mapAreaPosition = getMapAreaPositions();
 
-        //console.log(mapAreaPosition);
         map         = mod_Map.getMapArea(mapAreaPosition);
         mapSize     = { x : map[0].length, y : map.length };
         renderOrder = getRenderOrder();
@@ -48,7 +50,7 @@
 
     function render() {
         var i = renderOrder.length,
-            vanishingCell = mod_Location.getVanishingTile(),
+            vanishingCell = getGridPosition({ x : camera.position.x, y : camera.position.y }),
             backPath, frontPath,
             northPath, eastPath, southPath, westPath,
             x, y;
@@ -60,6 +62,7 @@
 
             if (map[y][x] > 0) {
                 backPath  = getBackPath(x, y);
+                console.log(backPath);
                 frontPath = getFrontPath(x, y);
 
                 renderShape(backPath, mod_Color.getBackColor());
@@ -82,9 +85,12 @@
                     renderShape(northPath, mod_Color.getBackColor());
                 }
 */
-                renderShape(frontPath, mod_Color.getFrontColor());
+                //renderShape(frontPath, mod_Color.getFrontColor());
             }
         }
+
+        mod_canvasHelper.drawCamera(camera);
+        mod_canvasHelper.drawGrid(camera, { width: unitSize, height : unitSize}, unitShift);
     }
 
 
@@ -108,7 +114,7 @@
 
 
     function getRenderOrder() {
-        var vanishingCell   = ppv.modules.location.getVanishingTile(),
+        var vanishingCell   = getGridPosition({ x : camera.position.x, y : camera.position.y }),
             mapAmountX      = map[0].length,
             mapAmountY      = map.length,
             orderX          = [],
@@ -229,13 +235,11 @@
     function getMapAreaPositions() {
         var halfX, halfY, offsetX, offsetY, startX, startY, endX, endY;
 
-        gridPosition = mod_Location.getGridPosition();
-
         halfX        = Math.floor(canvas.width  / ((unitSize) * 2));
         halfY        = Math.floor(canvas.height / ((unitSize) * 2));
 
-        offsetX      = gridPosition.x + bufferTile.x;
-        offsetY      = gridPosition.y + bufferTile.y;
+        offsetX      = camera.position.x + bufferTile.x;
+        offsetY      = camera.position.y + bufferTile.y;
         startX       = halfX - offsetX;
         startY       = halfY - offsetY;
         endX         = halfX + offsetX;
@@ -251,7 +255,7 @@
 
     // ----------------------------------------------------------------------------------------------------------- Paths
 
-    function getBackPath(x, y) {
+    function old_getBackPath(x, y) {
         var pathX, pathY, tileHeight, currentUnitSize, shiftX, shiftY;
 
         tileHeight      = map[y][x];
@@ -266,6 +270,21 @@
             { x : pathX + currentUnitSize, y : pathY},
             { x : pathX + currentUnitSize, y : pathY + currentUnitSize},
             { x : pathX, y : pathY + currentUnitSize}
+        ];
+    }
+
+
+    function getBackPath(x, y) {
+        var currentUnitSize = unitSize,
+            startX          = (camera.position.x % unitSize) - (unitSize * 1.5) - unitShift.x,
+            startY          = (camera.position.y % unitSize) - (unitSize * 1.5) - unitShift.y;
+
+
+        return [
+            { x : startX, y : startY},
+            { x : startX + currentUnitSize, y : startY},
+            { x : startX + currentUnitSize, y : startY + currentUnitSize},
+            { x : startX, y : startY + currentUnitSize}
         ];
     }
 
@@ -302,8 +321,6 @@
 
         shiftX          = -((currentUnitSize * bufferTile.x) + (unitShift.x + currentUnitSize / 4));
         shiftY          = -((currentUnitSize * bufferTile.y) + (unitShift.y + currentUnitSize / 4));
-
-        console.log(shiftX, shiftY, (unitSize * tileHeight * unitDepth));
 
         pathX           = ((x * currentUnitSize) + shiftX);
         pathY           = ((y * currentUnitSize) + shiftY);
@@ -353,6 +370,16 @@
             { x : backPath[3].x,  y : backPath[3].y  },
             { x : frontPath[3].x, y : frontPath[3].y }
         ];
+    }
+
+    // -----------------------------------------------------------------------------------------------------------------
+
+    function getGridPosition(position) {
+        var startX          = (camera.position.x % unitSize) - (unitSize * 1.5) - unitShift.x,
+            startY          = (camera.position.y % unitSize) - (unitSize * 1.5) - unitShift.y;
+
+        console.log(startX, startY);
+        return {};
     }
 
     // -----------------------------------------------------------------------------------------------------------------
