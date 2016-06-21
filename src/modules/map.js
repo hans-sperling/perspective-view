@@ -19,17 +19,17 @@
 
     // -----------------------------------------------------------------------------------------------------------------
 
-    function getMapArea(startX, startY, endX, endY) {
+    function getMapArea(positions) {
         var mapArea = [],
             a       = 0,
             b       = 0,
             x, y;
 
-        for (y = startY; y < endY; y++, b++) {
+        for (y = positions.startY; y <= positions.endY; y++, b++) {
             a          = 0;
             mapArea[b] = [];
 
-            for (x = startX; x < endX; x++, a++) {
+            for (x = positions.startX; x <= positions.endX; x++, a++) {
                 if (y < 0 || x < 0 || y >= map.length || x >=  map[0].length) {
                     mapArea[b][a] = defaults.mapItem;
                 }

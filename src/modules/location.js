@@ -4,7 +4,8 @@
     var unitSize       = 10,
         unitShift      = { x : 0, y : 0 },
         vanishingPoint = { x : 1, y : 1},
-        currentTile    = { x : 1, y : 1};
+        currentTile    = { x : 1, y : 1},
+        vanishingTile  = { x : 1, y : 1};
 
     // -----------------------------------------------------------------------------------------------------------------
 
@@ -14,6 +15,7 @@
         vanishingPoint = config.vanishingPoint;
         currentTile    = config.currentTile;
 
+        vanishingTile = currentTile;
     }
 
 
@@ -29,25 +31,12 @@
 
 
     function getGridPosition() {
-        return { x : 4, y : 4 };
+        return currentTile;
     }
 
 
     function getVanishingTile() {
-        var tile = {};
-
-        if (unitSize > 0) {
-            tile.x = Math.floor(Number(vanishingPoint.x) / (unitSize + unitShift.x));
-            tile.y = Math.floor(Number(vanishingPoint.y) / (unitSize + unitShift.y));
-        }
-        else {
-            if (ppv.DEV.enable) {
-                console.error('Property <unitSize> is lower than 0 :: ', 'unitSize{' , typeof unitSize, '} :: ', unitSize);
-                if (ppv.DEV.abortOnError) { throw new Error('Script abort'); }
-            }
-        }
-
-        return tile;
+        return vanishingTile;
     }
 
     // -----------------------------------------------------------------------------------------------------------------

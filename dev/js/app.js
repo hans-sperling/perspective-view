@@ -1,7 +1,14 @@
 jQuery(document).ready(function() {
     'use strict';
 
-    var dummyMap1     = [
+    var dummyMap0     = [
+            [1, 0, 0, 0, 1],
+            [0, 1, 0, 1, 0],
+            [0, 0, 1, 0, 0],
+            [0, 1, 0, 1, 0],
+            [1, 0, 0, 0, 1]
+        ],
+        dummyMap1     = [
             [1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0],
             [0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1],
             [1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0],
@@ -37,7 +44,7 @@ jQuery(document).ready(function() {
             [2, 0, 2, 0, 2, 0, 2, 0, 2, 0, 2, 0, 2, 0, 2, 0],
             [0, 2, 0, 2, 0, 2, 0, 2, 0, 2, 0, 2, 0, 2, 0, 2]
         ],
-        dummyMap12     = [
+        dummyMap12    = [
             [1, 0, 2, 0, 1, 0, 2, 0, 1, 0, 2, 0, 1, 0, 2, 0],
             [0, 1, 0, 2, 0, 1, 0, 2, 0, 1, 0, 2, 0, 1, 0, 2],
             [2, 0, 1, 0, 2, 0, 1, 0, 2, 0, 1, 0, 2, 0, 1, 0],
@@ -65,10 +72,12 @@ jQuery(document).ready(function() {
 
 
     var config = {
-        canvas      : canvas,
-        context     : context,
-        map         : dummyMap1,
-        currentTile : { x : 4, y : 4 }
+        canvas         : canvas,
+        context        : context,
+        map            : dummyMap0,
+        vanishingPoint : { x : 50, y : 50 },
+        currentTile    : { x : 2, y : 2 },
+        unitShift      : { x : 0, y : 0 }
     };
 
     var ppv = new PerspectiveView(config);

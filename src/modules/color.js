@@ -1,9 +1,13 @@
 ;(function color(ppv) {
     'use strict';
 
-    var baseColor  = 'rgba(150, 150, 150, 0.5)',
+    var backColor  = 'rgba(150, 150, 150, 0.5)',
         spaceColor = 'rgba(255, 255, 255, 0)',
-        topColor   = 'rgba(255, 0, 0, 0.7)';
+        frontColor = 'rgba(255, 0, 0, 0.7)',
+        northColor = 'rgba(150, 150, 150, 0.5)',
+        eastColor  = 'rgba(150, 150, 150, 0.5)',
+        southColor = 'rgba(150, 150, 150, 0.5)',
+        westColor  = 'rgba(150, 150, 150, 0.5)';
 
     // -----------------------------------------------------------------------------------------------------------------
 
@@ -18,8 +22,8 @@
 
     // -----------------------------------------------------------------------------------------------------------------
 
-    function getBaseColor() {
-        return baseColor;
+    function getBackColor() {
+        return backColor;
     }
 
 
@@ -27,8 +31,29 @@
         return spaceColor;
     }
 
-    function getTopColor() {
-        return topColor;
+
+    function getFrontColor() {
+        return frontColor;
+    }
+
+
+    function getNorthColor() {
+        return northColor;
+    }
+
+
+    function getEastColor() {
+        return eastColor;
+    }
+
+
+    function getSouthColor() {
+        return southColor;
+    }
+
+
+    function getWestColor() {
+        return westColor;
     }
 
     // -----------------------------------------------------------------------------------------------------------------
@@ -37,9 +62,13 @@
     ppv.appendModule({ color : {
         init          : init,
         run           : run,
-        getBaseColor  : getBaseColor,
+        getBackColor  : getBackColor,
         getSpaceColor : getSpaceColor,
-        getTopColor   : getTopColor
+        getFrontColor : getFrontColor,
+        getNorthColor : getNorthColor,
+        getEastColor  : getEastColor,
+        getSouthColor : getSouthColor,
+        getWestColor  : getWestColor
     }});
 
 })(window.PPV);

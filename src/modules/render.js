@@ -8,7 +8,7 @@
         canvas       = null,
         context      = null,
         map          = [],
-        bufferTile   = { x : 1, y : 1}, // Amount of tiles out of the canvas
+        bufferTile   = { x : 0, y : 0}, // Amount of tiles out of the canvas
         mapSize      = { x : 1, y : 1},
         unitSize     = 10,
         unitDepth    = 1,
@@ -25,8 +25,8 @@
 
         canvas    = config.canvas;
         context   = config.context;
-        // unitShift = config.unitShift;
         unitSize  = config.unitSize;
+        unitShift = config.unitShift;
     }
 
 
@@ -35,49 +35,86 @@
     }
 
 
-    function getMapAreaPositions() {
-        var halfX, halfY, offsetX, offsetY, startX, startY, endX, endY;
+    function update() {
+        var mapAreaPosition = getMapAreaPositions();
 
-        gridPosition = mod_Location.getGridPosition();
+        //console.log(mapAreaPosition);
+        map         = mod_Map.getMapArea(mapAreaPosition);
+        mapSize     = { x : map[0].length, y : map.length };
+        renderOrder = getRenderOrder();
+    }
 
-        halfX        = Math.ceil(canvas.width  / ((unitSize) * 2));
-        halfY        = Math.ceil(canvas.height / ((unitSize) * 2));
-        offsetX      = gridPosition.x + bufferTile.x;
-        offsetY      = gridPosition.y + bufferTile.y;
-        startX       = halfX - offsetX;
-        startY       = halfY - offsetY;
-        endX         = halfX + offsetX;
-        endY         = halfY + offsetY;
+    // ---------------------------------------------------------------------------------------------------------- Render
 
-        return {
-            startX : halfX - offsetX,
-            startY : halfY - offsetY,
-            endX   : halfX + offsetX,
-            endY   : halfY + offsetY
+    function render() {
+        var i = renderOrder.length,
+            vanishingCell = mod_Location.getVanishingTile(),
+            backPath, frontPath,
+            northPath, eastPath, southPath, westPath,
+            x, y;
+
+
+        while (i--) {
+            x        = renderOrder[i].x;
+            y        = renderOrder[i].y;
+
+            if (map[y][x] > 0) {
+                backPath  = getBackPath(x, y);
+                frontPath = getFrontPath(x, y);
+
+                renderShape(backPath, mod_Color.getBackColor());
+/*
+                if (x < vanishingCell.x) {
+                    eastPath  = getEastPath(backPath, frontPath);
+                    renderShape(eastPath, mod_Color.getBackColor());
+                }
+                else if (x > vanishingCell.x) {
+                    westPath  = getWestPath(backPath, frontPath);
+                    renderShape(westPath, mod_Color.getBackColor());
+                }
+
+                if (y < vanishingCell.y) {
+                    southPath = getSouthPath(backPath, frontPath);
+                    renderShape(southPath, mod_Color.getBackColor());
+                }
+                else if (y > vanishingCell.y) {
+                    northPath = getNorthPath(backPath, frontPath);
+                    renderShape(northPath, mod_Color.getBackColor());
+                }
+*/
+                renderShape(frontPath, mod_Color.getFrontColor());
+            }
         }
     }
 
 
-    function update() {
-        var mapAreaPosition = getMapAreaPositions();
+    function renderShape(path, color) {
+        var i = 0;
 
-        map         = mod_Map.getMapArea(mapAreaPosition.startX, mapAreaPosition.startY, mapAreaPosition.endX, mapAreaPosition.endY);
-        mapSize     = { x : map[0].length, y : map.length };
+        context.beginPath();
+        context.moveTo(path[i].x, path[i].y);
 
-        renderOrder = getRenderOrder();
+        context.fillStyle   = color;
+        context.strokeStyle = color;
+
+        for (i = 1; i < path.length; i++) {
+            context.lineTo(path[i].x, path[i].y);
+        }
+
+        context.closePath();
+        context.stroke();
+        context.fill();
     }
 
-    // -----------------------------------------------------------------------------------------------------------------
 
-    // get reversed render order
     function getRenderOrder() {
-        var vanishingCell = ppv.modules.location.getVanishingTile(),
-            mapAmountX    = map[0].length,
-            mapAmountY    = map.length,
-            orderX        = [],
-            orderY        = [],
-            orderlist2     = [],
-            orderlist     = {
+        var vanishingCell   = ppv.modules.location.getVanishingTile(),
+            mapAmountX      = map[0].length,
+            mapAmountY      = map.length,
+            orderX          = [],
+            orderY          = [],
+            orderlistSimple = [],
+            orderlist       = {
                 tl : [],
                 tc : [],
                 tr : [],
@@ -90,12 +127,13 @@
             },
             x, y;
 
+
         // Get reversed x render order
         for (x = vanishingCell.x; x < mapAmountX; x++) {
             orderX.push(x);
         }
 
-        for (x = vanishingCell.x-1; x >= 0 ; x--) {
+        for (x = vanishingCell.x - 1; x >= 0 ; x--) {
             orderX.push(x);
         }
 
@@ -112,7 +150,7 @@
         // Merge the x and y render order
         for (y = 0; y < mapAmountY; y++) {
             for (x = 0; x < mapAmountX; x++) {
-
+                /*
                 if (orderY[y] < vanishingCell.y) { // Top
                     if (orderX[x] < vanishingCell.x) { // Top left
                         orderlist.tl.push({
@@ -174,156 +212,46 @@
                         });
                     }
                 }
+*/
 
-                /*
-                orderlist2.push({
+                orderlistSimple.push({
                     x: orderX[x],
                     y: orderY[y]
                 });
-                 */
+
             }
         }
 
-        return orderlist;
+        return orderlistSimple;
     }
 
 
-    function render() {
+    function getMapAreaPositions() {
+        var halfX, halfY, offsetX, offsetY, startX, startY, endX, endY;
 
-        renderPaths(150);
+        gridPosition = mod_Location.getGridPosition();
 
-        newRenderLogic(150);
+        halfX        = Math.floor(canvas.width  / ((unitSize) * 2));
+        halfY        = Math.floor(canvas.height / ((unitSize) * 2));
 
-        // Or
-        /*
-        renderBase();
-        renderRoof();
-        /**/
-    }
+        offsetX      = gridPosition.x + bufferTile.x;
+        offsetY      = gridPosition.y + bufferTile.y;
+        startX       = halfX - offsetX;
+        startY       = halfY - offsetY;
+        endX         = halfX + offsetX;
+        endY         = halfY + offsetY;
 
-
-    function renderShape(path) {
-        var i = 0;
-
-        // Base
-        context.beginPath();
-        context.moveTo(path[i].x, path[i].y);
-
-        context.fillStyle   = mod_Color.getBaseColor();
-        context.strokeStyle = mod_Color.getBaseColor();
-
-        for (i = 1; i < path.length; i++) {
-            context.lineTo(path[i].x, path[i].y);
+        return {
+            startX : halfX - offsetX,
+            startY : halfY - offsetY,
+            endX   : halfX + offsetX,
+            endY   : halfY + offsetY
         }
-
-        context.closePath();
-        context.stroke();
-        context.fill();
     }
 
+    // ----------------------------------------------------------------------------------------------------------- Paths
 
-    function newRednerLogic(delay) {
-        var objects = [],
-
-            i;
-
-    }
-
-
-
-
-    function renderPaths(delay) {
-        var path = [],
-            c = renderOrder.length,
-            x, y, i, j;
-
-
-        // Get paths in render order
-        while (c--) {
-            x = renderOrder[c].x;
-            y = renderOrder[c].y;
-
-            if (map[y][x] > 0) {
-                path.push({
-                    base : getBasePath(x, y),
-                    roof : getRoofPath(x, y)
-                });
-            }
-        }
-
-
-
-
-        // Render paths into canvas
-        for (i = 0; i < path.length; i++) {
-            (function(i) {
-                setTimeout(function () {
-                    var basePath = path[i].base,
-                        roofPath = path[i].base;
-
-                    renderShape(basePath);
-                    renderShape(roofPath);
-
-                },delay * i);
-            })(i);
-        }
-
-    }
-
-
-    function renderBase() {
-        var x, y, tileHeight, currentUnitSize, shiftX, shiftY;
-
-        for (y = 0; y < mapSize.y; y++){
-            for (x = 0; x < mapSize.x; x++) {
-                tileHeight      = map[y][x];
-                currentUnitSize = unitSize;
-                shiftX          = -(currentUnitSize * bufferTile.x) + unitShift.x;
-                shiftY          = -(currentUnitSize * bufferTile.y) + unitShift.y;
-
-                // Color of the shape
-                if (tileHeight > 0) {
-                    context.fillStyle = mod_Color.getBaseColor();
-                }
-                else {
-                    context.fillStyle = mod_Color.getSpaceColor();
-                }
-
-                context.fillRect((x * currentUnitSize) + shiftX, (y * currentUnitSize) + shiftY, currentUnitSize, currentUnitSize);
-                context.fill();
-            }
-        }
-        context.restore();
-    }
-
-
-    function renderRoof() {
-        var x, y, tileHeight, currentUnitSize, shiftX, shiftY;
-
-        for (y = 0; y < mapSize.y; y++){
-            for (x = 0; x < mapSize.x; x++) {
-                tileHeight      = map[y][x];
-                currentUnitSize = unitSize + (unitSize * tileHeight * unitDepth);
-                shiftX          = -(currentUnitSize * bufferTile.x) + unitShift.x + (unitShift.x * unitDepth);
-                shiftY          = -(currentUnitSize * bufferTile.y) + unitShift.y + (unitShift.y * unitDepth);
-
-                // Color of the shape
-                if (tileHeight > 0) {
-                    context.fillStyle = mod_Color.getTopColor();
-                }
-                else {
-                    context.fillStyle = mod_Color.getSpaceColor();
-                }
-
-                context.fillRect((x * currentUnitSize) + shiftX, (y * currentUnitSize) + shiftY, currentUnitSize, currentUnitSize);
-                context.fill();
-            }
-        }
-        context.restore();
-    }
-
-
-    function getBasePath(x, y) {
+    function getBackPath(x, y) {
         var pathX, pathY, tileHeight, currentUnitSize, shiftX, shiftY;
 
         tileHeight      = map[y][x];
@@ -354,12 +282,77 @@
         pathY           = (y * currentUnitSize) + shiftY;
 
         return [
-            { x : pathX, y : pathY},
-            { x : pathX + currentUnitSize, y : pathY},
+            { x : pathX,                   y : pathY                  },
+            { x : pathX + currentUnitSize, y : pathY                  },
             { x : pathX + currentUnitSize, y : pathY + currentUnitSize},
-            { x : pathX, y : pathY + currentUnitSize}
+            { x : pathX,                   y : pathY + currentUnitSize}
         ];
+    }
 
+
+    function getFrontPath(x, y) {
+        var pathX, pathY, depthShiftX, depthShiftY,
+            vanishingCell = mod_Location.getVanishingTile(),
+            tileHeight, currentUnitSize, shiftX, shiftY,
+            halfCanvasX = canvas.width  / 2,
+            halfCanvasY = canvas.height / 2;
+
+        tileHeight      = map[y][x];
+        currentUnitSize = unitSize + (unitSize * tileHeight * unitDepth); // Base unit size * depth factor
+
+        shiftX          = -((currentUnitSize * bufferTile.x) + (unitShift.x + currentUnitSize / 4));
+        shiftY          = -((currentUnitSize * bufferTile.y) + (unitShift.y + currentUnitSize / 4));
+
+        console.log(shiftX, shiftY, (unitSize * tileHeight * unitDepth));
+
+        pathX           = ((x * currentUnitSize) + shiftX);
+        pathY           = ((y * currentUnitSize) + shiftY);
+
+        return [
+            { x : pathX,                   y : pathY                  },
+            { x : pathX + currentUnitSize, y : pathY                  },
+            { x : pathX + currentUnitSize, y : pathY + currentUnitSize},
+            { x : pathX,                   y : pathY + currentUnitSize}
+        ];
+    }
+
+    function getNorthPath(backPath, frontPath) {
+        return [
+            { x : backPath[0].x,  y : backPath[0].y  },
+            { x : backPath[1].x,  y : backPath[1].y  },
+            { x : frontPath[1].x, y : frontPath[1].y },
+            { x : frontPath[0].x, y : frontPath[0].y }
+        ];
+    }
+
+
+    function getEastPath(backPath, frontPath) {
+        return [
+            { x : frontPath[1].x, y : frontPath[1].y },
+            { x : backPath[1].x,  y : backPath[1].y  },
+            { x : backPath[2].x,  y : backPath[2].y  },
+            { x : frontPath[2].x, y : frontPath[2].y }
+        ];
+    }
+
+
+    function getSouthPath(backPath, frontPath) {
+        return [
+            { x : frontPath[3].x, y : frontPath[3].y },
+            { x : backPath[3].x,  y : backPath[3].y  },
+            { x : backPath[2].x,  y : backPath[2].y  },
+            { x : frontPath[2].x, y : frontPath[2].y }
+        ];
+    }
+
+
+    function getWestPath(backPath, frontPath) {
+        return [
+            { x : frontPath[0].x, y : frontPath[0].y },
+            { x : backPath[0].x,  y : backPath[0].y  },
+            { x : backPath[3].x,  y : backPath[3].y  },
+            { x : frontPath[3].x, y : frontPath[3].y }
+        ];
     }
 
     // -----------------------------------------------------------------------------------------------------------------
