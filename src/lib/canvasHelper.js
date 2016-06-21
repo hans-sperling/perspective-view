@@ -1,0 +1,255 @@
+;(function canvasHelper(ppv) {
+    'use strict';
+
+
+    /**
+     * Stores the context of the canvas.
+     *
+     * @private
+     * @memberof canvasHelper
+     * @type {object}
+     */
+    var _context = {},
+
+
+    /**
+     * Stores the canvas element in which the helpers are rendered.
+     *
+     * @private
+     * @memberof canvasHelper
+     * @type {object}
+     */
+    _canvas  = {},
+
+
+    /**
+     * Stores the config for all helpers.
+     *
+     * @private
+     * @memberof canvasHelper
+     * @type     {object}
+     * @property {object} camera           - Config of the camera helper
+     * @property {string} camera.color     - Color of the camera lines
+     * @property {number} camera.lineWidth - Line width of the camera lines
+     * @property {object} grid             - Config of the grid helper
+     * @property {string} grid.color       - Color of the grid lines
+     * @property {number} grid.lineWidth   - Line width of the grid lines
+     */
+    _config = {
+        camera: {
+            color: 'rgba(0, 255, 127, 0.5)',
+            lineWidth: 1
+        },
+        grid: {
+            color: 'rgba(0, 127, 255, 0.5)',
+            lineWidth: 1
+        },
+        path: {
+            color: 'rgba(255, 0, 127, 0.5)',
+            fillcolor: '#fff',
+            lineWidth: 1
+        },
+        point: {
+            color: 'rgba(255, 127, 0, 0.5)',
+            width: 5,
+            height: 5
+        }
+    };
+
+    // -----------------------------------------------------------------------------------------------------------------
+
+    function init(config) {
+        _canvas  = config.canvas;
+        _context = config.context;
+    }
+
+    // -----------------------------------------------------------------------------------------------------------------
+
+    /**
+     * Clean the complete canvas and resets it.
+     *
+     * @private
+     * @memberof canvasHelper
+     * @return {void}
+     */
+    function clean() {
+        _context.save();
+        _context.setTransform(1, 0, 0, 1, 0, 0);
+        _context.clearRect(0, 0, _canvas.width, _canvas.height);
+        _context.restore();
+        
+    }
+
+
+    /**
+     * Draws the camera size and position.
+     *
+     * @public
+     * @memberof canvasHelper
+     * @param  {object} camera            - Properties of the camera
+     * @param  {number} camera.width      - Width of the camera/canvas in px
+     * @param  {number} camera.height     - Height of the camera/canvas in px
+     * @param  {object} camera.position   - Position of the camera/canvas center
+     * @param  {number} camera.position.x - X-Position of the camera in px
+     * @param  {number} camera.position.y - Y-Position of the camera in px
+     * @return {object} canvasHelper      - Returns emitter, so calls can be chained
+     * @example
+     *  canvasHelper.drawCamera({
+    *     width: 800,
+    *     height: 600,
+    *     position: {
+    *         x: 400,
+    *         y: 300
+    *     }
+    *  });
+     */
+    function drawCamera(camera) {
+        _context.save();
+
+        _context.strokeStyle = _config.camera.color;
+        _context.lineWidth   = _config.camera.lineWidth;
+
+        _context.beginPath();
+        _context.moveTo(_config.camera.lineWidth/2, _config.camera.lineWidth/2);
+        _context.lineTo(camera.width-_config.camera.lineWidth/2, _config.camera.lineWidth/2);
+        _context.lineTo(camera.width-_config.camera.lineWidth/2, camera.height-_config.camera.lineWidth/2);
+        _context.lineTo(_config.camera.lineWidth/2, camera.height-_config.camera.lineWidth/2);
+        _context.lineTo(_config.camera.lineWidth/2, _config.camera.lineWidth/2);
+
+        _context.moveTo(camera.position.x, camera.position.y);
+        _context.lineTo(_config.camera.lineWidth/2, _config.camera.lineWidth/2);
+
+        _context.moveTo(camera.position.x, camera.position.y);
+        _context.lineTo(camera.width-_config.camera.lineWidth/2, _config.camera.lineWidth/2);
+
+        _context.moveTo(camera.position.x, camera.position.y);
+        _context.lineTo(camera.width-_config.camera.lineWidth/2, camera.height-_config.camera.lineWidth/2);
+
+        _context.moveTo(camera.position.x, camera.position.y);
+        _context.lineTo(_config.camera.lineWidth/2, camera.height-_config.camera.lineWidth/2);
+        _context.closePath();
+        _context.stroke();
+
+        _context.restore();
+
+        
+    }
+
+
+    /**
+     * Draws a grid referred to the camera center position
+     *
+     * @public
+     * @memberof canvasHelper
+     * @param  {object} camera            - Properties of the camera
+     * @param  {number} camera.width      - Width of the camera/canvas in px
+     * @param  {number} camera.height     - Height of the camera/canvas in px
+     * @param  {object} camera.position   - Position of the camera/canvas center
+     * @param  {number} camera.position.x - X-Position of the camera in px
+     * @param  {number} camera.position.y - Y-Position of the camera in px
+     * @param  {object} unit              - Properties of an unit/tile
+     * @param  {number} unit.width        - Width of an unit/tile in px
+     * @param  {number} unit.height       - Height of an unit/tile in px
+     * @return {object} canvasHelper      - Returns emitter, so calls can be chained
+     * @example
+     *  canvasHelper.drawGrid({
+    *     width: 800,
+    *     height: 600,
+    *     position: {
+    *         x: 400,
+    *         y: 300
+    *     }
+    *  }, {
+    *      width: 100,
+    *      height: 100
+    *  });
+     */
+    function drawGrid(camera, unit, drift) {
+        var startX = (camera.position.x % unit.width)  - (unit.width  * 1.5) - drift.x,
+            startY = (camera.position.y % unit.height) - (unit.height * 1.5) - drift.y,
+            x, y;
+
+        _context.save();
+        _context.strokeStyle = _config.grid.color;
+        _context.lineWidth   = _config.grid.lineWidth;
+
+        _context.beginPath();
+        for (y = startY; y < camera.height; y += unit.height) {
+            _context.moveTo(startX, y);
+            _context.lineTo(camera.width, y);
+        }
+        for (x = startX; x < camera.width; x += unit.width) {
+            _context.moveTo(x, startY);
+            _context.lineTo(x, camera.height);
+        }
+        _context.closePath();
+        _context.stroke();
+        _context.restore();
+
+        
+    }
+
+
+    function drawPoint(x, y, width, height) {
+        if (typeof width !== 'number') {
+            width = _config.point.width;
+        }
+
+        if (typeof height !== 'number') {
+            height = _config.point.height;
+        }
+
+        _context.save();
+        _context.fillStyle = _config.point.color;
+        _context.fillRect(
+            x - width/2,
+            y - height/2,
+            width,
+            height
+        );
+        _context.restore();
+
+        
+    }
+
+
+    function drawPath(parameters) {
+        var path = parameters.path,
+            filled = parameters.filled || false,
+            i, pathAmount = path.length;
+
+        _context.save();
+
+        _context.strokeStyle = _config.path.color;
+        _context.fillStyle   = _config.path.fillcolor;
+        _context.lineWidth   = _config.path.lineWidth;
+
+        _context.beginPath();
+        _context.moveTo(path[0].x, path[0].y);
+
+        for (i = 1; i < pathAmount; i++) {
+            _context.lineTo(path[i].x, path[i].y);
+        }
+
+        _context.closePath();
+        _context.stroke();
+
+        if (!filled) {
+            _context.fill();
+        }
+
+        _context.restore();
+    }
+
+    // -----------------------------------------------------------------------------------------------------------------
+
+    // Append module with public methods and properties
+    ppv.appendModule({ canvasHelper: {
+        init       : init,
+        clean      : clean,
+        drawCamera : drawCamera,
+        drawGrid   : drawGrid,
+        drawPoint  : drawPoint,
+        drawPath   : drawPath
+    }});
+})(window.PPV);
