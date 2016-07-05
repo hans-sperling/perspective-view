@@ -70,11 +70,13 @@ jQuery(document).ready(function() {
             [0, 0, 0, 0, 0]
         ],
         dummyMap4 = [
-            [1, 0, 1, 0, 1],
-            [0, 1, 0, 1, 0],
-            [1, 0, 1, 0, 1],
-            [0, 1, 0, 1, 0],
-            [1, 0, 1, 0, 1]
+            [1, 0, 1, 0, 1, 0, 1],
+            [0, 1, 0, 1, 0, 1, 0],
+            [1, 0, 1, 0, 1, 0, 1],
+            [0, 1, 0, 1, 0, 1, 0],
+            [1, 0, 1, 0, 1, 0, 1],
+            [0, 1, 0, 1, 0, 1, 0],
+            [1, 0, 1, 0, 1, 0, 1]
         ],
         $canvas      = $('#PerspectiveView'),
         canvas       = $canvas[0],
@@ -101,5 +103,24 @@ jQuery(document).ready(function() {
 
     var ppv = new PerspectiveView(config);
 
-    ppv.render();
+    var i = -1, j = -1, b=false;
+
+    (function loop() {
+        i += 0.0027777777777778 * 2;
+        j += 0.0027777777777778 * 3;
+
+        ppv.render({
+            unitShift: {
+                x : Math.cos(Math.PI * i) * 50,
+                y : Math.sin(Math.PI * j) * 50
+            }
+        });
+
+        if(!b) {
+            window.requestAnimFrame(loop);
+        }
+    })();
+
+
+
 });

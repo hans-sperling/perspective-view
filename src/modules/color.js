@@ -3,7 +3,7 @@
 
     var backColor  = 'rgba(150, 150, 150, 0.5)',
         spaceColor = 'rgba(255, 255, 255, 0)',
-        frontColor = 'rgb(207, 207, 207)',
+        frontColor = 'rgba(207, 207, 207, 1.8)',
         northColor = 'rgb(127, 127, 127)',
         eastColor  = 'rgb(159, 159, 159)',
         southColor = 'rgb(223, 223, 223)',

@@ -9,9 +9,9 @@
         canvas       = null,
         context      = null,
         bufferTile   = { x : 0, y : 0 }, // Amount of tiles out of the canvas
-        unitSize     = 10,
-        unitDepth    = 2,
-        unitShift    = { x : 0, y : 15 },
+        unitSize     = 100,
+        unitDepth    = 1.25,
+        unitShift    = { x : 0, y : 0 },
         renderOrder  = [],
         camera       = { width : 1, height : 1, position : { x : 1, y : 1 }},
         map          = [],
@@ -32,25 +32,28 @@
         canvas    = config.canvas;
         context   = config.context;
         camera    = config.camera;
-        unitSize  = config.unitSize;
+        //unitSize  = config.unitSize;
         //unitShift = config.unitShift;
     }
 
 
     function run() {
-        update();
+        update({});
     }
 
 
-    function update() {
+    function update(config) {
+        unitSize  = config.unitSize || unitSize;
+        unitShift = config.unitShift || unitShift;
+
         gridSize     = getGridSize();
         gridPosition = {
             x: Math.floor(gridSize.x / 2),
             y: Math.floor(gridSize.y / 2)
         };
         var mapPosition = {
-                x : 2,
-                y : 2
+                x : 3,
+                y : 3
             },
             mapEdges = {
                 startX : mapPosition.x - gridPosition.x - gridOffset.x,
@@ -68,14 +71,16 @@
     // ---------------------------------------------------------------------------------------------------------- Render
 
     function render() {
-        var i             = renderOrder.length,
+        var renderOrderAmount = renderOrder.length,
             vanishingCell = gridPosition,
             haltUnitSize  = unitSize / 2,
             backPath, frontPath,
             northPath, eastPath, southPath, westPath,
-            x, y;
-console.log(renderOrder);
-        while (i--) {
+            i, x, y;
+
+        mod_canvasHelper.clean();
+        //for (i = 0; i < renderOrderAmount; i++) { // normal
+        for (i = renderOrderAmount - 1; i >= 0; i--) { // reversed
             /*(function(i) {
                 setTimeout(function () {*/
                     x = renderOrder[i].x;
@@ -86,6 +91,7 @@ console.log(renderOrder);
                         frontPath = getFrontPath(x, y, grid[y][x]);
 
                         renderShape(backPath, mod_Color.getBackColor());
+
                         if (x < vanishingCell.x + gridOffset.x || unitShift.x < -haltUnitSize) {
                             eastPath  = getEastPath(backPath, frontPath);
                             renderShape(eastPath, mod_Color.getEastColor());
@@ -111,7 +117,7 @@ console.log(renderOrder);
         }
 
         mod_canvasHelper.drawCamera(camera);
-        //mod_canvasHelper.drawGrid(camera, { width: unitSize, height : unitSize}, unitShift);
+//        mod_canvasHelper.drawGrid(camera, { width: unitSize, height : unitSize}, unitShift);
     }
 
     function renderShape(path, color) {
@@ -252,7 +258,6 @@ console.log(renderOrder);
             }
         }
 
-        console.log(orderlistSimple);
         return orderlistSimple;
     }
 

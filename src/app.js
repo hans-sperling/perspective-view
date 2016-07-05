@@ -91,8 +91,8 @@ window.PPV = (function() {
 
     // -----------------------------------------------------------------------------------------------------------------
 
-    function render() {
-        mod.render.update();
+    function render(cfg) {
+        mod.render.update(cfg);
         mod.render.render();
     }
 
