@@ -68,41 +68,40 @@
     // ---------------------------------------------------------------------------------------------------------- Render
 
     function render() {
-        var i = renderOrder.length,
+        var i             = renderOrder.length,
             vanishingCell = gridPosition,
             backPath, frontPath,
             northPath, eastPath, southPath, westPath,
             x, y;
 
         while (i--) {
-            x        = renderOrder[i].x;
-            y        = renderOrder[i].y;
+            x = renderOrder[i].x;
+            y = renderOrder[i].y;
 
             if (grid[y][x] > 0) {
                 backPath  = getBackPath(x, y);
                 frontPath = getFrontPath(x, y);
-                console.log(frontPath);
 
                 renderShape(backPath, mod_Color.getBackColor());
-/*
-                if (x < vanishingCell.x) {
+
+                if (x < vanishingCell.x + mapOffset.x) {
                     eastPath  = getEastPath(backPath, frontPath);
-                    renderShape(eastPath, mod_Color.getBackColor());
+                    renderShape(eastPath, mod_Color.getEastColor());
                 }
-                else if (x > vanishingCell.x) {
+                else if (x > vanishingCell.x + mapOffset.x) {
                     westPath  = getWestPath(backPath, frontPath);
-                    renderShape(westPath, mod_Color.getBackColor());
+                    renderShape(westPath, mod_Color.getWestColor());
                 }
 
-                if (y < vanishingCell.y) {
+                if (y < vanishingCell.y + mapOffset.y) {
                     southPath = getSouthPath(backPath, frontPath);
-                    renderShape(southPath, mod_Color.getBackColor());
+                    renderShape(southPath, mod_Color.getSouthColor());
                 }
-                else if (y > vanishingCell.y) {
+                else if (y > vanishingCell.y + mapOffset.y) {
                     northPath = getNorthPath(backPath, frontPath);
-                    renderShape(northPath, mod_Color.getBackColor());
+                    renderShape(northPath, mod_Color.getNorthColor());
                 }
-*/
+
                 renderShape(frontPath, mod_Color.getFrontColor());
             }
         }
@@ -251,35 +250,37 @@
     // ----------------------------------------------------------------------------------------------------------- Paths
 
     function getBackPath(x, y) {
+        //console.log(x, y);
+
         var currentUnitSize = unitSize,
-            startX = (currentUnitSize * x),
-            startY = (currentUnitSize * y),
+            startX = (currentUnitSize * x) - (currentUnitSize * mapOffset.x),
+            startY = (currentUnitSize * y) - (currentUnitSize * mapOffset.y),
             endX   = startX + currentUnitSize,
             endY   = startY + currentUnitSize;
 
         return [
             { x : startX, y : startY },
-            { x : startX, y : endY   },
+            { x : endX,   y : startY },
             { x : endX,   y : endY   },
-            { x : endX,   y : startY }
+            { x : startX, y : endY   }
         ];
     }
 
 
     function getFrontPath(x, y) {
-        console.log(x, y);
+        //console.log(x, y);
 
         var currentUnitSize = unitSize * unitDepth,
-            startX = (currentUnitSize * x), // - currentUnitSize * x
-            startY = (currentUnitSize * y), // - currentUnitSize * y
-            endX   = startX + currentUnitSize, // + currentUnitSize * x
-            endY   = startY + currentUnitSize; // + currentUnitSize * y
+            startX = (currentUnitSize * x) - (currentUnitSize * mapOffset.x) - ((gridSize.x * currentUnitSize) / 2) + camera.position.x,
+            startY = (currentUnitSize * y) - (currentUnitSize * mapOffset.y) - ((gridSize.y * currentUnitSize) / 2) + camera.position.y,
+            endX   = startX + currentUnitSize,
+            endY   = startY + currentUnitSize;
 
         return [
             { x : startX, y : startY },
-            { x : startX, y : endY   },
+            { x : endX,   y : startY },
             { x : endX,   y : endY   },
-            { x : endX,   y : startY }
+            { x : startX, y : endY   }
         ];
     }
 

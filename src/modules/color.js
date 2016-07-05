@@ -2,12 +2,12 @@
     'use strict';
 
     var backColor  = 'rgba(150, 150, 150, 0.5)',
-        spaceColor = 'rgba(255, 255, 255, 0)',
+        spaceColor = 'rgba(255, 255, 255, 1)',
         frontColor = 'rgba(255, 0, 0, 0.7)',
-        northColor = 'rgba(150, 150, 150, 0.5)',
-        eastColor  = 'rgba(150, 150, 150, 0.5)',
-        southColor = 'rgba(150, 150, 150, 0.5)',
-        westColor  = 'rgba(150, 150, 150, 0.5)';
+        northColor = 'rgba(127, 127, 127, 1)',
+        eastColor  = 'rgba(159, 159, 159, 1)',
+        southColor = 'rgba(223, 223, 223, 1)',
+        westColor  = 'rgba(191, 191, 191, 1)';
 
     // -----------------------------------------------------------------------------------------------------------------
 

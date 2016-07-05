@@ -111,8 +111,6 @@
             startY = (camera.position.y % unit.height) - (unit.height * 1.5) - drift.y,
             x, y;
 
-        console.log(startX, startY);
-
         _context.save();
         _context.strokeStyle = _config.grid.color;
         _context.lineWidth   = _config.grid.lineWidth;
