@@ -8,19 +8,19 @@
 
         canvas       = null,
         context      = null,
-        bufferTile   = { x : 0, y : 0}, // Amount of tiles out of the canvas
+        bufferTile   = { x : 0, y : 0 }, // Amount of tiles out of the canvas
         unitSize     = 10,
         unitDepth    = 2,
-        unitShift    = { x : 0, y : 0},
+        unitShift    = { x : 0, y : 15 },
         renderOrder  = [],
         camera       = { width : 1, height : 1, position : { x : 1, y : 1 }},
         map          = [],
-        mapSize      = { x : 1, y : 1},
-        mapPosition  = { x : 0, y : 0},
-        mapOffset    = { x : 0, y : 0},
+        mapSize      = { x : 1, y : 1 },
+        mapPosition  = { x : 0, y : 0 },
         grid         = [],
         gridSize     = { x : 1, y : 1 },
-        gridPosition = { x : 1, y : 1 };
+        gridPosition = { x : 1, y : 1 },
+        gridOffset   = { x : 1, y : 1 };
 
     // -----------------------------------------------------------------------------------------------------------------
 
@@ -33,7 +33,7 @@
         context   = config.context;
         camera    = config.camera;
         unitSize  = config.unitSize;
-        unitShift = config.unitShift;
+        //unitShift = config.unitShift;
     }
 
 
@@ -53,10 +53,10 @@
                 y : 2
             },
             mapEdges = {
-                startX : mapPosition.x - gridPosition.x - mapOffset.x,
-                startY : mapPosition.y - gridPosition.y - mapOffset.y,
-                endX   : mapPosition.x + gridPosition.x + mapOffset.x,
-                endY   : mapPosition.y + gridPosition.y + mapOffset.y
+                startX : mapPosition.x - gridPosition.x - gridOffset.x,
+                startY : mapPosition.y - gridPosition.y - gridOffset.y,
+                endX   : mapPosition.x + gridPosition.x + gridOffset.x,
+                endY   : mapPosition.y + gridPosition.y + gridOffset.y
             };
 
 
@@ -70,44 +70,48 @@
     function render() {
         var i             = renderOrder.length,
             vanishingCell = gridPosition,
+            haltUnitSize  = unitSize / 2,
             backPath, frontPath,
             northPath, eastPath, southPath, westPath,
             x, y;
-
+console.log(renderOrder);
         while (i--) {
-            x = renderOrder[i].x;
-            y = renderOrder[i].y;
+            /*(function(i) {
+                setTimeout(function () {*/
+                    x = renderOrder[i].x;
+                    y = renderOrder[i].y;
 
-            if (grid[y][x] > 0) {
-                backPath  = getBackPath(x, y);
-                frontPath = getFrontPath(x, y);
+                    if (grid[y][x] > 0) {
+                        backPath  = getBackPath(x, y);
+                        frontPath = getFrontPath(x, y, grid[y][x]);
 
-                renderShape(backPath, mod_Color.getBackColor());
+                        renderShape(backPath, mod_Color.getBackColor());
+                        if (x < vanishingCell.x + gridOffset.x || unitShift.x < -haltUnitSize) {
+                            eastPath  = getEastPath(backPath, frontPath);
+                            renderShape(eastPath, mod_Color.getEastColor());
+                        }
+                        else if (x > vanishingCell.x + gridOffset.x || unitShift.x > haltUnitSize) {
+                            westPath  = getWestPath(backPath, frontPath);
+                            renderShape(westPath, mod_Color.getWestColor());
+                        }
 
-                if (x < vanishingCell.x + mapOffset.x) {
-                    eastPath  = getEastPath(backPath, frontPath);
-                    renderShape(eastPath, mod_Color.getEastColor());
-                }
-                else if (x > vanishingCell.x + mapOffset.x) {
-                    westPath  = getWestPath(backPath, frontPath);
-                    renderShape(westPath, mod_Color.getWestColor());
-                }
+                        if (y < vanishingCell.y + gridOffset.y || unitShift.y < -haltUnitSize) {
+                            southPath = getSouthPath(backPath, frontPath);
+                            renderShape(southPath, mod_Color.getSouthColor());
+                        }
+                        else if (y > vanishingCell.y + gridOffset.y || unitShift.y > haltUnitSize) {
+                            northPath = getNorthPath(backPath, frontPath);
+                            renderShape(northPath, mod_Color.getNorthColor());
+                        }
 
-                if (y < vanishingCell.y + mapOffset.y) {
-                    southPath = getSouthPath(backPath, frontPath);
-                    renderShape(southPath, mod_Color.getSouthColor());
-                }
-                else if (y > vanishingCell.y + mapOffset.y) {
-                    northPath = getNorthPath(backPath, frontPath);
-                    renderShape(northPath, mod_Color.getNorthColor());
-                }
-
-                renderShape(frontPath, mod_Color.getFrontColor());
-            }
+                        renderShape(frontPath, mod_Color.getFrontColor());
+                    }
+                /*},100 * i);
+            })(i);*/
         }
 
         mod_canvasHelper.drawCamera(camera);
-        mod_canvasHelper.drawGrid(camera, { width: unitSize, height : unitSize}, unitShift);
+        //mod_canvasHelper.drawGrid(camera, { width: unitSize, height : unitSize}, unitShift);
     }
 
     function renderShape(path, color) {
@@ -150,29 +154,33 @@
             x, y;
 
 
+
         // Get reversed x render order
-        for (x = vanishingCell.x; x < mapAmountX; x++) {
+        for (x = vanishingCell.x + gridOffset.x; x < mapAmountX; x++) {
             orderX.push(x);
         }
 
-        for (x = vanishingCell.x - 1; x >= 0 ; x--) {
+        for (x = vanishingCell.x + gridOffset.x - 1; x >= 0 ; x--) {
             orderX.push(x);
         }
 
 
         // Get reversed y render order
-        for (y = vanishingCell.y; y < mapAmountY; y++) {
+        for (y = vanishingCell.y + gridOffset.y; y < mapAmountY; y++) {
             orderY.push(y);
         }
 
-        for (y = vanishingCell.y - 1; y >= 0 ; y--) {
+        for (y = vanishingCell.y + gridOffset.y - 1; y >= 0 ; y--) {
             orderY.push(y);
         }
+
+        //orderX.reverse();
+        //orderY.reverse();
 
         // Merge the x and y render order
         for (y = 0; y < mapAmountY; y++) {
             for (x = 0; x < mapAmountX; x++) {
-                /*
+/*
                 if (orderY[y] < vanishingCell.y) { // Top
                     if (orderX[x] < vanishingCell.x) { // Top left
                         orderlist.tl.push({
@@ -194,40 +202,40 @@
                         });
                     }
                 }
-                else if (orderY[y] == vanishingCell.y) { // Top
-                    if (orderX[x] < vanishingCell.x) { // Top left
+                else if (orderY[y] == vanishingCell.y) { // Center
+                    if (orderX[x] < vanishingCell.x) { // Center left
                         orderlist.cl.push({
                             x: orderX[x],
                             y: orderY[y]
                         });
                     }
-                    else if (orderX[x] == vanishingCell.x) { // Top center
+                    else if (orderX[x] == vanishingCell.x) { // Center center
                         orderlist.cc.push({
                             x: orderX[x],
                             y: orderY[y]
                         });
                     }
-                    else { // Top right - if (orderX[x] > vanishingCell.x)
+                    else { // Center right - if (orderX[x] > vanishingCell.x)
                         orderlist.cr.push({
                             x: orderX[x],
                             y: orderY[y]
                         });
                     }
                 }
-                else { // if (orderY[y] < vanishingCell.y)
-                    if (orderX[x] < vanishingCell.x) { // Top left
+                else { // Bottom if (orderY[y] < vanishingCell.y)
+                    if (orderX[x] < vanishingCell.x) { // Bottom left
                         orderlist.bl.push({
                             x: orderX[x],
                             y: orderY[y]
                         });
                     }
-                    else if (orderX[x] == vanishingCell.x) { // Top center
+                    else if (orderX[x] == vanishingCell.x) { // Bottom center
                         orderlist.bc.push({
                             x: orderX[x],
                             y: orderY[y]
                         });
                     }
-                    else { // Top right - if (orderX[x] > vanishingCell.x)
+                    else { // Bottom right - if (orderX[x] > vanishingCell.x)
                         orderlist.br.push({
                             x: orderX[x],
                             y: orderY[y]
@@ -244,19 +252,17 @@
             }
         }
 
+        console.log(orderlistSimple);
         return orderlistSimple;
     }
 
     // ----------------------------------------------------------------------------------------------------------- Paths
 
     function getBackPath(x, y) {
-        //console.log(x, y);
-
-        var currentUnitSize = unitSize,
-            startX = (currentUnitSize * x) - (currentUnitSize * mapOffset.x),
-            startY = (currentUnitSize * y) - (currentUnitSize * mapOffset.y),
-            endX   = startX + currentUnitSize,
-            endY   = startY + currentUnitSize;
+        var startX = (unitSize * x) - (unitSize * gridOffset.x) + unitShift.x,
+            startY = (unitSize * y) - (unitSize * gridOffset.y) + unitShift.y,
+            endX   = startX + unitSize,
+            endY   = startY + unitSize;
 
         return [
             { x : startX, y : startY },
@@ -267,14 +273,11 @@
     }
 
 
-    function getFrontPath(x, y) {
-        //console.log(x, y);
-
-        var currentUnitSize = unitSize * unitDepth,
-            startX = (currentUnitSize * x) - (currentUnitSize * mapOffset.x) - ((gridSize.x * currentUnitSize) / 2) + camera.position.x,
-            startY = (currentUnitSize * y) - (currentUnitSize * mapOffset.y) - ((gridSize.y * currentUnitSize) / 2) + camera.position.y,
-            endX   = startX + currentUnitSize,
-            endY   = startY + currentUnitSize;
+    function getFrontPath(x, y, h) {
+        var startX = (( (unitSize * x) - (unitSize * gridOffset.x) - ( (gridSize.x * unitSize) / 2) ) * unitDepth * h) + camera.position.x + (unitShift.x * unitDepth * h),
+            startY = (( (unitSize * y) - (unitSize * gridOffset.y) - ( (gridSize.y * unitSize) / 2) ) * unitDepth * h) + camera.position.y + (unitShift.y * unitDepth * h),
+            endX   = startX + (unitSize * unitDepth * h),
+            endY   = startY + (unitSize * unitDepth * h);
 
         return [
             { x : startX, y : startY },
