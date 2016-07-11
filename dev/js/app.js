@@ -72,9 +72,9 @@ jQuery(document).ready(function() {
         dummyMap4 = [
             [1, 0, 1, 0, 1, 0, 1],
             [0, 1, 0, 1, 0, 1, 0],
-            [1, 0, 1, 0, 1, 0, 1],
-            [0, 1, 0, 1, 0, 1, 0],
-            [1, 0, 1, 0, 1, 0, 1],
+            [1, 0, 0, 0, 0, 0, 1],
+            [0, 1, 0, 2, 0, 1, 0],
+            [1, 0, 0, 0, 0, 0, 1],
             [0, 1, 0, 1, 0, 1, 0],
             [1, 0, 1, 0, 1, 0, 1]
         ],
@@ -103,7 +103,7 @@ jQuery(document).ready(function() {
 
     var ppv = new PerspectiveView(config);
 
-    var i = -1, j = -1, b=false;
+    var i = -1, j = -1;
 
     (function loop() {
         i += 0.0027777777777778 * 2;
@@ -116,9 +116,9 @@ jQuery(document).ready(function() {
             }
         });
 
-        if(!b) {
-            window.requestAnimFrame(loop);
-        }
+
+        // window.requestAnimFrame(loop);
+
     })();
 
 
