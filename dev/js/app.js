@@ -103,11 +103,11 @@ jQuery(document).ready(function() {
 
     var ppv = new PerspectiveView(config);
 
-    var i = -1, j = -1;
+    var i = -1, j = -1, m = 2;
 
     (function loop() {
-        i += 0.0027777777777778 * 2;
-        j += 0.0027777777777778 * 3;
+        i += (m * 0.0027777777777778) * 2;
+        j += (m * 0.0027777777777778) * 3;
 
         ppv.render({
             unitShift: {
@@ -117,7 +117,7 @@ jQuery(document).ready(function() {
         });
 
 
-        // window.requestAnimFrame(loop);
+        window.requestAnimFrame(loop);
 
     })();
 
