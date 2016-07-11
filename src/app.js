@@ -85,15 +85,20 @@ window.PPV = (function() {
         runModules();
 
         return {
-            render : render
+            render : render,
+            update : update
         }
     }
 
     // -----------------------------------------------------------------------------------------------------------------
 
-    function render(cfg) {
+    function render() {
         mod.render.update(cfg);
         mod.render.render();
+    }
+
+    function update(config) {
+
     }
 
     // -----------------------------------------------------------------------------------------------------------------

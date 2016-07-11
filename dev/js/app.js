@@ -69,7 +69,7 @@ jQuery(document).ready(function() {
             [0, 0, 1, 0, 0],
             [0, 0, 0, 0, 0]
         ],
-        dummyMap4 = [
+        dummyMap5 = [
             [1, 0, 1, 0, 1, 0, 1],
             [0, 1, 0, 1, 0, 1, 0],
             [1, 0, 0, 0, 0, 0, 1],
@@ -89,7 +89,7 @@ jQuery(document).ready(function() {
     var config = {
         canvas   : canvas,
         context  : context,
-        map      : dummyMap4,
+        map      : dummyMap5,
         unitSize : 20,
         camera   : {
             width    : canvas.width,
@@ -103,11 +103,11 @@ jQuery(document).ready(function() {
 
     var ppv = new PerspectiveView(config);
 
-    var i = -1, j = -1, m = 2;
+    var c = 0.0027777777777778, m = 2, i = -(c * m), j = -(c * m);
 
     (function loop() {
-        i += (m * 0.0027777777777778) * 2;
-        j += (m * 0.0027777777777778) * 3;
+        i += (c * m) * 2;
+        j += (c * m) * 3;
 
         ppv.render({
             unitShift: {
@@ -117,7 +117,7 @@ jQuery(document).ready(function() {
         });
 
 
-        window.requestAnimFrame(loop);
+        //window.requestAnimFrame(loop);
 
     })();
 
