@@ -6,21 +6,30 @@
         mod_Color        = null,
         mod_canvasHelper = null,
 
-        canvas       = null,
-        context      = null,
-        bufferTile   = { x : 0, y : 0 }, // Amount of tiles out of the canvas
-        unitSize     = 100,
-        unitDepth    = 1.25,
-        unitShift    = { x : 0, y : 0 },
+        cfg              = {
+            canvas         : null,
+            context        : null,
+            map            : [],
+            position       : { x : 0, y : 0 },
+            unitSize       : 20,
+            unitDepth      : 1.25,
+            unitShift      : { x : 0, y : 0 }, // @todo - remove, deprecated, use position
+            camera   : {
+                width    : 1,
+                height   : 1,
+                position : {
+                    x : 1,
+                    y : 1
+                }
+            }
+        },
+
         renderOrder  = [],
-        camera       = { width : 1, height : 1, position : { x : 1, y : 1 }},
-        map          = [],
-        mapSize      = { x : 1, y : 1 },
         mapPosition  = { x : 0, y : 0 },
         grid         = [],
         gridSize     = { x : 1, y : 1 },
         gridPosition = { x : 1, y : 1 },
-        gridOffset   = { x : 1, y : 1 };
+        gridOffset   = { x : 1, y : 1 }; // Should be simplified to a single int var - x and y size are same!
 
     // -----------------------------------------------------------------------------------------------------------------
 
@@ -29,11 +38,7 @@
         mod_Color        = ppv.modules.color;
         mod_canvasHelper = ppv.modules.canvasHelper;
 
-        canvas    = config.canvas;
-        context   = config.context;
-        camera    = config.camera;
-        //unitSize  = config.unitSize;
-        //unitShift = config.unitShift;
+        cfg = config;
     }
 
 
@@ -43,24 +48,27 @@
 
 
     function update(config) {
-        unitSize  = config.unitSize || unitSize;
-        unitShift = config.unitShift || unitShift;
+        cfg.unitSize  = config.unitSize  || cfg.unitSize;
+        cfg.unitShift = config.unitShift || cfg.unitShift;
+        cfg.position  = config.position  || cfg.position;
 
         gridSize     = getGridSize();
         gridPosition = {
             x: Math.floor(gridSize.x / 2),
             y: Math.floor(gridSize.y / 2)
         };
-        var mapPosition = {
-                x : 3,
-                y : 3
-            },
-            mapEdges = {
-                startX : mapPosition.x - gridPosition.x - gridOffset.x,
-                startY : mapPosition.y - gridPosition.y - gridOffset.y,
-                endX   : mapPosition.x + gridPosition.x + gridOffset.x,
-                endY   : mapPosition.y + gridPosition.y + gridOffset.y
-            };
+
+        mapPosition = {
+            x : Math.ceil(cfg.position.x / cfg.unitSize),
+            y : Math.ceil(cfg.position.y / cfg.unitSize)
+        };
+
+        var mapEdges = {
+            startX : mapPosition.x - gridPosition.x - gridOffset.x,
+            startY : mapPosition.y - gridPosition.y - gridOffset.y,
+            endX   : mapPosition.x + gridPosition.x + gridOffset.x,
+            endY   : mapPosition.y + gridPosition.y + gridOffset.y
+        };
 
 
         grid = mod_Map.getMapArea(mapEdges);
@@ -73,7 +81,7 @@
     function render() {
         var renderOrderAmount = renderOrder.length,
             vanishingCell = gridPosition,
-            haltUnitSize  = unitSize / 2,
+            haltUnitSize  = cfg.unitSize / 2,
             backPath, frontPath,
             northPath, eastPath, southPath, westPath,
             i, x, y;
@@ -92,20 +100,20 @@
 
                         renderShape(backPath, mod_Color.getBackColor());
 
-                        if (x < vanishingCell.x + gridOffset.x || unitShift.x < -haltUnitSize) {
+                        if (x < vanishingCell.x + gridOffset.x || cfg.unitShift.x < -haltUnitSize) {
                             eastPath  = getEastPath(backPath, frontPath);
                             renderShape(eastPath, mod_Color.getEastColor());
                         }
-                        else if (x > vanishingCell.x + gridOffset.x || unitShift.x > haltUnitSize) {
+                        else if (x > vanishingCell.x + gridOffset.x || cfg.unitShift.x > haltUnitSize) {
                             westPath  = getWestPath(backPath, frontPath);
                             renderShape(westPath, mod_Color.getWestColor());
                         }
 
-                        if (y < vanishingCell.y + gridOffset.y || unitShift.y < -haltUnitSize) {
+                        if (y < vanishingCell.y + gridOffset.y || cfg.unitShift.y < -haltUnitSize) {
                             southPath = getSouthPath(backPath, frontPath);
                             renderShape(southPath, mod_Color.getSouthColor());
                         }
-                        else if (y > vanishingCell.y + gridOffset.y || unitShift.y > haltUnitSize) {
+                        else if (y > vanishingCell.y + gridOffset.y || cfg.unitShift.y > haltUnitSize) {
                             northPath = getNorthPath(backPath, frontPath);
                             renderShape(northPath, mod_Color.getNorthColor());
                         }
@@ -116,26 +124,27 @@
             })(i);*/
         }
 
-        mod_canvasHelper.drawCamera(camera);
-//        mod_canvasHelper.drawGrid(camera, { width: unitSize, height : unitSize}, unitShift);
+        mod_canvasHelper.drawCamera(cfg.camera);
+//        mod_canvasHelper.drawGrid(cfg.camera, { width: cfg.unitSize, height : cfg.unitSize}, cfg.unitShift);
+//        mod_canvasHelper.drawGrid(cfg.camera, { width: cfg.unitSize, height : cfg.unitSize}, cfg.position);
     }
 
     function renderShape(path, color) {
         var i = 0;
 
-        context.beginPath();
-        context.moveTo(path[i].x, path[i].y);
+        cfg.context.beginPath();
+        cfg.context.moveTo(path[i].x, path[i].y);
 
-        context.fillStyle   = color;
-        context.strokeStyle = color;
+        cfg.context.fillStyle   = color;
+        cfg.context.strokeStyle = color;
 
         for (i = 1; i < path.length; i++) {
-            context.lineTo(path[i].x, path[i].y);
+            cfg.context.lineTo(path[i].x, path[i].y);
         }
 
-        context.closePath();
-        context.stroke();
-        context.fill();
+        cfg.context.closePath();
+        cfg.context.stroke();
+        cfg.context.fill();
     }
 
 
@@ -264,10 +273,10 @@
     // ----------------------------------------------------------------------------------------------------------- Paths
 
     function getBackPath(x, y) {
-        var startX = (unitSize * x) - (unitSize * gridOffset.x) + unitShift.x,
-            startY = (unitSize * y) - (unitSize * gridOffset.y) + unitShift.y,
-            endX   = startX + unitSize,
-            endY   = startY + unitSize;
+        var startX = (cfg.unitSize * x) - (cfg.unitSize * gridOffset.x) + cfg.unitShift.x,
+            startY = (cfg.unitSize * y) - (cfg.unitSize * gridOffset.y) + cfg.unitShift.y,
+            endX   = startX + cfg.unitSize,
+            endY   = startY + cfg.unitSize;
 
         return [
             { x : startX, y : startY },
@@ -279,10 +288,10 @@
 
 
     function getFrontPath(x, y, h) {
-        var startX = (( (unitSize * x) - (unitSize * gridOffset.x) - ( (gridSize.x * unitSize) / 2) ) * unitDepth * h) + camera.position.x + (unitShift.x * unitDepth * h),
-            startY = (( (unitSize * y) - (unitSize * gridOffset.y) - ( (gridSize.y * unitSize) / 2) ) * unitDepth * h) + camera.position.y + (unitShift.y * unitDepth * h),
-            endX   = startX + (unitSize * unitDepth * h),
-            endY   = startY + (unitSize * unitDepth * h);
+        var startX = (( (cfg.unitSize * x) - (cfg.unitSize * gridOffset.x) - ( (gridSize.x * cfg.unitSize) / 2) ) * cfg.unitDepth * h) + cfg.camera.position.x + (cfg.unitShift.x * cfg.unitDepth * h),
+            startY = (( (cfg.unitSize * y) - (cfg.unitSize * gridOffset.y) - ( (gridSize.y * cfg.unitSize) / 2) ) * cfg.unitDepth * h) + cfg.camera.position.y + (cfg.unitShift.y * cfg.unitDepth * h),
+            endX   = startX + (cfg.unitSize * cfg.unitDepth * h),
+            endY   = startY + (cfg.unitSize * cfg.unitDepth * h);
 
         return [
             { x : startX, y : startY },
@@ -336,8 +345,8 @@
 
     function getGridSize() {
         return {
-            x : Math.ceil(camera.width  / unitSize) + (bufferTile.x * 2),
-            y : Math.ceil(camera.height / unitSize) + (bufferTile.y * 2)
+            x : Math.ceil(cfg.camera.width  / cfg.unitSize) + (gridOffset.x * 2),
+            y : Math.ceil(cfg.camera.height / cfg.unitSize) + (gridOffset.y * 2)
         };
     }
 

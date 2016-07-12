@@ -91,6 +91,7 @@ jQuery(document).ready(function() {
         context  : context,
         map      : dummyMap5,
         unitSize : 20,
+        position : { x : 70, y : 70 },
         camera   : {
             width    : canvas.width,
             height   : canvas.height,
@@ -110,7 +111,7 @@ jQuery(document).ready(function() {
         j += (c * m) * 3;
 
         ppv.render({
-            unitShift: {
+            position : {
                 x : Math.cos(Math.PI * i) * 50,
                 y : Math.sin(Math.PI * j) * 50
             }

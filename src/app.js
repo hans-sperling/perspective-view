@@ -1,5 +1,5 @@
 function PerspectiveView(configuration) {
-    return window.PPV.public(configuration);
+    return window.PPV.init(configuration);
 }
 
 window.PPV = (function() {
@@ -17,7 +17,8 @@ window.PPV = (function() {
             context        : null,
             map            : [],
             unitSize       : 20,
-            unitShift      : { x : 0, y : 0 },
+            position       : { x : 0, y : 0 },
+            unitShift      : { x : 0, y : 0 }, // @todo - remove, deprecated, use position
             camera   : {
                 width    : 1,
                 height   : 1,
@@ -78,6 +79,18 @@ window.PPV = (function() {
     }
 
 
+    function render() {
+        mod.render.update(cfg);
+        mod.render.render();
+    }
+
+
+    function update(config) {
+
+    }
+
+    // -----------------------------------------------------------------------------------------------------------------
+
     function init(config) {
         cfg = mod.merge.deep(defaults, config);
 
@@ -92,22 +105,11 @@ window.PPV = (function() {
 
     // -----------------------------------------------------------------------------------------------------------------
 
-    function render() {
-        mod.render.update(cfg);
-        mod.render.render();
-    }
-
-    function update(config) {
-
-    }
-
-    // -----------------------------------------------------------------------------------------------------------------
-
     return {
         DEV           : DEV,
         configuration : cfg,
         appendModule  : appendModule,
-        public        : init,
+        init          : init,
         modules       : mod
     };
 
