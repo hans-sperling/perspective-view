@@ -70,35 +70,37 @@
         _context.setTransform(1, 0, 0, 1, 0, 0);
         _context.clearRect(0, 0, _canvas.width, _canvas.height);
         _context.restore();
-        
     }
 
 
     function drawCamera(camera) {
+        console.log(camera);
+        var c  = { x : camera.position.x, y : camera.position.y},
+            tl = { x : c.x - (camera.width / 2), y : c.y - (camera.height / 2)},
+            tr = { x : c.x + (camera.width / 2), y : c.y - (camera.height / 2)},
+            bl = { x : c.x - (camera.width / 2), y : c.y + (camera.height / 2)},
+            br = { x : c.x + (camera.width / 2), y : c.y + (camera.height / 2)};
+
         _context.save();
 
         _context.strokeStyle = _config.camera.color;
         _context.lineWidth   = _config.camera.lineWidth;
 
-        _context.beginPath();
-        _context.moveTo(_config.camera.lineWidth/2, _config.camera.lineWidth/2);
-        _context.lineTo(camera.width-_config.camera.lineWidth/2, _config.camera.lineWidth/2);
-        _context.lineTo(camera.width-_config.camera.lineWidth/2, camera.height-_config.camera.lineWidth/2);
-        _context.lineTo(_config.camera.lineWidth/2, camera.height-_config.camera.lineWidth/2);
-        _context.lineTo(_config.camera.lineWidth/2, _config.camera.lineWidth/2);
 
-        _context.moveTo(camera.position.x, camera.position.y);
-        _context.lineTo(_config.camera.lineWidth/2, _config.camera.lineWidth/2);
+        _context.rect(tl.x, tl.y, camera.width, camera.height);
 
-        _context.moveTo(camera.position.x, camera.position.y);
-        _context.lineTo(camera.width-_config.camera.lineWidth/2, _config.camera.lineWidth/2);
+        _context.moveTo(tl.x, tl.y);
+        _context.lineTo(c.x,  c.y);
 
-        _context.moveTo(camera.position.x, camera.position.y);
-        _context.lineTo(camera.width-_config.camera.lineWidth/2, camera.height-_config.camera.lineWidth/2);
+        _context.moveTo(tr.x, tr.y);
+        _context.lineTo(c.x,  c.y);
 
-        _context.moveTo(camera.position.x, camera.position.y);
-        _context.lineTo(_config.camera.lineWidth/2, camera.height-_config.camera.lineWidth/2);
-        _context.closePath();
+        _context.moveTo(br.x, br.y);
+        _context.lineTo(c.x,  c.y);
+
+        _context.moveTo(bl.x, bl.y);
+        _context.lineTo(c.x,  c.y);
+
         _context.stroke();
 
         _context.restore();

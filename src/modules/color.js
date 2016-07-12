@@ -26,7 +26,7 @@
     function update(config) {
         // Nothing to do yet
 
-         debug();
+        // debug();
     }
 
     // ----------------------------------------------------------------------------------------------------------- DEBUG
@@ -120,6 +120,7 @@
     ppv.appendModule({ color : {
         init     : init,
         run      : run,
+        update   : update,
         getBack  : getBack,
         getEast  : getEast,
         getFront : getFront,

@@ -31,8 +31,8 @@
 
         dimension = getDimension();
         position  = getPosition();
-        size      = getSize();
-        tile      = getTile();
+        size      = getSize(dimension);
+        tile      = getTile(position);
 
         //debug();
     }
@@ -46,33 +46,48 @@
             size      : size,
             tile      : tile
         });
-
     }
 
     // --------------------------------------------------------------------------------------------------------- METHODS
 
-    function getArea(positions) {
-        var position = {x:0,y:0};
-        var mapArea = [],
-            a       = 0,
-            b       = 0,
-            x, y;
+    function getArea(position, buffer) {
 
-        for (y = positions.startY; y <= positions.endY; y++, b++) {
-            a          = 0;
-            mapArea[b] = [];
+        ////////////////////////////
+        //position = { x : 50, y : 50};
+        //buffer   = 1;
+        ////////////////////////////
 
-            for (x = positions.startX; x <= positions.endX; x++, a++) {
+        var tile = getTile(position),
+            tl   = { x : tile.x - Math.floor((CFG.camera.width / 2) / CFG.unitSize) - buffer,    y : tile.y - Math.floor((CFG.camera.height / 2) / CFG.unitSize) - buffer},
+            br   = { x : tile.x + Math.ceil((CFG.camera.width / 2) / CFG.unitSize) + buffer - 1, y : tile.y + Math.ceil((CFG.camera.height / 2) / CFG.unitSize) + buffer - 1},
+            area = [],
+            a = 0, b = 0, x, y;
+
+        for (y = tl.y; y <= br.y; y++, b++) {
+            a       = 0;
+            area[b] = [];
+
+            for (x = tl.x; x <= br.x; x++, a++) {
                 if (y < 0 || x < 0 || y >= map.length || x >=  map[0].length) {
-                    mapArea[b][a] = defaults.mapItem;
+                    area[b][a] = defaults.mapItem;
                 }
                 else {
-                    mapArea[b][a] = map[y][x];
+                    area[b][a] = map[y][x];
                 }
             }
         }
 
-        return mapArea;
+        //*
+        for (y=0;y<area[0].length;y++) {
+            var row = '';
+            for (x=0;x<area.length;x++) {
+                row += area[y][x] + ', ';
+            }
+            console.log(row);
+        }
+        /**/
+
+        return area;
     }
 
 
@@ -84,12 +99,10 @@
     }
 
 
-    function getSize() {
-        var dim = getDimension();
-
+    function getSize(dimension) {
         return {
-            x : CFG.unitSize * dim.x,
-            y : CFG.unitSize * dim.y
+            x : CFG.unitSize * dimension.x,
+            y : CFG.unitSize * dimension.y
         };
     }
 
@@ -102,12 +115,10 @@
     }
 
 
-    function getTile() {
-        var pos = getPosition();
-
+    function getTile(position) {
         return {
-            x : Math.ceil(pos.x / CFG.unitSize),
-            y : Math.ceil(pos.y / CFG.unitSize)
+            x : Math.ceil(position.x / CFG.unitSize),
+            y : Math.ceil(position.y / CFG.unitSize)
         };
     }
 
@@ -117,6 +128,7 @@
     ppv.appendModule({ map : {
         init         : init,
         run          : run,
+        update       : update,
         getArea      : getArea,
         getDimension : getDimension,
         getPosition  : getPosition,
