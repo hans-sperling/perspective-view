@@ -98,27 +98,27 @@
                         backPath  = getBackPath(x, y);
                         frontPath = getFrontPath(x, y, grid[y][x]);
 
-                        renderShape(backPath, mod_Color.getBackColor());
+                        renderShape(backPath, mod_Color.getBack());
 
                         if (x < vanishingCell.x + gridOffset.x || cfg.unitShift.x < -haltUnitSize) {
                             eastPath  = getEastPath(backPath, frontPath);
-                            renderShape(eastPath, mod_Color.getEastColor());
+                            renderShape(eastPath, mod_Color.getEast());
                         }
                         else if (x > vanishingCell.x + gridOffset.x || cfg.unitShift.x > haltUnitSize) {
                             westPath  = getWestPath(backPath, frontPath);
-                            renderShape(westPath, mod_Color.getWestColor());
+                            renderShape(westPath, mod_Color.getWest());
                         }
 
                         if (y < vanishingCell.y + gridOffset.y || cfg.unitShift.y < -haltUnitSize) {
                             southPath = getSouthPath(backPath, frontPath);
-                            renderShape(southPath, mod_Color.getSouthColor());
+                            renderShape(southPath, mod_Color.getSouth());
                         }
                         else if (y > vanishingCell.y + gridOffset.y || cfg.unitShift.y > haltUnitSize) {
                             northPath = getNorthPath(backPath, frontPath);
-                            renderShape(northPath, mod_Color.getNorthColor());
+                            renderShape(northPath, mod_Color.getNorth());
                         }
 
-                        renderShape(frontPath, mod_Color.getFrontColor());
+                        renderShape(frontPath, mod_Color.getFront());
                     }
                 /*},100 * i);
             })(i);*/
