@@ -34,8 +34,8 @@ body.dark .application {
 
 .application {
     position: relative;
-    width: 500px;
-    height: 500px;
+    width: 100px;
+    height: 100px;
     margin: 0 auto;
     border: 1px solid;
     box-sizing: content-box;

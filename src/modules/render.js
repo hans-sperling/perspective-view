@@ -71,7 +71,7 @@
         };
 
 
-        grid = mod_Map.getMapArea(mapEdges);
+        grid = mod_Map.getArea(mapEdges);
 
         renderOrder = getRenderOrder();
     }

@@ -87,12 +87,13 @@ jQuery(document).ready(function() {
 
 
     var config = {
-        canvas   : canvas,
-        context  : context,
-        map      : dummyMap5,
-        unitSize : 20,
-        position : { x : 70, y : 70 },
-        camera   : {
+        canvas    : canvas,
+        context   : context,
+        map       : dummyMap5,
+        unitSize  : 10,
+        unitDepth : 2,
+        position  : {x : 50, y : 50},
+        camera    : {
             width    : canvas.width,
             height   : canvas.height,
             position : {

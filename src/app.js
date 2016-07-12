@@ -5,21 +5,23 @@ function PerspectiveView(configuration) {
 window.PPV = (function() {
     'use strict';
 
+    // ------------------------------------------------------------------------------------------------------ PROPERTIES
+
     var mod      = {},
-        cfg      = {},
+        CFG      = {},
         DEV      = {
             enable       : true,
             abortOnError : false,
             util         : {}
         },
         defaults = {
-            canvas         : null,
-            context        : null,
-            map            : [],
-            unitSize       : 20,
-            position       : { x : 0, y : 0 },
-            unitShift      : { x : 0, y : 0 }, // @todo - remove, deprecated, use position
-            camera   : {
+            canvas    : null,
+            context   : null,
+            map       : [],
+            unitSize  : 1,
+            unitDepth : 1,
+            position  : { x : 0, y : 0 },
+            camera    : {
                 width    : 1,
                 height   : 1,
                 position : {
@@ -29,7 +31,7 @@ window.PPV = (function() {
             }
         };
 
-    // -----------------------------------------------------------------------------------------------------------------
+    // --------------------------------------------------------------------------------------------------------- MODULES
 
     function appendModule(module) {
         var id;
@@ -49,9 +51,9 @@ window.PPV = (function() {
                 mod[id] = module[id];
             }
         }
+
     }
 
-    // -----------------------------------------------------------------------------------------------------------------
 
     function initModules(config) {
         var i;
@@ -79,22 +81,30 @@ window.PPV = (function() {
     }
 
 
-    function render() {
-        mod.render.update(cfg);
-        mod.render.render();
+    function updateModules(config) {
+        var i;
+
+        for (i in mod) {
+            if (mod.hasOwnProperty(i)) {
+                if (typeof mod[i].update === 'function') {
+                    mod[i].update(config);
+                }
+            }
+        }
     }
 
+    // --------------------------------------------------------------------------------------------------------- PRIVATE
 
-    function update(config) {
-
+    function mergeConfig(config) {
+        return mod.merge.deep(defaults, config);
     }
 
-    // -----------------------------------------------------------------------------------------------------------------
+    // ------------------------------------------------------------------------------------------------------------ INIT
 
     function init(config) {
-        cfg = mod.merge.deep(defaults, config);
+        CFG = mergeConfig(config);
 
-        initModules(cfg);
+        initModules(CFG);
         runModules();
 
         return {
@@ -103,11 +113,25 @@ window.PPV = (function() {
         }
     }
 
-    // -----------------------------------------------------------------------------------------------------------------
+    // ---------------------------------------------------------------------------------------------------------- PUBLIC
+
+    function render() {
+        // mod.render.update(CFG);
+        // mod.render.render();
+    }
+
+
+    function update(config) {
+        CFG = mergeConfig(config);
+
+        updateModules(CFG);
+    }
+
+    // ----------------------------------------------------------------------------------------------------- DEV RETURNS
 
     return {
         DEV           : DEV,
-        configuration : cfg,
+        configuration : CFG,
         appendModule  : appendModule,
         init          : init,
         modules       : mod
