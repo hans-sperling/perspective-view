@@ -74,7 +74,6 @@
 
 
     function drawCamera(camera) {
-        console.log(camera);
         var c  = { x : camera.position.x, y : camera.position.y},
             tl = { x : c.x - (camera.width / 2), y : c.y - (camera.height / 2)},
             tr = { x : c.x + (camera.width / 2), y : c.y - (camera.height / 2)},
@@ -88,6 +87,7 @@
 
 
         _context.rect(tl.x, tl.y, camera.width, camera.height);
+        _context.stroke();
 
         _context.beginPath();
         _context.moveTo(tl.x, tl.y);
@@ -115,9 +115,9 @@
 
 
 
-    function drawGrid(camera, unit, drift) {
-        var startX = (camera.position.x % unit.width)   - drift.x,
-            startY = (camera.position.y % unit.height)  - drift.y,
+    function drawCanvasGrid(camera, unit, shift) {
+        var startX = (camera.position.x % unit.width)  - shift.x,
+            startY = (camera.position.y % unit.height) - shift.y,
             x, y;
 
         _context.save();
@@ -125,14 +125,48 @@
         _context.lineWidth   = _config.grid.lineWidth;
 
         _context.beginPath();
-        for (y = startY; y < camera.height; y += unit.height) {
-            _context.moveTo(startX, y);
-            _context.lineTo(camera.width, y);
+
+        for (x = startX; x <= _canvas.width; x += unit.width) {
+            _context.moveTo(x, 0);
+            _context.lineTo(x, _canvas.height);
         }
-        for (x = startX; x < camera.width; x += unit.width) {
-            _context.moveTo(x, startY);
-            _context.lineTo(x, camera.height);
+
+        for (y = startY; y <= _canvas.height; y += unit.height) {
+            _context.moveTo(0, y);
+            _context.lineTo(_canvas.width, y);
         }
+
+        _context.closePath();
+        _context.stroke();
+        _context.restore();
+    }
+
+
+    function drawCameraGrid(camera, unit, shift) {
+        var cameraStartX = (camera.position.x - (camera.width  / 2)),
+            cameraStartY = (camera.position.y - (camera.height / 2)),
+            startX       = cameraStartX + (((cameraStartX % unit.width)+ unit.width - shift.x) % unit.width),
+            stopX        = cameraStartX + camera.width,
+            startY       = cameraStartY + (((cameraStartY % unit.height) + unit.height - shift.y) % unit.height),
+            stopY        = cameraStartY + camera.height,
+            x, y;
+
+        _context.save();
+        _context.strokeStyle = _config.grid.color;
+        _context.lineWidth   = _config.grid.lineWidth;
+
+        _context.beginPath();
+
+        for (x = startX; x <= stopX; x += unit.width) {
+            _context.moveTo(x, cameraStartY);
+            _context.lineTo(x, stopY);
+        }
+
+        for (y = startY; y <= stopY; y += unit.height) {
+            _context.moveTo(cameraStartX, y);
+            _context.lineTo(stopX, y);
+        }
+
         _context.closePath();
         _context.stroke();
         _context.restore();
@@ -192,11 +226,12 @@
 
     // Append module with public methods and properties
     ppv.appendModule({ canvasHelper: {
-        init       : init,
-        clean      : clean,
-        drawCamera : drawCamera,
-        drawGrid   : drawGrid,
-        drawPoint  : drawPoint,
-        drawPath   : drawPath
+        init           : init,
+        clean          : clean,
+        drawCamera     : drawCamera,
+        drawCanvasGrid : drawCanvasGrid,
+        drawCameraGrid : drawCameraGrid,
+        drawPoint      : drawPoint,
+        drawPath       : drawPath
     }});
 })(window.PPV);

@@ -31,7 +31,6 @@
     function update(config) {
         CFG = config;
 
-        // todo - condition if it is necessary to get a ne render-order (i.e. unitSize changed)
         renderMap   = mod_Map.getArea(CFG.position, buffer);
         renderOrder = getRenderOrder(renderMap);
 
@@ -56,22 +55,22 @@
 
 
     function getVanishingTile() {
-        return { x : Math.ceil(renderMap[0].length / 2), y : Math.ceil(renderMap.length / 2)};
+        return { x : Math.floor(renderMap[0].length / 2), y : Math.floor(renderMap.length / 2)};
     }
 
 
     function render() {
-        var shift  = { x : (CFG.position.x % CFG.unitSize), y : (CFG.position.y % CFG.unitSize) },
-            renderOrderAmount = renderOrder.length,
+        var renderOrderAmount = renderOrder.length,
             vanishingTile     = getVanishingTile(),
-            halfUnitSize = CFG.unitSize / 2,
+            halfUnitSize      = CFG.unitSize / 2,
+            shift             = { x : (CFG.position.x % CFG.unitSize), y : (CFG.position.y % CFG.unitSize) },
             backPath, frontPath,
             eastPath, westPath, southPath, northPath,
             i, x, y;
-    
-        console.log(vanishingTile);
 
         cleanCanvas();
+
+        console.log(vanishingTile);
 
 
         for (i = renderOrderAmount - 1; i >= 0; i--) { // reversed
@@ -101,14 +100,14 @@
                     northPath = getNorthPath(backPath, frontPath);
                     renderShape(northPath, mod_Color.getNorth());
                 }
-*/
                 //renderShape(frontPath, mod_Color.getFront());
+*/
             }
         }
 
 
+        mod_canvasHelper.drawCameraGrid(CFG.camera, { width: CFG.unitSize, height : CFG.unitSize}, shift);
         mod_canvasHelper.drawCamera(CFG.camera);
-        mod_canvasHelper.drawGrid(CFG.camera, { width: CFG.unitSize, height : CFG.unitSize}, shift);
     }
 
     function renderShape(path, color) {
@@ -173,17 +172,22 @@
     // ------------------------------------------------------------------------------------------------- Paths
 
     function getBackPath(x, y) {
-        var shift  = { x : (CFG.position.x % CFG.unitSize), y : (CFG.position.y % CFG.unitSize) },
-            startX = (CFG.unitSize * x) - (CFG.unitSize * buffer) + shift.x,
-            startY = (CFG.unitSize * y) - (CFG.unitSize * buffer) + shift.y,
-            endX   = startX + CFG.unitSize,
-            endY   = startY + CFG.unitSize;
+        var unitSize     = CFG.unitSize,
+            camera       = CFG.camera,
+            cameraStartX = (camera.position.x - (camera.width  / 2)),
+            cameraStartY = (camera.position.y - (camera.height / 2)),
+            shift        = { x : (CFG.position.x % CFG.unitSize), y : (CFG.position.y % CFG.unitSize) },
+            startX       = cameraStartX + (((cameraStartX % unitSize) - shift.x) % unitSize) + x * unitSize,
+            startY       = cameraStartY + (((cameraStartY % unitSize)  - shift.y) % unitSize) + y * unitSize;
+
+
+console.log(x, y, cameraStartX, startX, shift.x);
 
         return [
             { x : startX, y : startY },
-            { x : endX,   y : startY },
-            { x : endX,   y : endY   },
-            { x : startX, y : endY   }
+            { x : startX + unitSize,   y : startY },
+            { x : startX + unitSize,   y : startY + unitSize   },
+            { x : startX, y : startY + unitSize}
         ];
     }
 

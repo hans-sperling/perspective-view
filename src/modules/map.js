@@ -33,7 +33,7 @@
         dimension = getDimension();
         position  = getPosition();
         size      = getSize(dimension);
-        tile      = getTile(position);
+        tile      = getPositionTile(position);
 
         //debug();
     }
@@ -55,20 +55,28 @@
 
         ////////////////////////////
         //position = { x : 50, y : 50};
-        //buffer   = 1;
+        //buffer   = 0;
         ////////////////////////////
 
-        var tile = getTile(position),
-            tl   = { x : tile.x - Math.ceil((CFG.camera.width / 2) / CFG.unitSize) - buffer,     y : tile.y - Math.ceil((CFG.camera.height / 2) / CFG.unitSize) - buffer},
-            br   = { x : tile.x + Math.ceil((CFG.camera.width / 2) / CFG.unitSize) + buffer - 1, y : tile.y + Math.ceil((CFG.camera.height / 2) / CFG.unitSize) + buffer - 1},
-            area = [],
+        var camera       = CFG.camera,
+            unitSize     = CFG.unitSize,
+            positionTile = getPositionTile(position),
+            sizeX        = Math.ceil((camera.width / 2) / unitSize),
+            sizeY        = Math.ceil((camera.height / 2) / unitSize),
+            startX       = positionTile.x - sizeX - buffer,
+            stopX        = positionTile.x + sizeX + buffer,
+            startY       = positionTile.y - sizeY - buffer,
+            stopY        = positionTile.y + sizeY + buffer,
+            area         = [],
             a = 0, b = 0, x, y;
 
-        for (y = tl.y; y <= br.y; y++, b++) {
+        console.log('positionTile: ', positionTile);
+
+        for (y = startY; y <= stopY; y++, b++) {
             a       = 0;
             area[b] = [];
 
-            for (x = tl.x; x <= br.x; x++, a++) {
+            for (x = startX; x <= stopX; x++, a++) {
                 if (y < 0 || x < 0 || y >= map.length || x >=  map[0].length) {
                     area[b][a] = defaults.mapItem;
                 }
@@ -83,7 +91,7 @@
         for (y=0;y<area[0].length;y++) {
             var row = '';
             for (x=0;x<area.length;x++) {
-                row += area[y][x] + ', ';
+                row += area[y][x] + '  ';
             }
             console.log(row);
         }
@@ -118,17 +126,19 @@
     }
 
 
-    function getTile(position) {
+    function getPositionTile(position) {
         return {
-            x : Math.ceil(position.x / CFG.unitSize),
-            y : Math.ceil(position.y / CFG.unitSize)
+            x : Math.floor(position.x / CFG.unitSize),
+            y : Math.floor(position.y / CFG.unitSize)
         };
     }
 
 
-    function getVanishingTile() {
         // todo - usefull?
+    /*
+    function getVanishingTile() {
     }
+    */
 
     // --------------------------------------------------------------------------------------------------------- RETURNS
 
@@ -141,8 +151,8 @@
         getDimension     : getDimension,
         getPosition      : getPosition,
         getSize          : getSize,
-        getTile          : getTile,
-        getVanishingTile : getVanishingTile
+        getPositionTile  : getPositionTile
+        //getVanishingTile : getVanishingTile
     }});
 
 })(window.PPV);

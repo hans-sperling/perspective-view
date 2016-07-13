@@ -41,12 +41,12 @@ jQuery(document).ready(function() {
         canvas    : canvas,
         context   : context,
         map       : dummyMap3,
-        unitSize  : 10,
+        unitSize  : 100,
         unitDepth : 1.0,
-        position  : {x : 4  , y : 0},
+        position  : {x : 0, y : 0},
         camera    : {
-            width    : canvas.width,
-            height   : canvas.height,
+            width    : 900,
+            height   : 900,
             position : {
                 x : canvas.width  / 2,
                 y : canvas.height / 2
