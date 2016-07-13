@@ -89,19 +89,26 @@
 
         _context.rect(tl.x, tl.y, camera.width, camera.height);
 
+        _context.beginPath();
         _context.moveTo(tl.x, tl.y);
         _context.lineTo(c.x,  c.y);
+        _context.stroke();
 
+        _context.beginPath();
         _context.moveTo(tr.x, tr.y);
         _context.lineTo(c.x,  c.y);
+        _context.stroke();
 
+        _context.beginPath();
         _context.moveTo(br.x, br.y);
         _context.lineTo(c.x,  c.y);
+        _context.stroke();
 
+        _context.beginPath();
         _context.moveTo(bl.x, bl.y);
         _context.lineTo(c.x,  c.y);
-
         _context.stroke();
+
 
         _context.restore();
     }
@@ -109,8 +116,8 @@
 
 
     function drawGrid(camera, unit, drift) {
-        var startX = (camera.position.x % unit.width)  - (unit.width  * 1.5) - drift.x,
-            startY = (camera.position.y % unit.height) - (unit.height * 1.5) - drift.y,
+        var startX = (camera.position.x % unit.width)   - drift.x,
+            startY = (camera.position.y % unit.height)  - drift.y,
             x, y;
 
         _context.save();

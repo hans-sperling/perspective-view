@@ -5,6 +5,7 @@
 
     var CFG       = {},
         map       = [],             // Stores the map
+        area      = [],             // Stores the map part to be rendered
         size      = {x : 0, y : 0}, // Stores the size of the map in px
         dimension = {x : 0, y : 0}, // Stores the x- and y-amount of the map - amount of tiles in the map
         position  = {x : 0, y : 0}, // Stores the current position on the map in px
@@ -58,7 +59,7 @@
         ////////////////////////////
 
         var tile = getTile(position),
-            tl   = { x : tile.x - Math.floor((CFG.camera.width / 2) / CFG.unitSize) - buffer,    y : tile.y - Math.floor((CFG.camera.height / 2) / CFG.unitSize) - buffer},
+            tl   = { x : tile.x - Math.ceil((CFG.camera.width / 2) / CFG.unitSize) - buffer,     y : tile.y - Math.ceil((CFG.camera.height / 2) / CFG.unitSize) - buffer},
             br   = { x : tile.x + Math.ceil((CFG.camera.width / 2) / CFG.unitSize) + buffer - 1, y : tile.y + Math.ceil((CFG.camera.height / 2) / CFG.unitSize) + buffer - 1},
             area = [],
             a = 0, b = 0, x, y;
@@ -78,6 +79,7 @@
         }
 
         //*
+        console.group('Area');
         for (y=0;y<area[0].length;y++) {
             var row = '';
             for (x=0;x<area.length;x++) {
@@ -85,6 +87,7 @@
             }
             console.log(row);
         }
+        console.groupEnd();
         /**/
 
         return area;
@@ -122,18 +125,24 @@
         };
     }
 
+
+    function getVanishingTile() {
+        // todo - usefull?
+    }
+
     // --------------------------------------------------------------------------------------------------------- RETURNS
 
     // Append module with public methods and properties
     ppv.appendModule({ map : {
-        init         : init,
-        run          : run,
-        update       : update,
-        getArea      : getArea,
-        getDimension : getDimension,
-        getPosition  : getPosition,
-        getSize      : getSize,
-        getTile      : getTile
+        init             : init,
+        run              : run,
+        update           : update,
+        getArea          : getArea,
+        getDimension     : getDimension,
+        getPosition      : getPosition,
+        getSize          : getSize,
+        getTile          : getTile,
+        getVanishingTile : getVanishingTile
     }});
 
 })(window.PPV);

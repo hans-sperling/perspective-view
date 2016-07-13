@@ -8,15 +8,9 @@
         mod_Color        = null,
         mod_canvasHelper = null,
         CFG              = {},
-
-        buffer = 0, // Amount of tiles to buffer
-
-        renderOrder  = [],
-        mapPosition  = { x : 0, y : 0 },
-        grid         = [],
-        gridSize     = { x : 1, y : 1 },
-        gridPosition = { x : 1, y : 1 },
-        gridOffset   = { x : 1, y : 1 }; // Should be simplified to a single int var - x and y size are same!
+        buffer           = 0, // Amount of tiles to buffer
+        renderMap        = [],
+        renderOrder      = [];
 
     // ------------------------------------------------------------------------------------------------ MODULE INTERFACE
 
@@ -37,36 +31,11 @@
     function update(config) {
         CFG = config;
 
+        // todo - condition if it is necessary to get a ne render-order (i.e. unitSize changed)
+        renderMap   = mod_Map.getArea(CFG.position, buffer);
+        renderOrder = getRenderOrder(renderMap);
 
-        mod_Map.getArea(CFG.position, buffer);
-
-        /*
-
-        gridSize     = getGridSize();
-        gridPosition = {
-            x: Math.floor(gridSize.x / 2),
-            y: Math.floor(gridSize.y / 2)
-        };
-
-        mapPosition = {
-            x : Math.ceil(CFG.position.x / CFG.unitSize),
-            y : Math.ceil(CFG.position.y / CFG.unitSize)
-        };
-
-        var mapEdges = {
-            startX : mapPosition.x - gridPosition.x - gridOffset.x,
-            startY : mapPosition.y - gridPosition.y - gridOffset.y,
-            endX   : mapPosition.x + gridPosition.x + gridOffset.x,
-            endY   : mapPosition.y + gridPosition.y + gridOffset.y
-        };
-
-
-        grid = mod_Map.getArea(mapEdges);
-
-        renderOrder = getRenderOrder();
-        */
-
-         debug();
+        //debug();
     }
 
     // ----------------------------------------------------------------------------------------------------------- DEBUG
@@ -86,57 +55,60 @@
     }
 
 
-    function render() {
+    function getVanishingTile() {
+        return { x : Math.ceil(renderMap[0].length / 2), y : Math.ceil(renderMap.length / 2)};
+    }
 
-        /*
-        var renderOrderAmount = renderOrder.length,
-            vanishingCell = gridPosition,
-            halfUnitSize  = CFG.unitSize / 2,
+
+    function render() {
+        var shift  = { x : (CFG.position.x % CFG.unitSize), y : (CFG.position.y % CFG.unitSize) },
+            renderOrderAmount = renderOrder.length,
+            vanishingTile     = getVanishingTile(),
+            halfUnitSize = CFG.unitSize / 2,
             backPath, frontPath,
-            northPath, eastPath, southPath, westPath,
+            eastPath, westPath, southPath, northPath,
             i, x, y;
-        */
+    
+        console.log(vanishingTile);
 
         cleanCanvas();
 
 
-        /*
-        //for (i = 0; i < renderOrderAmount; i++) { // normal
         for (i = renderOrderAmount - 1; i >= 0; i--) { // reversed
             x = renderOrder[i].x;
             y = renderOrder[i].y;
 
-            if (grid[y][x] > 0) {
+            if (renderMap[y][x] > 0) {
                 backPath  = getBackPath(x, y);
-                frontPath = getFrontPath(x, y, grid[y][x]);
+                frontPath = getFrontPath(x, y, renderMap[y][x]);
 
                 renderShape(backPath, mod_Color.getBack());
-
-                if (x < vanishingCell.x + gridOffset.x || CFG.unitShift.x < -halfUnitSize) {
+/*
+                if (x < vanishingTile.x ) {
                     eastPath  = getEastPath(backPath, frontPath);
                     renderShape(eastPath, mod_Color.getEast());
                 }
-                else if (x > vanishingCell.x + gridOffset.x || CFG.unitShift.x > halfUnitSize) {
+                else if (x > vanishingTile.x) {
                     westPath  = getWestPath(backPath, frontPath);
                     renderShape(westPath, mod_Color.getWest());
                 }
 
-                if (y < vanishingCell.y + gridOffset.y || CFG.unitShift.y < -halfUnitSize) {
+                if (y < vanishingTile.y ) {
                     southPath = getSouthPath(backPath, frontPath);
                     renderShape(southPath, mod_Color.getSouth());
                 }
-                else if (y > vanishingCell.y + gridOffset.y || CFG.unitShift.y > halfUnitSize) {
+                else if (y > vanishingTile.y) {
                     northPath = getNorthPath(backPath, frontPath);
                     renderShape(northPath, mod_Color.getNorth());
                 }
-
-                renderShape(frontPath, mod_Color.getFront());
+*/
+                //renderShape(frontPath, mod_Color.getFront());
             }
         }
-        */
+
 
         mod_canvasHelper.drawCamera(CFG.camera);
-        //mod_canvasHelper.drawGrid(CFG.camera, { width: CFG.unitSize, height : CFG.unitSize}, CFG.position);
+        mod_canvasHelper.drawGrid(CFG.camera, { width: CFG.unitSize, height : CFG.unitSize}, shift);
     }
 
     function renderShape(path, color) {
@@ -158,30 +130,30 @@
     }
 
 
-    function getRenderOrder() {
-        var vanishingCell   = gridPosition,
-            mapAmountX      = grid[0].length,
-            mapAmountY      = grid.length,
+    function getRenderOrder(map) {
+        var vanishingCell   = getVanishingTile(),
+            mapAmountX      = map[0].length,
+            mapAmountY      = map.length,
             orderX          = [],
             orderY          = [],
             order           = [],
             x, y;
 
         // Get reversed x render order
-        for (x = vanishingCell.x + gridOffset.x; x < mapAmountX; x++) {
+        for (x = vanishingCell.x; x < mapAmountX; x++) {
             orderX.push(x);
         }
 
-        for (x = vanishingCell.x + gridOffset.x - 1; x >= 0 ; x--) {
+        for (x = vanishingCell.x - 1; x >= 0 ; x--) {
             orderX.push(x);
         }
 
         // Get reversed y render order
-        for (y = vanishingCell.y + gridOffset.y; y < mapAmountY; y++) {
+        for (y = vanishingCell.y; y < mapAmountY; y++) {
             orderY.push(y);
         }
 
-        for (y = vanishingCell.y + gridOffset.y - 1; y >= 0 ; y--) {
+        for (y = vanishingCell.y - 1; y >= 0 ; y--) {
             orderY.push(y);
         }
 
@@ -198,19 +170,12 @@
         return order;
     }
 
-
-    function getGridSize() {
-        return {
-            x : Math.ceil(CFG.camera.width  / CFG.unitSize) + (gridOffset.x * 2),
-            y : Math.ceil(CFG.camera.height / CFG.unitSize) + (gridOffset.y * 2)
-        };
-    }
-
     // ------------------------------------------------------------------------------------------------- Paths
 
     function getBackPath(x, y) {
-        var startX = (CFG.unitSize * x) - (CFG.unitSize * gridOffset.x) + CFG.unitShift.x,
-            startY = (CFG.unitSize * y) - (CFG.unitSize * gridOffset.y) + CFG.unitShift.y,
+        var shift  = { x : (CFG.position.x % CFG.unitSize), y : (CFG.position.y % CFG.unitSize) },
+            startX = (CFG.unitSize * x) - (CFG.unitSize * buffer) + shift.x,
+            startY = (CFG.unitSize * y) - (CFG.unitSize * buffer) + shift.y,
             endX   = startX + CFG.unitSize,
             endY   = startY + CFG.unitSize;
 
@@ -223,9 +188,17 @@
     }
 
 
+    function getGridSize() {
+        return {
+            x : renderMap[0].length /* Math.ceil(CFG.camera.width  / CFG.unitSize) + (buffer * 2)*/,
+            y : renderMap.length    /*Math.ceil(CFG.camera.height / CFG.unitSize) + (buffer * 2)*/
+        };
+    }
+
     function getFrontPath(x, y, h) {
-        var startX = (( (CFG.unitSize * x) - (CFG.unitSize * gridOffset.x) - ( (gridSize.x * CFG.unitSize) / 2) ) * CFG.unitDepth * h) + CFG.camera.position.x + (CFG.unitShift.x * CFG.unitDepth * h),
-            startY = (( (CFG.unitSize * y) - (CFG.unitSize * gridOffset.y) - ( (gridSize.y * CFG.unitSize) / 2) ) * CFG.unitDepth * h) + CFG.camera.position.y + (CFG.unitShift.y * CFG.unitDepth * h),
+        var shift  = { x : (CFG.position.x % CFG.unitSize), y : (CFG.position.y % CFG.unitSize) },
+            startX = (( (CFG.unitSize * x) - (CFG.unitSize * buffer) - ( (getGridSize().x * CFG.unitSize) / 2) ) * CFG.unitDepth * h) + CFG.camera.position.x + (shift.x * CFG.unitDepth * h),
+            startY = (( (CFG.unitSize * y) - (CFG.unitSize * buffer) - ( (getGridSize().y * CFG.unitSize) / 2) ) * CFG.unitDepth * h) + CFG.camera.position.y + (shift.y * CFG.unitDepth * h),
             endX   = startX + (CFG.unitSize * CFG.unitDepth * h),
             endY   = startY + (CFG.unitSize * CFG.unitDepth * h);
 

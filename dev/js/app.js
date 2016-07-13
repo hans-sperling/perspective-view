@@ -22,6 +22,13 @@ jQuery(document).ready(function() {
             [1, 0, 0, 0, 1],
             [1, 1, 1, 1, 1]
         ],
+        dummyMap3     = [
+            [1, 0, 1, 0, 1],
+            [0, 0, 0, 0, 0],
+            [1, 0, 1, 0, 1],
+            [0, 0, 0, 0, 0],
+            [1, 0, 1, 0, 1]
+        ],
         $canvas      = $('#PerspectiveView'),
         canvas       = $canvas[0],
         context      = canvas.getContext('2d');
@@ -33,10 +40,10 @@ jQuery(document).ready(function() {
     var config = {
         canvas    : canvas,
         context   : context,
-        map       : dummyMap2,
+        map       : dummyMap3,
         unitSize  : 10,
-        unitDepth : 2,
-        position  : {x : 0, y : 0},
+        unitDepth : 1.0,
+        position  : {x : 4  , y : 0},
         camera    : {
             width    : canvas.width,
             height   : canvas.height,
