@@ -10,7 +10,8 @@
         CFG              = {},
         buffer           = 0, // Amount of tiles to buffer
         renderMap        = [],
-        renderOrder      = [];
+        renderOrder      = [],
+        unitDepthSize    = 0;
 
     // ------------------------------------------------------------------------------------------------ MODULE INTERFACE
 
@@ -31,8 +32,9 @@
     function update(config) {
         CFG = config;
 
-        renderMap   = mod_Map.getArea(CFG.position, buffer);
-        renderOrder = getRenderOrder(renderMap);
+        renderMap     = mod_Map.getArea(CFG.position, buffer);
+        renderOrder   = getRenderOrder(renderMap);
+        unitDepthSize = getUnitDepthSize();
 
         //debug();
     }
@@ -59,6 +61,11 @@
     }
 
 
+    function getUnitDepthSize() {
+        return (CFG.unitSize * CFG.unitDepth) - CFG.unitSize;
+    }
+
+
     function render() {
         var renderOrderAmount = renderOrder.length,
             vanishingTile     = getVanishingTile(),
@@ -69,7 +76,6 @@
             i, x, y;
 
         cleanCanvas();
-
         for (i = renderOrderAmount - 1; i >= 0; i--) { // reversed
             x = renderOrder[i].x;
             y = renderOrder[i].y;
@@ -80,6 +86,7 @@
 
                 renderShape(backPath, mod_Color.getBack());
 
+                /*
                 if (x < vanishingTile.x ) {
                     eastPath  = getEastPath(backPath, frontPath);
                     renderShape(eastPath, mod_Color.getEast());
@@ -97,15 +104,17 @@
                     northPath = getNorthPath(backPath, frontPath);
                     renderShape(northPath, mod_Color.getNorth());
                 }
+                */
 
                 renderShape(frontPath, mod_Color.getFront());
             }
         }
 
 
-        //mod_canvasHelper.drawCanvasGrid(CFG.camera, { width: CFG.unitSize, height : CFG.unitSize}, shift);
-        //mod_canvasHelper.drawCamera(CFG.camera);
         //mod_canvasHelper.drawCameraGrid(CFG.camera, { width: CFG.unitSize, height : CFG.unitSize}, shift);
+        mod_canvasHelper.drawCamera(CFG.camera);
+        mod_canvasHelper.drawCanvasGrid(CFG.camera, { width: CFG.unitSize, height : CFG.unitSize}, shift);
+
     }
 
     function renderShape(path, color) {
@@ -189,18 +198,45 @@
     }
 
 
+    function getShift() {
+        var position      = CFG.position,
+            unitDepth     = CFG.unitDepth,
+            unitSize      = CFG.unitSize;
+
+        return {
+            x : (position.x % unitSize),
+            y : (position.y % unitSize)
+        };
+    }
+
     function getFrontPath(x, y, h) {
+        h = 2;
         var vanishingTile = getVanishingTile(),
             position      = CFG.position,
-            unitDepth     = CFG.unitDepth * h,
+            unitDepth     = CFG.unitDepth,
             unitSize      = CFG.unitSize,
             camera        = CFG.camera,
-            shift         = { x : ((position.x % unitSize) * unitDepth), y : ((position.y % unitSize) * unitDepth) },
-            startX        = camera.position.x + ((x - vanishingTile.x) * unitSize * unitDepth) - shift.x,
-            startY        = camera.position.y + ((y - vanishingTile.y) * unitSize * unitDepth) - shift.y,
-            stopX         = startX + unitSize * unitDepth,
-            stopY         = startY + unitSize * unitDepth;
+            shift         = getShift(),
+            shiftX        = shift.x + (shift.x /2)*h,
+            shiftY        = shift.y + (unitDepthSize / 2 * h),
+            startX        = camera.position.x + ((x - vanishingTile.x) * (unitSize + (unitDepthSize * h))) - shiftX,
+            startY        = camera.position.y + ((y - vanishingTile.y) * (unitSize + (unitDepthSize * h))) - shiftY,
+            stopX         = startX + (unitSize + (unitDepthSize * h)),
+            stopY         = startY + (unitSize + (unitDepthSize * h));
 
+        if (x==5&&y==5) {
+            console.log(shift.x );
+            console.log('x: ', x);
+            console.log('vanishingTile.x: ', vanishingTile.x);
+            console.log('position.x: ', position.x);
+            console.log('unitDepthSize: ', unitDepthSize);
+            console.log('h: ', h);
+            console.log('newSize: ', stopX - startX);
+            console.log('shift.x: ', shift.x);
+            console.log('shiftX: ', shiftX);
+            console.log('startX: ', startX);
+
+        }
 
         return [
             { x : startX, y : startY },
@@ -208,21 +244,6 @@
             { x : stopX,  y : stopY  },
             { x : startX, y : stopY  }
         ];
-
-        /*
-        var shift  = { x : (CFG.position.x % CFG.unitSize), y : (CFG.position.y % CFG.unitSize) },
-            startX = (( (CFG.unitSize * x) - (CFG.unitSize * buffer) - ( (getGridSize().x * CFG.unitSize) / 2) ) * CFG.unitDepth * h) + CFG.camera.position.x + (shift.x * CFG.unitDepth * h),
-            startY = (( (CFG.unitSize * y) - (CFG.unitSize * buffer) - ( (getGridSize().y * CFG.unitSize) / 2) ) * CFG.unitDepth * h) + CFG.camera.position.y + (shift.y * CFG.unitDepth * h),
-            endX   = startX + (CFG.unitSize * CFG.unitDepth * h),
-            endY   = startY + (CFG.unitSize * CFG.unitDepth * h);
-
-        return [
-            { x : startX, y : startY },
-            { x : endX,   y : startY },
-            { x : endX,   y : endY   },
-            { x : startX, y : endY   }
-        ];
-        */
     }
 
 

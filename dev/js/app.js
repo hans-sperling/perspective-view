@@ -23,9 +23,9 @@ jQuery(document).ready(function() {
             [1, 1, 1, 1, 1]
         ],
         dummyMap3     = [
-            [2, 0, 2, 0, 2],
-            [0, 0, 0, 0, 0],
-            [1, 0, 2, 0, 1],
+            [3, 0, 1, 0, 2],
+            [2, 1, 0, 0, 0],
+            [1, 0, 1, 0, 1],
             [0, 0, 0, 0, 0],
             [1, 0, 1, 0, 1]
         ],
@@ -35,6 +35,30 @@ jQuery(document).ready(function() {
             [1, 0, 0, 0, 0],
             [0, 0, 0, 0, 0],
             [1, 0, 0, 0, 0]
+        ],
+        dummyMap5     = [
+            [1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1],
+            [0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0],
+            [1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1],
+            [0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0],
+            [1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1],
+            [0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0],
+            [1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1],
+            [0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0],
+            [1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1],
+            [0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0],
+            [1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1]
+        ],
+        dummyMap6     = [
+            [1, 0, 1, 0, 1, 0, 1, 0, 1],
+            [0, 0, 0, 0, 0, 0, 0, 0, 0],
+            [1, 0, 1, 0, 1, 0, 1, 0, 1],
+            [0, 0, 0, 0, 0, 0, 0, 0, 0],
+            [1, 0, 1, 0, 2, 0, 1, 0, 1],
+            [0, 0, 0, 0, 0, 0, 0, 0, 0],
+            [1, 0, 1, 0, 1, 0, 1, 0, 1],
+            [0, 0, 0, 0, 0, 0, 0, 0, 0],
+            [1, 0, 1, 0, 1, 0, 1, 0, 1]
         ],
         $canvas      = $('#PerspectiveView'),
         canvas       = $canvas[0],
@@ -49,11 +73,14 @@ jQuery(document).ready(function() {
         context   : context,
         map       : dummyMap3,
         unitSize  : 100,
-        unitDepth : 1.1,
-        position  : {x : 250, y : 250},
+        unitDepth : 2,
+        position  : {
+            x : 50,
+            y : 0
+        },
         camera    : {
-            width    : 1000,
-            height   : 1000,
+            width    : canvas.width,
+            height   : canvas.height,
             position : {
                 //*
                 x : canvas.width  / 2,
@@ -77,18 +104,18 @@ jQuery(document).ready(function() {
         j += (c * m) * 1;
         //console.log(Math.cos(Math.PI * i) * 50)
 
-        //*
+        /*
         ppv.update({
             position : {
-                x : 250 + Math.cos(Math.PI * i) * 100,
-                y : 250+ Math.sin(Math.PI * j) * 100
+                x : 250 + Math.floor(Math.cos(Math.PI * i) * 100),
+                y : 250 + Math.floor(Math.sin(Math.PI * j) * 100)
             }
         });
         /**/
         ppv.render();
 
 
-        window.requestAnimFrame(loop);
+        //window.requestAnimFrame(loop);
 
     })();
 
