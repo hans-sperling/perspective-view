@@ -70,9 +70,6 @@
 
         cleanCanvas();
 
-        console.log(vanishingTile);
-
-
         for (i = renderOrderAmount - 1; i >= 0; i--) { // reversed
             x = renderOrder[i].x;
             y = renderOrder[i].y;
@@ -82,7 +79,7 @@
                 frontPath = getFrontPath(x, y, renderMap[y][x]);
 
                 renderShape(backPath, mod_Color.getBack());
-/*
+
                 if (x < vanishingTile.x ) {
                     eastPath  = getEastPath(backPath, frontPath);
                     renderShape(eastPath, mod_Color.getEast());
@@ -100,14 +97,15 @@
                     northPath = getNorthPath(backPath, frontPath);
                     renderShape(northPath, mod_Color.getNorth());
                 }
-                //renderShape(frontPath, mod_Color.getFront());
-*/
+
+                renderShape(frontPath, mod_Color.getFront());
             }
         }
 
 
-        mod_canvasHelper.drawCameraGrid(CFG.camera, { width: CFG.unitSize, height : CFG.unitSize}, shift);
-        mod_canvasHelper.drawCamera(CFG.camera);
+        //mod_canvasHelper.drawCanvasGrid(CFG.camera, { width: CFG.unitSize, height : CFG.unitSize}, shift);
+        //mod_canvasHelper.drawCamera(CFG.camera);
+        //mod_canvasHelper.drawCameraGrid(CFG.camera, { width: CFG.unitSize, height : CFG.unitSize}, shift);
     }
 
     function renderShape(path, color) {
@@ -177,29 +175,41 @@
             cameraStartX = (camera.position.x - (camera.width  / 2)),
             cameraStartY = (camera.position.y - (camera.height / 2)),
             shift        = { x : (CFG.position.x % CFG.unitSize), y : (CFG.position.y % CFG.unitSize) },
-            startX       = cameraStartX + (((cameraStartX % unitSize) - shift.x) % unitSize) + x * unitSize,
-            startY       = cameraStartY + (((cameraStartY % unitSize)  - shift.y) % unitSize) + y * unitSize;
-
-
-console.log(x, y, cameraStartX, startX, shift.x);
+            startX       = cameraStartX - (cameraStartX % unitSize) + x * unitSize - shift.x,
+            startY       = cameraStartY - (cameraStartY % unitSize) + y * unitSize - shift.y,
+            stopX        = startX + unitSize,
+            stopY        = startY + unitSize;
 
         return [
             { x : startX, y : startY },
-            { x : startX + unitSize,   y : startY },
-            { x : startX + unitSize,   y : startY + unitSize   },
-            { x : startX, y : startY + unitSize}
+            { x : stopX,  y : startY },
+            { x : stopX,  y : stopY  },
+            { x : startX, y : stopY  }
         ];
     }
 
 
-    function getGridSize() {
-        return {
-            x : renderMap[0].length /* Math.ceil(CFG.camera.width  / CFG.unitSize) + (buffer * 2)*/,
-            y : renderMap.length    /*Math.ceil(CFG.camera.height / CFG.unitSize) + (buffer * 2)*/
-        };
-    }
-
     function getFrontPath(x, y, h) {
+        var vanishingTile = getVanishingTile(),
+            position      = CFG.position,
+            unitDepth     = CFG.unitDepth * h,
+            unitSize      = CFG.unitSize,
+            camera        = CFG.camera,
+            shift         = { x : ((position.x % unitSize) * unitDepth), y : ((position.y % unitSize) * unitDepth) },
+            startX        = camera.position.x + ((x - vanishingTile.x) * unitSize * unitDepth) - shift.x,
+            startY        = camera.position.y + ((y - vanishingTile.y) * unitSize * unitDepth) - shift.y,
+            stopX         = startX + unitSize * unitDepth,
+            stopY         = startY + unitSize * unitDepth;
+
+
+        return [
+            { x : startX, y : startY },
+            { x : stopX,  y : startY },
+            { x : stopX,  y : stopY  },
+            { x : startX, y : stopY  }
+        ];
+
+        /*
         var shift  = { x : (CFG.position.x % CFG.unitSize), y : (CFG.position.y % CFG.unitSize) },
             startX = (( (CFG.unitSize * x) - (CFG.unitSize * buffer) - ( (getGridSize().x * CFG.unitSize) / 2) ) * CFG.unitDepth * h) + CFG.camera.position.x + (shift.x * CFG.unitDepth * h),
             startY = (( (CFG.unitSize * y) - (CFG.unitSize * buffer) - ( (getGridSize().y * CFG.unitSize) / 2) ) * CFG.unitDepth * h) + CFG.camera.position.y + (shift.y * CFG.unitDepth * h),
@@ -212,6 +222,7 @@ console.log(x, y, cameraStartX, startX, shift.x);
             { x : endX,   y : endY   },
             { x : startX, y : endY   }
         ];
+        */
     }
 
 

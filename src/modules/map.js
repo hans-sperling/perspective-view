@@ -70,8 +70,6 @@
             area         = [],
             a = 0, b = 0, x, y;
 
-        console.log('positionTile: ', positionTile);
-
         for (y = startY; y <= stopY; y++, b++) {
             a       = 0;
             area[b] = [];
@@ -86,7 +84,7 @@
             }
         }
 
-        //*
+        /*
         console.group('Area');
         for (y=0;y<area[0].length;y++) {
             var row = '';

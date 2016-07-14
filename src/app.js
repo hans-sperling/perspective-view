@@ -93,16 +93,10 @@ window.PPV = (function() {
         }
     }
 
-    // --------------------------------------------------------------------------------------------------------- PRIVATE
-
-    function mergeConfig(config) {
-        return mod.merge.deep(defaults, config);
-    }
-
     // ------------------------------------------------------------------------------------------------------------ INIT
 
     function init(config) {
-        CFG = mergeConfig(config);
+        CFG = mod.merge.deep(defaults, config);
 
         initModules(CFG);
         runModules();
@@ -122,7 +116,7 @@ window.PPV = (function() {
 
 
     function update(config) {
-        CFG = mergeConfig(config);
+        CFG =  mod.merge.deep(CFG, config);
 
         updateModules(CFG);
     }
