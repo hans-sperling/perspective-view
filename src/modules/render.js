@@ -80,7 +80,7 @@
 
                 renderShape(backPath, mod_Color.getBack());
 
-                /*
+                //*
                  if (x < vanishingTile.x ) {
                  eastPath  = getEastPath(backPath, frontPath);
                  renderShape(eastPath, mod_Color.getEast());
@@ -98,7 +98,7 @@
                  northPath = getNorthPath(backPath, frontPath);
                  renderShape(northPath, mod_Color.getNorth());
                  }
-                 */
+                 /**/
 
                 renderShape(frontPath, mod_Color.getFront());
             }
@@ -106,8 +106,8 @@
 
 
         //mod_canvasHelper.drawCameraGrid(CFG.camera, { width: CFG.unitSize, height : CFG.unitSize}, shift);
-        mod_canvasHelper.drawCamera(CFG.camera);
-        mod_canvasHelper.drawCanvasGrid(CFG.camera, { width: CFG.unitSize, height : CFG.unitSize}, shift);
+        //mod_canvasHelper.drawCamera(CFG.camera);
+        //mod_canvasHelper.drawCanvasGrid(CFG.camera, { width: CFG.unitSize, height : CFG.unitSize}, shift);
 
     }
 
@@ -195,12 +195,22 @@
     function getShift(h) {
         var position      = CFG.position,
             unitDepth     = CFG.unitDepth,
-            unitSize      = CFG.unitSize;
+            unitSize      = CFG.unitSize,
+            newUnitSize   = getUnitSizeByHeight(h);
 
-        return {
-            x : (position.x % unitSize),
-            y : (position.y % unitSize)
-        };
+
+        if (h == 0) {
+            return {
+                x : (position.x % unitSize),
+                y : (position.y % unitSize)
+            };
+        }
+        else {
+            return {
+                x : (position.x % unitSize) + ((newUnitSize - unitSize) / (unitSize / (position.x % unitSize))),
+                y : (position.y % unitSize) + ((newUnitSize - unitSize) / (unitSize / (position.y % unitSize)))
+            };
+        }
     }
 
 
@@ -217,12 +227,12 @@
     function getFrontPath(x, y, h) {
 
         var vanishingTile = getVanishingTile(),
-            shift         = getShift(),
+            shift         = getShift(h),
             unitSize      = getUnitSizeByHeight(h),
-            position      = CFG.position,
-            camPosition   = CFG.camera.position,
             unitDepth     = CFG.unitDepth,
+            position      = CFG.position,
             camera        = CFG.camera,
+            camPosition   = CFG.camera.position,
             shiftX        = shift.x,
             shiftY        = shift.y,
 
@@ -231,6 +241,7 @@
             stopX         = startX + unitSize,
             stopY         = startY + unitSize;
 
+        /*
         if (x==5&&y==5) {
             console.log('x: ', x);
             console.log('unitSize: ', unitSize);
@@ -244,6 +255,7 @@
             console.log('startX: ', startX);
             console.log('----------------------------------');
         }
+        /**/
 
         return [
             { x : startX, y : startY },

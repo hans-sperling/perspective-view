@@ -23,8 +23,8 @@ jQuery(document).ready(function() {
             [1, 1, 1, 1, 1]
         ],
         dummyMap3     = [
-            [1, 0, 1, 0, 2],
-            [0, 1, 0, 0, 0],
+            [3, 2, 1, 0, 2],
+            [2, 1, 0, 0, 0],
             [1, 0, 1, 0, 1],
             [0, 0, 0, 0, 0],
             [1, 0, 1, 0, 1]
@@ -104,7 +104,7 @@ jQuery(document).ready(function() {
         j += (c * m) * 1;
         //console.log(Math.cos(Math.PI * i) * 50)
 
-        /*
+        //*
         ppv.update({
             position : {
                 x : 250 + Math.floor(Math.cos(Math.PI * i) * 100),
@@ -115,7 +115,7 @@ jQuery(document).ready(function() {
         ppv.render();
 
 
-        //window.requestAnimFrame(loop);
+        window.requestAnimFrame(loop);
 
     })();
 
