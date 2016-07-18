@@ -3,6 +3,9 @@
 Delivers a simple javascript methods pool for rendering grid based (array) maps into a virtual, perspective, 3d top view
 with canvas.
 
+[Visual description](https://github.com/perspective-view/perspective-view/blob/master/dev/img/visual-description.png)
+
+
 ## Initialize
 
 ```javascript
