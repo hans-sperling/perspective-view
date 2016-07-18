@@ -9,7 +9,7 @@ module.exports = function(grunt) {
                 banner: banner
             },
             build : {
-                src  : 'src/<%= pkg.name %>.js',
+                src  : 'src/**/*.js',
                 dest : 'dist/<%= pkg.name %>.min.js'
             }
         },
@@ -18,7 +18,7 @@ module.exports = function(grunt) {
                 banner: banner
             },
             dist: {
-                src: 'src/<%= pkg.name %>.js',
+                src: 'src/**/*.js',
                 dest: 'dist/<%= pkg.name %>.js'
             }
         }
