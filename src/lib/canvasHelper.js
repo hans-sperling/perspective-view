@@ -1,6 +1,7 @@
 ;(function canvasHelper(ppv) {
     'use strict';
 
+    // ------------------------------------------------------------------------------------------------------ PROPERTIES
 
     /**
      * Stores the context of the canvas.
@@ -56,14 +57,24 @@
         }
     };
 
-    // -----------------------------------------------------------------------------------------------------------------
+    // ------------------------------------------------------------------------------------------------ MODULE INTERFACE
 
     function init(config) {
+        update(config);
+    }
+
+
+    function run() {
+        // Nothing to do yet
+    }
+
+
+    function update(config) {
         _canvas  = config.canvas;
         _context = config.context;
     }
 
-    // -----------------------------------------------------------------------------------------------------------------
+    // --------------------------------------------------------------------------------------------------------- METHODS
 
     function clean() {
         _context.save();
@@ -115,9 +126,9 @@
 
 
 
-    function drawCanvasGrid(camera, unit, shift) {
-        var startX = (camera.position.x % unit.width)  - shift.x,
-            startY = (camera.position.y % unit.height) - shift.y,
+    function drawCanvasGrid(camera, unitSize, shift) {
+        var startX = (camera.position.x % unitSize)  - shift.x,
+            startY = (camera.position.y % unitSize) - shift.y,
             x, y;
 
         _context.save();
@@ -126,12 +137,12 @@
 
         _context.beginPath();
 
-        for (x = startX; x <= _canvas.width; x += unit.width) {
+        for (x = startX; x <= _canvas.width; x += unitSize) {
             _context.moveTo(x, 0);
             _context.lineTo(x, _canvas.height);
         }
 
-        for (y = startY; y <= _canvas.height; y += unit.height) {
+        for (y = startY; y <= _canvas.height; y += unitSize) {
             _context.moveTo(0, y);
             _context.lineTo(_canvas.width, y);
         }
@@ -222,7 +233,7 @@
         _context.restore();
     }
 
-    // -----------------------------------------------------------------------------------------------------------------
+    // --------------------------------------------------------------------------------------------------------- RETURNS
 
     // Append module with public methods and properties
     ppv.appendModule({ canvasHelper: {

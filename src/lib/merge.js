@@ -1,10 +1,23 @@
 ;(function merge(ppv) {
+    'use strict';
 
-    function init() {
+    // ------------------------------------------------------------------------------------------------ MODULE INTERFACE
 
+    function init(config) {
+        update(config);
     }
 
-    // -----------------------------------------------------------------------------------------------------------------
+
+    function run() {
+        // Nothing to do yet
+    }
+
+
+    function update(config) {
+        // Nothing to do yet
+    }
+
+    // --------------------------------------------------------------------------------------------------------- METHODS
 
     function deep(target, src) {
         var array = Array.isArray(src);
@@ -51,11 +64,13 @@
         return dst;
     }
 
-    // -----------------------------------------------------------------------------------------------------------------
+    // --------------------------------------------------------------------------------------------------------- RETURNS
 
     // Append module with public methods and properties
     ppv.appendModule({ merge: {
-        init : init,
-        deep : deep
+        init   : init,
+        run    : run,
+        update : update,
+        deep   : deep
     }});
 })(window.PPV);

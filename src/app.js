@@ -17,16 +17,16 @@ window.PPV = (function() {
         defaults = {
             canvas    : null,
             context   : null,
-            map       : [],
-            unitSize  : 1,
-            unitDepth : 1,
-            position  : { x : 0, y : 0 },
+            map       : [[1]],
+            unitSize  : 100,
+            unitDepth : 1.1,
+            position  : { x : 0, y : 0},
             camera    : {
-                width    : 1,
-                height   : 1,
+                width    : 800,
+                height   : 600,
                 position : {
-                    x : 1,
-                    y : 1
+                    x : 400,
+                    y : 300
                 }
             }
         };
@@ -98,6 +98,7 @@ window.PPV = (function() {
     function init(config) {
         CFG = mod.merge.deep(defaults, config);
 
+        console.log(CFG);
         initModules(CFG);
         runModules();
 

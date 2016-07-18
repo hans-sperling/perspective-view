@@ -17,9 +17,9 @@ jQuery(document).ready(function() {
         ],
         dummyMap2     = [
             [1, 1, 1, 1, 1],
-            [1, 0, 0, 0, 1],
-            [1, 0, 1, 0, 1],
-            [1, 0, 0, 0, 1],
+            [1, 1, 1, 1, 1],
+            [1, 1, 1, 1, 1],
+            [1, 1, 1, 1, 1],
             [1, 1, 1, 1, 1]
         ],
         dummyMap3     = [
@@ -60,6 +60,21 @@ jQuery(document).ready(function() {
             [0, 0, 0, 0, 0, 0, 0, 0, 0],
             [1, 0, 1, 0, 1, 0, 1, 0, 1]
         ],
+        realisticMap0 = [
+            [2, 1, 1, 1, 1, 1, 2, 1, 1, 1, 1, 1, 3],
+            [1, 0, 0, 0, 0, 0, 2, 0, 0, 0, 0, 0, 1],
+            [1, 0, 1, 1, 0, 1, 2, 1, 0, 1, 1, 0, 1],
+            [1, 0, 2, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1],
+            [1, 0, 3, 0, 2, 0, 2, 2, 2, 2, 2, 0, 2],
+            [1, 0, 2, 0, 0, 0, 0, 0, 0, 0, 2, 0, 1],
+            [1, 0, 1, 1, 0, 2, 2, 2, 0, 0, 0, 0, 1],
+            [1, 0, 0, 0, 0, 2, 0, 2, 0, 2, 3, 0, 3],
+            [2, 0, 2, 2, 2, 2, 2, 2, 0, 1, 2, 0, 1],
+            [1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 1],
+            [1, 0, 2, 3, 2, 1, 0, 1, 2, 0, 1, 0, 1],
+            [1, 0, 0, 0, 0, 0, 0, 0, 2, 0, 0, 0, 1],
+            [3, 1, 1, 2, 1, 1, 1, 1, 2, 1, 1, 1, 3]
+        ],
         $canvas      = $('#PerspectiveView'),
         canvas       = $canvas[0],
         context      = canvas.getContext('2d');
@@ -67,48 +82,41 @@ jQuery(document).ready(function() {
     canvas.width  = canvas.offsetWidth;
     canvas.height = canvas.offsetHeight;
 
-
-    var config = {
-        canvas    : canvas,
-        context   : context,
-        map       : dummyMap3,
-        unitSize  : 100,
-        unitDepth : 1.1,
-        position  : {
-            x : 50,
-            y : 0
-        },
-        camera    : {
-            width    : canvas.width,
-            height   : canvas.height,
-            position : {
-                //*
-                x : canvas.width  / 2,
-                y : canvas.height / 2
-                /**/
-                /*
-                x : 0,
-                y : 0
-                /**/
+    var position = { x : 650, y : 750 },
+        c        = 0.0027777777777778,
+        m        = 1,
+        i        = -(c * m),
+        j        = -(c * m),
+        config   = {
+            canvas    : canvas,
+            context   : context,
+            map       : realisticMap0,
+            unitSize  : 100,
+            unitDepth : 1.1,
+            position  : position,
+            camera    : {
+                width    : canvas.width,
+                height   : canvas.height,
+                position : {
+                    x : canvas.width  / 2,
+                    y : canvas.height / 2
+                }
             }
-        }
-    };
+        },
+        ppv = new PerspectiveView(config);
 
-    var ppv = new PerspectiveView(config);
 
-    var position = {x : 250, y : 250},
-        c = 0.0027777777777778, m = 2, i = -(c * m), j = -(c * m);
 
     (function loop() {
-        i += (c * m) * 1;
-        j += (c * m) * 1;
+        i += (c * m);
+        j += (c * m);
         //console.log(Math.cos(Math.PI * i) * 50)
 
         //*
         ppv.update({
             position : {
-                x : 250 + Math.floor(Math.cos(Math.PI * i) * 100),
-                y : 250 + Math.floor(Math.sin(Math.PI * j) * 100)
+                x : position.x + Math.floor(Math.cos(Math.PI * i) * 200),
+                y : position.y + Math.floor(Math.sin(Math.PI * j) * 200)
             }
         });
         /**/

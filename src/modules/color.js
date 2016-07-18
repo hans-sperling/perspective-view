@@ -25,34 +25,11 @@
 
     function update(config) {
         // Nothing to do yet
-
-        // debug();
-    }
-
-    // ----------------------------------------------------------------------------------------------------------- DEBUG
-
-    function debug() {
-        console.log('color.js: ', {
-            back     : back,
-            space    : space,
-            front    : front,
-            north    : north,
-            east     : east,
-            south    : south,
-            west     : west,
-            getBack  : getBack(),
-            getSpace : getSpace(),
-            getFront : getFront(),
-            getNorth : getNorth(),
-            getEast  : getEast(),
-            getSouth : getSouth(),
-            getWest  : getWest()
-        });
     }
 
     // --------------------------------------------------------------------------------------------------------- METHODS
 
-    function getBack() {
+    function getBase() {
         return 'rgba('+
             back.r + ', ' +
             back.g + ', ' +
@@ -121,7 +98,7 @@
         init     : init,
         run      : run,
         update   : update,
-        getBack  : getBack,
+        getBase  : getBase,
         getEast  : getEast,
         getFront : getFront,
         getNorth : getNorth,
@@ -129,5 +106,4 @@
         getSpace : getSpace,
         getWest  : getWest
     }});
-
 })(window.PPV);

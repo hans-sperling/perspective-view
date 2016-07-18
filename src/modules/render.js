@@ -3,14 +3,16 @@
 
     // ------------------------------------------------------------------------------------------------------ PROPERTIES
 
-    var mod_Location     = null,
-        mod_Map          = null,
+    var mod_Map          = null,
         mod_Color        = null,
         mod_canvasHelper = null,
         CFG              = {},
-        buffer           = 0, // Amount of tiles to buffer
         renderMap        = [],
-        renderOrder      = [];
+        renderOrder      = [],
+        buffer           = 0,
+        doNotFill        = 0,
+        renderCamera     = 0,
+        renderGrid       = 0;
 
     // ------------------------------------------------------------------------------------------------ MODULE INTERFACE
 
@@ -29,19 +31,9 @@
 
 
     function update(config) {
-        CFG = config;
-
-        renderMap     = mod_Map.getArea(CFG.position, buffer);
-        renderOrder   = getRenderOrder(renderMap);
-
-        //debug();
-    }
-
-    // ----------------------------------------------------------------------------------------------------------- DEBUG
-
-    function debug() {
-        console.log('render.js: ', {
-        });
+        CFG         = config;
+        renderMap   = mod_Map.getArea(CFG.position, buffer);
+        renderOrder = getRenderOrder(renderMap);
     }
 
     // --------------------------------------------------------------------------------------------------------- METHODS
@@ -59,57 +51,95 @@
     }
 
 
+    function getShiftByHeight(h) {
+        var position    = CFG.position,
+            unitSize    = CFG.unitSize,
+            newUnitSize = getUnitSizeByHeight(h);
+
+        if (h == 0) {
+            return {
+                x : (position.x % unitSize),
+                y : (position.y % unitSize)
+            };
+        }
+        else {
+            return {
+                x : Math.round((position.x % unitSize) + ((newUnitSize - unitSize) / (unitSize / (position.x % unitSize)))),
+                y : Math.round((position.y % unitSize) + ((newUnitSize - unitSize) / (unitSize / (position.y % unitSize))))
+            };
+        }
+    }
+
+
+    function getUnitSizeByHeight(h) {
+        var unitSize  = CFG.unitSize,
+            unitDepth = CFG.unitDepth;
+
+        if (h == 0) {
+            return unitSize;
+        }
+        else {
+            return Math.round(unitSize + (Math.round(((unitSize * unitDepth) - unitSize)) * h));
+        }
+    }
+
+
     function render() {
-        var renderOrderAmount = renderOrder.length,
+        var camera            = CFG.camera,
+            renderOrderAmount = renderOrder.length,
             vanishingTile     = getVanishingTile(),
-            halfUnitSize      = CFG.unitSize / 2,
-            shift             = { x : (CFG.position.x % CFG.unitSize), y : (CFG.position.y % CFG.unitSize) },
             backPath, frontPath,
             eastPath, westPath, southPath, northPath,
-            i, x, y;
+            h, i, x, y;
 
         cleanCanvas();
-        for (i = renderOrderAmount - 1; i >= 0; i--) { // reversed
+
+        for (i = renderOrderAmount - 1; i >= 0; i--) {
             x = renderOrder[i].x;
             y = renderOrder[i].y;
+            h = renderMap[y][x];
 
-            if (renderMap[y][x] > 0) {
-                //backPath  = getBackPath(x, y);
+            if (h > 0) {
                 backPath  = getFrontPath(x, y, 0);
-                frontPath = getFrontPath(x, y, renderMap[y][x]);
+                frontPath = getFrontPath(x, y, h);
 
-                renderShape(backPath, mod_Color.getBack());
+                renderShape(backPath, mod_Color.getBase());
 
-                //*
-                 if (x < vanishingTile.x ) {
-                 eastPath  = getEastPath(backPath, frontPath);
-                 renderShape(eastPath, mod_Color.getEast());
-                 }
-                 else if (x > vanishingTile.x) {
-                 westPath  = getWestPath(backPath, frontPath);
-                 renderShape(westPath, mod_Color.getWest());
-                 }
+                if (x < vanishingTile.x && renderMap[y][x + 1] !== undefined && renderMap[y][x + 1] < h) {
+                    eastPath = getEastPath(backPath, frontPath);
+                    renderShape(eastPath, mod_Color.getEast());
+                }
+                else if (x > vanishingTile.x && renderMap[y][x - 1] !== undefined && renderMap[y][x - 1] < h) {
+                    westPath = getWestPath(backPath, frontPath);
+                    renderShape(westPath, mod_Color.getWest());
+                }
 
-                 if (y < vanishingTile.y ) {
-                 southPath = getSouthPath(backPath, frontPath);
-                 renderShape(southPath, mod_Color.getSouth());
-                 }
-                 else if (y > vanishingTile.y) {
-                 northPath = getNorthPath(backPath, frontPath);
-                 renderShape(northPath, mod_Color.getNorth());
-                 }
-                 /**/
+                if (y < vanishingTile.y && renderMap[y + 1] !== undefined && renderMap[y + 1][x] < h) {
+                    southPath = getSouthPath(backPath, frontPath);
+                    renderShape(southPath, mod_Color.getSouth());
+                }
+                else if (y > vanishingTile.y && renderMap[y - 1] !== undefined && renderMap[y - 1][x] < h) {
+                    northPath = getNorthPath(backPath, frontPath);
+                    renderShape(northPath, mod_Color.getNorth());
+                }
 
                 renderShape(frontPath, mod_Color.getFront());
             }
         }
 
+        if (renderGrid) {
+            var shift       = getShiftByHeight(0),
+                newUnitSize = getUnitSizeByHeight(0);
 
-        //mod_canvasHelper.drawCameraGrid(CFG.camera, { width: CFG.unitSize, height : CFG.unitSize}, shift);
-        //mod_canvasHelper.drawCamera(CFG.camera);
-        //mod_canvasHelper.drawCanvasGrid(CFG.camera, { width: CFG.unitSize, height : CFG.unitSize}, shift);
+            //mod_canvasHelper.drawCameraGrid(camera, newUnitSize, shift);
+            mod_canvasHelper.drawCanvasGrid(camera, newUnitSize, shift);
+        }
 
+        if (renderCamera) {
+            mod_canvasHelper.drawCamera(camera);
+        }
     }
+
 
     function renderShape(path, color) {
         var i = 0;
@@ -126,17 +156,20 @@
 
         CFG.context.closePath();
         CFG.context.stroke();
-        CFG.context.fill();
+
+        if (!doNotFill) {
+            CFG.context.fill();
+        }
     }
 
 
     function getRenderOrder(map) {
-        var vanishingCell   = getVanishingTile(),
-            mapAmountX      = map[0].length,
-            mapAmountY      = map.length,
-            orderX          = [],
-            orderY          = [],
-            order           = [],
+        var vanishingCell = getVanishingTile(),
+            mapAmountX    = map[0].length,
+            mapAmountY    = map.length,
+            orderX        = [],
+            orderY        = [],
+            order         = [],
             x, y;
 
         // Get reversed x render order
@@ -172,90 +205,17 @@
 
     // ------------------------------------------------------------------------------------------------- Paths
 
-    function getBackPath(x, y) {
-        var unitSize     = CFG.unitSize,
-            camera       = CFG.camera,
-            cameraStartX = (camera.position.x - (camera.width  / 2)),
-            cameraStartY = (camera.position.y - (camera.height / 2)),
-            shift        = { x : (CFG.position.x % CFG.unitSize), y : (CFG.position.y % CFG.unitSize) },
-            startX       = cameraStartX - (cameraStartX % unitSize) + x * unitSize - shift.x,
-            startY       = cameraStartY - (cameraStartY % unitSize) + y * unitSize - shift.y,
-            stopX        = startX + unitSize,
-            stopY        = startY + unitSize;
-
-        return [
-            { x : startX, y : startY },
-            { x : stopX,  y : startY },
-            { x : stopX,  y : stopY  },
-            { x : startX, y : stopY  }
-        ];
-    }
-
-
-    function getShift(h) {
-        var position      = CFG.position,
-            unitDepth     = CFG.unitDepth,
-            unitSize      = CFG.unitSize,
-            newUnitSize   = getUnitSizeByHeight(h);
-
-
-        if (h == 0) {
-            return {
-                x : (position.x % unitSize),
-                y : (position.y % unitSize)
-            };
-        }
-        else {
-            return {
-                x : (position.x % unitSize) + ((newUnitSize - unitSize) / (unitSize / (position.x % unitSize))),
-                y : (position.y % unitSize) + ((newUnitSize - unitSize) / (unitSize / (position.y % unitSize)))
-            };
-        }
-    }
-
-
-    function getUnitSizeByHeight(h) {
-        if (h == 0) {
-            return CFG.unitSize;
-        }
-        else {
-            return CFG.unitSize + (Math.round(((CFG.unitSize * CFG.unitDepth) - CFG.unitSize)) * h);
-        }
-    }
-
-
     function getFrontPath(x, y, h) {
-
         var vanishingTile = getVanishingTile(),
-            shift         = getShift(h),
+            shift         = getShiftByHeight(h),
             unitSize      = getUnitSizeByHeight(h),
-            unitDepth     = CFG.unitDepth,
-            position      = CFG.position,
-            camera        = CFG.camera,
             camPosition   = CFG.camera.position,
             shiftX        = shift.x,
             shiftY        = shift.y,
-
             startX        = camPosition.x + ((x - vanishingTile.x) * unitSize) - shiftX,
             startY        = camPosition.y + ((y - vanishingTile.y) * unitSize) - shiftY,
             stopX         = startX + unitSize,
             stopY         = startY + unitSize;
-
-        /*
-        if (x==5&&y==5) {
-            console.log('x: ', x);
-            console.log('unitSize: ', unitSize);
-            console.log('shift.x: ', shift.x);
-            console.log('vanishingTile.x: ', vanishingTile.x);
-            console.log('position.x: ', position.x);
-            console.log('h: ', h);
-            console.log('newSize: ', stopX - startX);
-            console.log('shift.x: ', shift.x);
-            console.log('shiftX: ', shiftX);
-            console.log('startX: ', startX);
-            console.log('----------------------------------');
-        }
-        /**/
 
         return [
             { x : startX, y : startY },
@@ -314,5 +274,4 @@
         update : update,
         render : render
     }});
-
 })(window.PPV);
