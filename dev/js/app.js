@@ -83,7 +83,7 @@ jQuery(document).ready(function() {
     canvas.height = canvas.offsetHeight;
 
     var position = { x : 650, y : 750 },
-        c        = 0.0027777777777778,
+        c        = 0.0027777777777778, // 1 / 360
         m        = 1,
         i        = -(c * m),
         j        = -(c * m),
@@ -105,23 +105,18 @@ jQuery(document).ready(function() {
         },
         ppv = new PerspectiveView(config);
 
-
-
     (function loop() {
         i += (c * m);
         j += (c * m);
-        //console.log(Math.cos(Math.PI * i) * 50)
 
-        //*
         ppv.update({
             position : {
                 x : position.x + Math.floor(Math.cos(Math.PI * i) * 200),
                 y : position.y + Math.floor(Math.sin(Math.PI * j) * 200)
             }
         });
-        /**/
-        ppv.render();
 
+        ppv.render();
 
         window.requestAnimFrame(loop);
 
