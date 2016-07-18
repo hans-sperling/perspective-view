@@ -23,8 +23,8 @@ jQuery(document).ready(function() {
             [1, 1, 1, 1, 1]
         ],
         dummyMap3     = [
-            [3, 0, 1, 0, 2],
-            [2, 1, 0, 0, 0],
+            [1, 0, 1, 0, 2],
+            [0, 1, 0, 0, 0],
             [1, 0, 1, 0, 1],
             [0, 0, 0, 0, 0],
             [1, 0, 1, 0, 1]
@@ -73,7 +73,7 @@ jQuery(document).ready(function() {
         context   : context,
         map       : dummyMap3,
         unitSize  : 100,
-        unitDepth : 2,
+        unitDepth : 1.1,
         position  : {
             x : 50,
             y : 0
