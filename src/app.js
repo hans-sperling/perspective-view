@@ -104,7 +104,6 @@ window.PPV = (function() {
     function init(config) {
         CFG = mod.merge.deep(defaults, config);
 
-        console.log(CFG);
         initModules(CFG);
         runModules();
 
