@@ -1,34 +1,34 @@
 jQuery(document).ready(function() {
     'use strict';
 
-    var map = [
-            [2, 1, 1, 1, 1, 1, 2, 1, 1, 1, 1, 1, 3],
-            [1, 0, 0, 0, 0, 0, 2, 0, 0, 0, 0, 0, 1],
-            [1, 0, 1, 1, 0, 1, 2, 1, 0, 1, 1, 0, 1],
-            [1, 0, 2, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1],
-            [1, 0, 3, 0, 2, 0, 2, 2, 2, 2, 2, 0, 2],
-            [1, 0, 2, 0, 0, 0, 0, 0, 0, 0, 2, 0, 1],
-            [1, 0, 1, 1, 0, 2, 2, 2, 0, 0, 0, 0, 1],
-            [1, 0, 0, 0, 0, 2, 0, 2, 0, 2, 3, 0, 3],
-            [2, 0, 2, 2, 2, 2, 2, 2, 0, 1, 2, 0, 1],
-            [1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 1],
-            [1, 0, 2, 3, 2, 1, 0, 1, 2, 0, 1, 0, 1],
-            [1, 0, 0, 0, 0, 0, 0, 0, 2, 0, 0, 0, 1],
-            [3, 1, 1, 2, 1, 1, 1, 1, 2, 1, 1, 1, 3]
+    var map     = [
+            [2, 1, 1,     1,     1, 1,      2,     1,     1,     1, 1, 1, 3],
+            [1, 0, 0,     0,     0, 0,      [1,2], 0,     0,     0, 0, 0, 1],
+            [1, 0, 1,     1,     0, 1,      2,     1,     0,     1, 1, 0, 1],
+            [1, 0, 2,     0,     0, 0,      0,     0,     0,     0, 0, 0, 1],
+            [1, 0, [1,3], 0,     2, 0,      2,     2,     [1,2], 2, 2, 0, 2],
+            [1, 0, 2,     0,     0, 0,      0,     0,     0,     0, 2, 0, 1],
+            [1, 0, 1,     1,     0, 2,      [1,2], 2,     0,     0, 0, 0, 1],
+            [1, 0, 0,     0,     0, [1,2], 0,      [1,2], 0,     2, 3, 0, 3],
+            [2, 0, 2,     2,     2, 2,      [1,2], 2,     0,     1, 2, 0, 1],
+            [1, 0, 0,     0,     0, 0,      0,     0,     0,     0, 1, 0, 1],
+            [1, 0, 2,     [1,3], 2, 1,      0,     1,     2,     0, 1, 0, 1],
+            [1, 0, 0,     0,     0, 0,      0,     0,     [1,2], 0, 0, 0, 1],
+            [3, 1, 1,     2,     1, 1,      1,     1,     2,     1, 1, 1, 3]
         ],
-        $canvas      = $('#PerspectiveView'),
-        canvas       = $canvas[0],
-        context      = canvas.getContext('2d');
+        $canvas = $('#PerspectiveView'),
+        canvas  = $canvas[0],
+        context = canvas.getContext('2d');
 
     canvas.width  = canvas.offsetWidth;
     canvas.height = canvas.offsetHeight;
 
     var position = { x : 650, y : 750 },
         c        = 0.0027777777777778, // 1 / 360
-        m        = 1,
-        i        = -(c * m),
-        j        = -(c * m),
-        config   = {
+        m        = 1,                  // multiplier to rotate faster
+        i        = -(c * m),           // Initial circle position x
+        j        = -(c * m),           // Initial circle position y
+            config   = {
             canvas    : canvas,
             context   : context,
             map       : map,
@@ -56,12 +56,14 @@ jQuery(document).ready(function() {
         i += (c * m);
         j += (c * m);
 
+
         ppv.update({
             position : {
                 x : position.x + Math.floor(Math.cos(Math.PI * i) * 200),
                 y : position.y + Math.floor(Math.sin(Math.PI * j) * 200)
             }
         });
+        /**/
 
         ppv.render();
 
