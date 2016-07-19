@@ -1,4 +1,4 @@
-/*! perspective-view - Delivers a simple javascript methods pool for rendering grid based (array) maps into a virtual, perspective, 3d top view with canvas. - Version: 1.1.1 */
+/*! perspective-view - Delivers a simple javascript methods pool for rendering grid based (array) maps into a virtual, perspective, 3d top view with canvas. - Version: 1.1.2 */
 function PerspectiveView(configuration) {
     return window.PPV.init(configuration);
 }
@@ -466,6 +466,92 @@ window.PPV = (function() {
     }});
 })(window.PPV);
 
+/**
+ * Function pool to check variables for there type.
+ */
+
+// ---------------------------------------------------------------------------------------------------------------------
+
+/**
+ * Checks if the type of the given parameter is an array.
+ *
+ * @param  {*} value
+ * @return {boolean}
+ */
+function isArray(value) {
+    return Object.prototype.toString.call(value) == "[object Array]";
+}
+
+/**
+ * Checks if the type of the given parameter is undefined.
+ *
+ * @param  {*} value
+ * @return {boolean}
+ */
+function isUndefined(value) {
+    return Object.prototype.toString.call(value) == "[object Undefined]";
+}
+
+/**
+ * Checks if the type of the given parameter is null.
+ *
+ * @param  {*} value
+ * @return {boolean}
+ */
+function isNull(value) {
+    return Object.prototype.toString.call(value) == "[object Null]";
+}
+
+/**
+ * Checks if the type of the given parameter is a string.
+ *
+ * @param  {*} value
+ * @return {boolean}
+ */
+function isString(value) {
+    return Object.prototype.toString.call(value) == "[object String]";
+}
+
+/**
+ * Checks if the type of the given parameter is a number.
+ *
+ * @param  {*} value
+ * @return {boolean}
+ */
+function isNumber(value) {
+    return Object.prototype.toString.call(value) == "[object Number]";
+}
+
+/**
+ * Checks if the type of the given parameter is a boolean.
+ *
+ * @param  {*} value
+ * @return {boolean}
+ */
+function isBoolean(value) {
+    return Object.prototype.toString.call(value) == "[object Boolean]";
+}
+
+/**
+ * Checks if the type of the given parameter is an object.
+ *
+ * @param  {*} value
+ * @return {boolean}
+ */
+function isObject(value) {
+    return Object.prototype.toString.call(value) == "[object Object]";
+}
+
+/**
+ * Checks if the type of the given parameter is a function.
+ *
+ * @param  {*} value
+ * @return {boolean}
+ */
+function isFunction(value) {
+    return Object.prototype.toString.call(value) == "[object Function]";
+}
+
 ;(function color(ppv) {
     'use strict';
 
@@ -743,18 +829,19 @@ window.PPV = (function() {
     function getShiftByHeight(h) {
         var position    = CFG.position,
             unitSize    = CFG.unitSize,
-            newUnitSize = getUnitSizeByHeight(h);
-
-        if (h == 0) {
-            return {
+            newUnitSize = getUnitSizeByHeight(h),
+            baseShift   = {
                 x : (position.x % unitSize),
                 y : (position.y % unitSize)
             };
+
+        if (h == 0) {
+            return baseShift;
         }
         else {
             return {
-                x : Math.round((position.x % unitSize) + ((newUnitSize - unitSize) / (unitSize / (position.x % unitSize)))),
-                y : Math.round((position.y % unitSize) + ((newUnitSize - unitSize) / (unitSize / (position.y % unitSize))))
+                x : Math.round(baseShift.x + ((newUnitSize - unitSize) / (unitSize / baseShift.x))),
+                y : Math.round(baseShift.y + ((newUnitSize - unitSize) / (unitSize / baseShift.y)))
             };
         }
     }
@@ -776,56 +863,32 @@ window.PPV = (function() {
     function render() {
         var camera            = CFG.camera,
             renderOrderAmount = renderOrder.length,
-            vanishingTile     = getVanishingTile(),
-            backPath, frontPath,
-            eastPath, westPath, southPath, northPath,
-            h, i, x, y;
+            item, i, x, y;
 
         cleanCanvas();
 
         for (i = renderOrderAmount - 1; i >= 0; i--) {
-            x = renderOrder[i].x;
-            y = renderOrder[i].y;
-            h = renderMap[y][x];
+            x    = renderOrder[i].x;
+            y    = renderOrder[i].y;
+            item = renderMap[y][x];
 
-            if (h > 0) {
-                backPath  = getFrontPath(x, y, 0);
-
-                if (CFG.render.mode.toLowerCase() === 'flat') {
-                    renderShape(backPath, mod_Color.getFront());
-                    continue;
+            if (CFG.render.mode.toLowerCase() === 'flat') {
+                if (isNumber(item) && item > 0 || isArray(item)) {
+                    renderShape(getFrontPath(x, y, 0), mod_Color.getFront());
                 }
-                else if (CFG.render.mode.toLowerCase() === 'uniform') {
-                    h = 1;
+            }
+            else if (CFG.render.mode.toLowerCase() === 'uniform') {
+                if (isNumber(item) && item > 0 || isArray(item)) {
+                    renderObject(x, y, 0, 1);
                 }
-                /* else if (CFG.render.mode.toLowerCase() === 'normal') {
-                    //renderShape(backPath, mod_Color.getBase());
+            }
+            else { // if (CFG.render.mode.toLowerCase() === 'normal') {
+                if (isNumber(item) && item > 0) {
+                    renderObject(x, y, 0, item);
                 }
-                else {
-                    //renderShape(backPath, mod_Color.getBase());
-                }*/
-
-                frontPath = getFrontPath(x, y, h);
-
-                if (CFG.render.wireFrame || x < vanishingTile.x && renderMap[y][x + 1] !== undefined && renderMap[y][x + 1] < h) {
-                    eastPath = getEastPath(backPath, frontPath);
-                    renderShape(eastPath, mod_Color.getEast());
+                else if (isArray(item) && item.length >= 2) {
+                    renderObject(x, y, item[0], item[1]);
                 }
-                if (CFG.render.wireFrame || x > vanishingTile.x && renderMap[y][x - 1] !== undefined && renderMap[y][x - 1] < h) {
-                    westPath = getWestPath(backPath, frontPath);
-                    renderShape(westPath, mod_Color.getWest());
-                }
-
-                if (CFG.render.wireFrame || y < vanishingTile.y && renderMap[y + 1] !== undefined && renderMap[y + 1][x] < h) {
-                    southPath = getSouthPath(backPath, frontPath);
-                    renderShape(southPath, mod_Color.getSouth());
-                }
-                if (CFG.render.wireFrame || y > vanishingTile.y && renderMap[y - 1] !== undefined && renderMap[y - 1][x] < h) {
-                    northPath = getNorthPath(backPath, frontPath);
-                    renderShape(northPath, mod_Color.getNorth());
-                }
-
-                renderShape(frontPath, mod_Color.getFront());
             }
         }
 
@@ -840,6 +903,36 @@ window.PPV = (function() {
         if (CFG.render.camera) {
             mod_canvasHelper.drawCamera(camera);
         }
+    }
+
+
+    function renderObject(x, y, h1, h2) {
+        var vanishingTile     = getVanishingTile(),
+            backPath, frontPath,
+            eastPath, westPath, southPath, northPath;
+
+        backPath  = getFrontPath(x, y, h1);
+        frontPath = getFrontPath(x, y, h2);
+
+        if (CFG.render.wireFrame || x < vanishingTile.x) {
+            eastPath = getEastPath(backPath, frontPath);
+            renderShape(eastPath, mod_Color.getEast());
+        }
+        if (CFG.render.wireFrame || x > vanishingTile.x) {
+            westPath = getWestPath(backPath, frontPath);
+            renderShape(westPath, mod_Color.getWest());
+        }
+
+        if (CFG.render.wireFrame || y < vanishingTile.y) {
+            southPath = getSouthPath(backPath, frontPath);
+            renderShape(southPath, mod_Color.getSouth());
+        }
+        if (CFG.render.wireFrame || y > vanishingTile.y) {
+            northPath = getNorthPath(backPath, frontPath);
+            renderShape(northPath, mod_Color.getNorth());
+        }
+
+        renderShape(frontPath, mod_Color.getFront());
     }
 
 
