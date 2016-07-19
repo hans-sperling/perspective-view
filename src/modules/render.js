@@ -9,10 +9,7 @@
         CFG              = {},
         renderMap        = [],
         renderOrder      = [],
-        buffer           = 0,
-        doNotFill        = 0,
-        renderCamera     = 0,
-        renderGrid       = 0;
+        buffer           = 0;
 
     // ------------------------------------------------------------------------------------------------ MODULE INTERFACE
 
@@ -101,24 +98,37 @@
 
             if (h > 0) {
                 backPath  = getFrontPath(x, y, 0);
+
+                if (CFG.render.mode.toLowerCase() === 'flat') {
+                    renderShape(backPath, mod_Color.getFront());
+                    continue;
+                }
+                else if (CFG.render.mode.toLowerCase() === 'uniform') {
+                    h = 1;
+                }
+                /* else if (CFG.render.mode.toLowerCase() === 'normal') {
+                    //renderShape(backPath, mod_Color.getBase());
+                }
+                else {
+                    //renderShape(backPath, mod_Color.getBase());
+                }*/
+
                 frontPath = getFrontPath(x, y, h);
 
-                renderShape(backPath, mod_Color.getBase());
-
-                if (x < vanishingTile.x && renderMap[y][x + 1] !== undefined && renderMap[y][x + 1] < h) {
+                if (CFG.render.wireFrame || x < vanishingTile.x && renderMap[y][x + 1] !== undefined && renderMap[y][x + 1] < h) {
                     eastPath = getEastPath(backPath, frontPath);
                     renderShape(eastPath, mod_Color.getEast());
                 }
-                else if (x > vanishingTile.x && renderMap[y][x - 1] !== undefined && renderMap[y][x - 1] < h) {
+                if (CFG.render.wireFrame || x > vanishingTile.x && renderMap[y][x - 1] !== undefined && renderMap[y][x - 1] < h) {
                     westPath = getWestPath(backPath, frontPath);
                     renderShape(westPath, mod_Color.getWest());
                 }
 
-                if (y < vanishingTile.y && renderMap[y + 1] !== undefined && renderMap[y + 1][x] < h) {
+                if (CFG.render.wireFrame || y < vanishingTile.y && renderMap[y + 1] !== undefined && renderMap[y + 1][x] < h) {
                     southPath = getSouthPath(backPath, frontPath);
                     renderShape(southPath, mod_Color.getSouth());
                 }
-                else if (y > vanishingTile.y && renderMap[y - 1] !== undefined && renderMap[y - 1][x] < h) {
+                if (CFG.render.wireFrame || y > vanishingTile.y && renderMap[y - 1] !== undefined && renderMap[y - 1][x] < h) {
                     northPath = getNorthPath(backPath, frontPath);
                     renderShape(northPath, mod_Color.getNorth());
                 }
@@ -127,7 +137,7 @@
             }
         }
 
-        if (renderGrid) {
+        if (CFG.render.grid) {
             var shift       = getShiftByHeight(0),
                 newUnitSize = getUnitSizeByHeight(0);
 
@@ -135,7 +145,7 @@
             mod_canvasHelper.drawCanvasGrid(camera, newUnitSize, shift);
         }
 
-        if (renderCamera) {
+        if (CFG.render.camera) {
             mod_canvasHelper.drawCamera(camera);
         }
     }
@@ -157,7 +167,7 @@
         CFG.context.closePath();
         CFG.context.stroke();
 
-        if (!doNotFill) {
+        if (!CFG.render.wireFrame) {
             CFG.context.fill();
         }
     }
