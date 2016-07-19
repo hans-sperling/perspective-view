@@ -28,6 +28,12 @@ window.PPV = (function() {
                     x : 400,
                     y : 300
                 }
+            },
+            render : {
+                mode      : 'normal', // flat, normal, uniform
+                wireFrame : false,
+                grid      : false,
+                camera    : false
             }
         };
 
