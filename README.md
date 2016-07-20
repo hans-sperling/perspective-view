@@ -9,35 +9,53 @@ with canvas.
 
 ## Initialize
 
+The fast and simple way:
+```javascript
+    var ppv = new PerspectiveView({                                       // HTML Object of the canvas
+        canvas    : document.getElementById('myCanvas'),                  // The 2d context of the canvas
+        context   : document.getElementById('myCanvas').getContext('2d'), // Your complete map
+        map       : [
+            [2, 0, 1, 0, 2],
+            [0, 0, 0, 0, 0],
+            [1, 0, 3, 0, 1],
+            [0, 0, 0, 0, 0],
+            [2, 0, 1, 0, 2]
+        ]
+    });
+
+    ppv.render(); // Render the perspective-view of the given map
+```
+
+The detailed way:
 ```javascript
 var config = {
-    canvas    : document.getElementById('myCanvas'),  // HTML Object of the canvas
-    context   : canvas.getContext('2d'),              // The 2d context of the canvas
-    map       : [                                     // Your complete map
+    canvas    : document.getElementById('myCanvas'),                 // HTML Object of the canvas
+    context   : ocument.getElementById('myCanvas').getContext('2d'), // The 2d context of the canvas
+    map       : [                                                    // Your complete map
         [2, 0, 1, 0, 2], 
         [0, 0, 0, 0, 0],
         [1, 0, 3, 0, 1],
         [0, 0, 0, 0, 0],
         [2, 0, 1, 0, 2]],
-        unitSize  : 100,                              // Size of a cel in the grid
-        unitDepth : 1.1,                              // Factor to set the depth (height) of an object
-        position  : {                                 // Position on the map in px for the center of the visible part
+        unitSize  : 100, // Size of a cel in the grid
+        unitDepth : 1.1, // Factor to set the depth (height) of an object
+        position  : {    // Position on the map in px for the center of the visible part
         x : 250,
         y : 250
     },
     camera    : {
-        width    : 800,                               // canvas.width
-        height   : 600,                               // canvas.height
+        width    : 800, // canvas.width
+        height   : 600, // canvas.height
         position : {
-            x : 400,                                  // (canvas.width  / 2)
-            y : 300                                   // (canvas.height / 2)
+            x : 400,    // (canvas.width  / 2)
+            y : 300     // (canvas.height / 2)
         }
     },
     render : {
-        mode      : 'default',                        // [flat, uniform, default]
-        wireFrame : false,                            // Show map as wire frame
-        grid      : false,                            // Display a grid for better map view
-        camera    : false                             // Draw the camera into the canvas
+        mode      : 'default', // [flat, uniform, default]
+        wireFrame : false,     // Show map as wire frame
+        grid      : false,     // Display a grid for better map view
+        camera    : false      // Draw the camera into the canvas
     },
     color : {
         mode        : 'default',                      // [default] - other modes will be following
@@ -55,9 +73,9 @@ var config = {
     }
 }
 
-var ppv = new PerspectiveView(config);               // Create an instance of perspective-view with your config
+var ppv = new PerspectiveView(config); // Create an instance of perspective-view with your config
 
-ppv.render();                                        // Render the perspective-view of the given map
+ppv.render();                          // Render the perspective-view of the given map
 
 ```
 
@@ -167,7 +185,7 @@ ppv.render();                                        // Render the perspective-v
 **Example**:
 ```javascript
     // Default color module, base object color, no space color,
-    // Pseudo lighting from the top-south-east (like  midday),
+    // pseudo lighting from the top-south-east (like  midday),
     // objects are be brighter, the higher they are
     ppv.update({
         color : {
@@ -196,7 +214,7 @@ ppv.render();                                        // Render the perspective-v
 **Example**:
 ```javascript
     ppv.update({
-        context : canvas.getContext('2d'),
+        context : document.getElementById('myCanvas').getContext('2d'),
     });
 ```
 
