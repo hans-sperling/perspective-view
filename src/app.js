@@ -36,6 +36,7 @@ window.PPV = (function() {
                 camera    : false
             },
             color : {
+                mode  : 'color',
                 back  : {r: 150, g: 150, b: 150, a: 0},
                 east  : {r: 159, g: 159, b: 159, a: 1},
                 front : {r: 207, g: 207, b: 207, a: 1},
