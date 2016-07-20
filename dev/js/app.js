@@ -45,10 +45,13 @@ jQuery(document).ready(function() {
                 }
             },
             render : {
-                mode      : 'default', // flat, default, uniform
-                wireFrame : false,
-                grid      : false,
-                camera    : false
+                mode        : 'default', // flat, default, uniform
+                back        : false,
+                front       : true,
+                hiddenWalls : false,
+                wireFrame   : false,
+                grid        : false,
+                camera      : false
             },
             color : {
                 mode        : 'default', // default, w.i.p
