@@ -52,10 +52,14 @@ var config = {
         }
     },
     render : {
-        mode      : 'default', // [flat, uniform, default]
-        wireFrame : false,     // Show map as wire frame
-        grid      : false,     // Display a grid for better map view
-        camera    : false      // Draw the camera into the canvas
+        back        : false,     // Toggle drawing the back of an object
+        camera      : false,     // Toggle drawing the camera into the canvas
+        front       : true,      // Toggle drawing the front of an object
+        grid        : false,     // Toggle drawing a grid for better map view
+        hiddenWalls : false,     // Toggle drawing hidden walls - necessary if the object color is transparent
+        mode        : 'default', // Change rendering mode [flat, uniform, default]
+        walls       : true,      // Toggle drawing walls generally
+        wireFrame   : false      // Toggle drawing object as wire frame
     },
     color : {
         mode        : 'default',                      // [default] - other modes will be following
@@ -103,7 +107,7 @@ ppv.render();                          // Render the perspective-view of the giv
 ```
 
 ### render()
-- Description: Renders the ma with the currently set config.
+- Description: Renders the ma with the currently set config
 - Argument(s): `void`
 - Return: `void`
 
@@ -116,7 +120,7 @@ ppv.render();                          // Render the perspective-view of the giv
 ## Configuration
 
 ### camera
-- Description: Properties of the camera (the visible part of the map in the canvas).
+- Description: Properties of the camera (the visible part of the map in the canvas)
 - Type: `object`
   - Property `number` **camera.width**: A regular value is i.e. _canvas.width_
   - Property `number` **camera.height**: A regular value is i.e. _canvas.height_
@@ -207,7 +211,7 @@ ppv.render();                          // Render the perspective-view of the giv
 
 
 ### context
-- Description: 2d context of the canvas.
+- Description: 2d context of the canvas
 - Type: `html-object`
 - **necessary!**
 
@@ -220,7 +224,7 @@ ppv.render();                          // Render the perspective-view of the giv
 
 
 ### map
-- Description: 2d-Array of the map, where 0 represents space and 1 or higher for an object with the given height.
+- Description: 2d-Array of the map, where 0 represents space and 1 or higher for an object with the given height
 - Type: `array`
 - **necessary!**
 
@@ -273,11 +277,14 @@ ppv.render();                          // Render the perspective-view of the giv
 ### render
 - Description: Config to change the render option
 - Type: `object`
-  - Property `string` **render.mode**: [flat, uniform, default] _flat_ will draw shapes in unitSize, _uniform_ will draw
-    objects in the same height, and in _default_ mode the objects will be drawn as high as they are declared in the map
-  - Property `boolean` **render.wireFrame**: Renders all objects as wire frame object instead of filling them 
-  - Property `boolean` **render.grid**: Draws a grid in unitSize into the canvas
-  - Property `boolean` **render.camera**: Draws the camera into the canvas
+  - Property `boolean` **render.back**: Toggle drawing the back of an object
+  - Property `boolean` **render.camera**: Toggle drawing the camera into the canvas
+  - Property `boolean` **render.front**: Toggle drawing the front of an object
+  - Property `boolean` **render.grid**: Toggle drawing a grid for better map view
+  - Property `boolean` **render.hiddenWalls**: Toggle drawing hidden walls - necessary if the object color is transparent
+  - Property `string` **render.mode**: [flat, uniform, default] _flat_ will draw shapes in unitSize, _uniform_ will draw objects in the same height, and in _default_ mode the objects will be drawn as high as they are declared in the map
+  - Property `boolean` **render.walls**: Toggle drawing walls generally
+  - Property `boolean` **render.wireFrame**: Toggle drawing object as wire frame
 
 **Example**:
 ```javascript
@@ -305,13 +312,24 @@ ppv.render();                          // Render the perspective-view of the giv
             grid      : true,
             camera    : true
         },
-});
+    });
+
+    // Render all objects as glass-boxes/transparent
+    ppv.update({
+        render {
+            back        : true,
+            hiddenWalls : true,
+            mode        : 'default',
+        },
+        color : {
+            objectColor : {r: 200, g: 200, b: 200, a: 0.5}
+        }
+    });
 ```
 
 
 ### unitDepth
-- Description: Describes a factor for the depth effect/height ob an object where 1 represents a flat object in unitSize 
-  and 2 represents a double sized object front. Regular values are near by 1.
+- Description: Describes a factor for the depth effect/height ob an object where 1 represents a flat object in unitSize and 2 represents a double sized object front. Regular values are near by 1.
 - Type: `number`
 - _recommended_
 
@@ -330,7 +348,7 @@ ppv.render();                          // Render the perspective-view of the giv
 
 
 ### unitSize
-- Description: X any Y size of an unit (single object) in your mal given in px.
+- Description: X any Y size of an unit (single object) in your mal given in px
 - Type: `number`
 - _recommended_ 
 
