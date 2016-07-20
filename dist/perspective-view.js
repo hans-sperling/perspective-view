@@ -1,4 +1,4 @@
-/*! perspective-view - Delivers a simple javascript methods pool for rendering grid based (array) maps into a virtual, perspective, 3d top view with canvas. - Version: 1.2.0 */
+/*! perspective-view - Delivers a simple javascript methods pool for rendering grid based (array) maps into a virtual, perspective, 3d top view with canvas. - Version: 1.3.0 */
 function PerspectiveView(configuration) {
     return window.PPV.init(configuration);
 }
@@ -16,6 +16,8 @@ window.PPV = (function() {
             util         : {}
         },
         defaults = {
+            colorModule : {},
+            // -------------
             canvas    : null,
             context   : null,
             map       : [[1]],
@@ -37,13 +39,18 @@ window.PPV = (function() {
                 camera    : false
             },
             color : {
-                back  : {r: 150, g: 150, b: 150, a: 0},
-                east  : {r: 159, g: 159, b: 159, a: 1},
-                front : {r: 207, g: 207, b: 207, a: 1},
-                north : {r: 127, g: 127, b: 127, a: 1},
-                south : {r: 223, g: 223, b: 223, a: 1},
-                space : {r: 255, g: 255, b: 255, a: 0},
-                west  : {r: 191, g: 191, b: 191, a: 1}
+                mode        : 'default',
+                objectColor : {r: 200, g: 200, b: 200, a: 1},
+                spaceColor  : {r: 255, g: 255, b: 255, a: 0},
+                lighting    : {
+                    base   : 0,
+                    east   : -10,
+                    height : 2,
+                    front  : 10,
+                    north  : -20,
+                    south  : 0,
+                    west   : -15
+                }
             }
         };
 
@@ -113,6 +120,10 @@ window.PPV = (function() {
 
     function init(config) {
         CFG = mod.merge.deep(defaults, config);
+
+        if (CFG.color.mode.toLowerCase() === 'default') {
+            CFG.colorModule = 'color';
+        }
 
         initModules(CFG);
         runModules();
@@ -586,66 +597,68 @@ function isFunction(value) {
 
     // --------------------------------------------------------------------------------------------------------- METHODS
 
-    function getBase() {
+
+    function getColor(lighting) {
+        var color = CFG.color.objectColor;
+
         return 'rgba('+
-            CFG.color.back.r + ', ' +
-            CFG.color.back.g + ', ' +
-            CFG.color.back.b + ', ' +
-            CFG.color.back.a + ')';
+            Math.round(color.r + (2.55 * lighting)) + ', ' +
+            Math.round(color.g + (2.55 * lighting)) + ', ' +
+            Math.round(color.b + (2.55 * lighting)) + ', ' +
+            color.a + ')';
+    }
+
+
+    function getBase() {
+        var lighting = CFG.color.lighting.base;
+
+        return getColor(lighting);
     }
 
 
     function getSpace() {
+        var color = CFG.color.lightingColor.spaceColor;
+
         return 'rgba('+
-            CFG.color.space.r + ', ' +
-            CFG.color.space.g + ', ' +
-            CFG.color.space.b + ', ' +
-            CFG.color.space.a + ')';
+            color.r + ', ' +
+            color.g + ', ' +
+            color.b + ', ' +
+            color.a + ')';
     }
 
 
-    function getFront() {
-        return 'rgba('+
-            CFG.color.front.r + ', ' +
-            CFG.color.front.g + ', ' +
-            CFG.color.front.b + ', ' +
-            CFG.color.front.a + ')';
+    function getFront(h) {
+        var lighting = CFG.color.lighting.front + (h * CFG.color.lighting.height);
+
+        return getColor(lighting);
     }
 
 
     function getNorth() {
-        return 'rgba('+
-            CFG.color.north.r + ', ' +
-            CFG.color.north.g + ', ' +
-            CFG.color.north.b + ', ' +
-            CFG.color.north.a + ')';
+        var lighting = CFG.color.lighting.north;
+
+        return getColor(lighting);
     }
 
 
     function getEast() {
-        return 'rgba('+
-            CFG.color.east.r + ', ' +
-            CFG.color.east.g + ', ' +
-            CFG.color.east.b + ', ' +
-            CFG.color.east.a + ')';
+        var lighting = CFG.color.lighting.east;
+
+        return getColor(lighting);
     }
 
 
     function getSouth() {
-        return 'rgba('+
-            CFG.color.south.r + ', ' +
-            CFG.color.south.g + ', ' +
-            CFG.color.south.b + ', ' +
-            CFG.color.south.a + ')';
+        var lighting = CFG.color.lighting.south;
+
+        return getColor(lighting);
     }
 
 
     function getWest() {
-        return 'rgba('+
-            CFG.color.west.r + ', ' +
-            CFG.color.west.g + ', ' +
-            CFG.color.west.b + ', ' +
-            CFG.color.west.a + ')';
+        var lighting = CFG.color.lighting.west;
+
+        return getColor(lighting);
     }
 
     // --------------------------------------------------------------------------------------------------------- RETURNS
@@ -796,7 +809,7 @@ function isFunction(value) {
 
     function init(config) {
         mod_Map          = ppv.modules.map;
-        mod_Color        = ppv.modules.color;
+        mod_Color        = ppv.modules[config.colorModule];
         mod_canvasHelper = ppv.modules.canvasHelper;
 
         update(config);
@@ -877,7 +890,7 @@ function isFunction(value) {
 
             if (CFG.render.mode.toLowerCase() === 'flat') {
                 if (isNumber(item) && item > 0 || isArray(item)) {
-                    renderShape(getFrontPath(x, y, 0), mod_Color.getFront());
+                    renderShape(getFrontPath(x, y, 0), mod_Color.getFront(0));
                 }
             }
             else if (CFG.render.mode.toLowerCase() === 'uniform') {
@@ -885,7 +898,7 @@ function isFunction(value) {
                     renderObject(x, y, 0, 1);
                 }
             }
-            else { // if (CFG.render.mode.toLowerCase() === 'normal') {
+            else { // if (CFG.render.mode.toLowerCase() === 'default') {
                 if (isNumber(item) && item > 0) {
                     renderObject(x, y, 0, item);
                 }
@@ -935,7 +948,7 @@ function isFunction(value) {
             renderShape(northPath, mod_Color.getNorth());
         }
 
-        renderShape(frontPath, mod_Color.getFront());
+        renderShape(frontPath, mod_Color.getFront(h2));
     }
 
 
