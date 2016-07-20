@@ -32,17 +32,21 @@ window.PPV = (function() {
                 }
             },
             render : {
-                mode      : 'normal', // flat, normal, uniform
-                wireFrame : false,
-                grid      : false,
-                camera    : false
+                back        : false,
+                camera      : false,
+                front       : true,
+                grid        : false,
+                hiddenWalls : false,
+                mode        : 'default',
+                walls       : true,
+                wireFrame   : false
             },
             color : {
                 mode        : 'default',
                 objectColor : {r: 200, g: 200, b: 200, a: 1},
                 spaceColor  : {r: 255, g: 255, b: 255, a: 0},
                 lighting    : {
-                    base   : 0,
+                    back   : 0,
                     east   : -10,
                     height : 2,
                     front  : 10,

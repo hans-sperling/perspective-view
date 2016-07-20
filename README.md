@@ -11,10 +11,10 @@ with canvas.
 
 The fast and simple way:
 ```javascript
-    var ppv = new PerspectiveView({                                       // HTML Object of the canvas
-        canvas    : document.getElementById('myCanvas'),                  // The 2d context of the canvas
-        context   : document.getElementById('myCanvas').getContext('2d'), // Your complete map
-        map       : [
+    var ppv = new PerspectiveView({
+        canvas    : document.getElementById('myCanvas'),                  // HTML Object of the canvas
+        context   : document.getElementById('myCanvas').getContext('2d'), // The 2d context of the canvas
+        map       : [                                                     // Your complete map
             [2, 0, 1, 0, 2],
             [0, 0, 0, 0, 0],
             [1, 0, 3, 0, 1],
@@ -52,17 +52,21 @@ var config = {
         }
     },
     render : {
-        mode      : 'default', // [flat, uniform, default]
-        wireFrame : false,     // Show map as wire frame
-        grid      : false,     // Display a grid for better map view
-        camera    : false      // Draw the camera into the canvas
+        back        : false,     // Toggle drawing the back of an object
+        camera      : false,     // Toggle drawing the camera into the canvas
+        front       : true,      // Toggle drawing the front of an object
+        grid        : false,     // Toggle drawing a grid for better map view
+        hiddenWalls : false,     // Toggle drawing hidden walls - necessary if the object color is transparent
+        mode        : 'default', // Change rendering mode [flat, uniform, default]
+        walls       : true,      // Toggle drawing walls generally
+        wireFrame   : false      // Toggle drawing object as wire frame
     },
     color : {
         mode        : 'default',                      // [default] - other modes will be following
         objectColor : {r: 200, g: 200, b: 200, a: 1}, // RGBA-color of an object
         spaceColor  : {r: 255, g: 255, b: 255, a: 0}, // RGBA-color of empty space
         lighting    : {                               // Lighting describes how much percent a specific shape will
-            base   : 0,                               // be deviates from the objectColor
+            back   : 0,                               // be deviates from the objectColor
             east   : -10,
             front  : 0,
             height : 2,                               // Special - The higher an object is the brighter/darker the
@@ -103,7 +107,7 @@ ppv.render();                          // Render the perspective-view of the giv
 ```
 
 ### render()
-- Description: Renders the ma with the currently set config.
+- Description: Renders the ma with the currently set config
 - Argument(s): `void`
 - Return: `void`
 
@@ -116,7 +120,7 @@ ppv.render();                          // Render the perspective-view of the giv
 ## Configuration
 
 ### camera
-- Description: Properties of the camera (the visible part of the map in the canvas).
+- Description: Properties of the camera (the visible part of the map in the canvas)
 - Type: `object`
   - Property `number` **camera.width**: A regular value is i.e. _canvas.width_
   - Property `number` **camera.height**: A regular value is i.e. _canvas.height_
@@ -173,7 +177,7 @@ ppv.render();                          // Render the perspective-view of the giv
   - Property `object` **color.objectColor**: RGBA-Color-Object of an object
   - Property `object` **color.spaceColor**: RGBA-Color-Object of empty space
   - Property `object` **color.lighting**: Percentage deviation of the objectColor for the shapes
-    - Property `number` **color.lighting.base**: Percentage deviation of the base shape
+    - Property `number` **color.lighting.back**: Percentage deviation of the back shape
     - Property `number` **color.lighting.east**: Percentage deviation of the east shape
     - Property `number` **color.lighting.front**: Percentage deviation of the front shape
     - Property `number` **color.lighting.height**: Percentage deviation of the front shape plus the height of an object
@@ -193,7 +197,7 @@ ppv.render();                          // Render the perspective-view of the giv
             objectColor : {r: 200, g: 200, b: 200, a: 1},
             spaceColor  : {r: 255, g: 255, b: 255, a: 0},
             lighting    : {
-                base   : 0,
+                back   : 0,
                 east   : -10,
                 front  : 0,
                 height : 2,
@@ -207,7 +211,7 @@ ppv.render();                          // Render the perspective-view of the giv
 
 
 ### context
-- Description: 2d context of the canvas.
+- Description: 2d context of the canvas
 - Type: `html-object`
 - **necessary!**
 
@@ -220,7 +224,7 @@ ppv.render();                          // Render the perspective-view of the giv
 
 
 ### map
-- Description: 2d-Array of the map, where 0 represents space and 1 or higher for an object with the given height.
+- Description: 2d-Array of the map, where 0 represents space and 1 or higher for an object with the given height
 - Type: `array`
 - **necessary!**
 
@@ -273,11 +277,14 @@ ppv.render();                          // Render the perspective-view of the giv
 ### render
 - Description: Config to change the render option
 - Type: `object`
-  - Property `string` **render.mode**: [flat, uniform, default] _flat_ will draw shapes in unitSize, _uniform_ will draw
-    objects in the same height, and in _default_ mode the objects will be drawn as high as they are declared in the map
-  - Property `boolean` **render.wireFrame**: Renders all objects as wire frame object instead of filling them 
-  - Property `boolean` **render.grid**: Draws a grid in unitSize into the canvas
-  - Property `boolean` **render.camera**: Draws the camera into the canvas
+  - Property `boolean` **render.back**: Toggle drawing the back of an object
+  - Property `boolean` **render.camera**: Toggle drawing the camera into the canvas
+  - Property `boolean` **render.front**: Toggle drawing the front of an object
+  - Property `boolean` **render.grid**: Toggle drawing a grid for better map view
+  - Property `boolean` **render.hiddenWalls**: Toggle drawing hidden walls - necessary if the object color is transparent
+  - Property `string` **render.mode**: [flat, uniform, default] _flat_ will draw shapes in unitSize, _uniform_ will draw objects in the same height, and in _default_ mode the objects will be drawn as high as they are declared in the map
+  - Property `boolean` **render.walls**: Toggle drawing walls generally
+  - Property `boolean` **render.wireFrame**: Toggle drawing object as wire frame
 
 **Example**:
 ```javascript
@@ -305,13 +312,24 @@ ppv.render();                          // Render the perspective-view of the giv
             grid      : true,
             camera    : true
         },
-});
+    });
+
+    // Render all objects as glass-boxes/transparent
+    ppv.update({
+        render {
+            back        : true,
+            hiddenWalls : true,
+            mode        : 'default',
+        },
+        color : {
+            objectColor : {r: 200, g: 200, b: 200, a: 0.5}
+        }
+    });
 ```
 
 
 ### unitDepth
-- Description: Describes a factor for the depth effect/height ob an object where 1 represents a flat object in unitSize 
-  and 2 represents a double sized object front. Regular values are near by 1.
+- Description: Describes a factor for the depth effect/height ob an object where 1 represents a flat object in unitSize and 2 represents a double sized object front. Regular values are near by 1.
 - Type: `number`
 - _recommended_
 
@@ -330,7 +348,7 @@ ppv.render();                          // Render the perspective-view of the giv
 
 
 ### unitSize
-- Description: X any Y size of an unit (single object) in your mal given in px.
+- Description: X any Y size of an unit (single object) in your mal given in px
 - Type: `number`
 - _recommended_ 
 

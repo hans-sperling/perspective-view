@@ -1,4 +1,4 @@
-/*! perspective-view - Delivers a simple javascript methods pool for rendering grid based (array) maps into a virtual, perspective, 3d top view with canvas. - Version: 1.3.2 */
+/*! perspective-view - Delivers a simple javascript methods pool for rendering grid based (array) maps into a virtual, perspective, 3d top view with canvas. - Version: 1.4.0 */
 function PerspectiveView(configuration) {
     return window.PPV.init(configuration);
 }
@@ -33,17 +33,21 @@ window.PPV = (function() {
                 }
             },
             render : {
-                mode      : 'normal', // flat, normal, uniform
-                wireFrame : false,
-                grid      : false,
-                camera    : false
+                back        : false,
+                camera      : false,
+                front       : true,
+                grid        : false,
+                hiddenWalls : false,
+                mode        : 'default',
+                walls       : true,
+                wireFrame   : false
             },
             color : {
                 mode        : 'default',
                 objectColor : {r: 200, g: 200, b: 200, a: 1},
                 spaceColor  : {r: 255, g: 255, b: 255, a: 0},
                 lighting    : {
-                    base   : 0,
+                    back   : 0,
                     east   : -10,
                     height : 2,
                     front  : 10,
@@ -609,8 +613,8 @@ function isFunction(value) {
     }
 
 
-    function getBase() {
-        var lighting = CFG.color.lighting.base;
+    function getBack() {
+        var lighting = CFG.color.lighting.back;
 
         return getColor(lighting);
     }
@@ -668,7 +672,7 @@ function isFunction(value) {
         init     : init,
         run      : run,
         update   : update,
-        getBase  : getBase,
+        getBack  : getBack,
         getEast  : getEast,
         getFront : getFront,
         getNorth : getNorth,
@@ -875,6 +879,7 @@ function isFunction(value) {
         }
     }
 
+    // ------------------------------------------------------------------------------------------------ RENDER
 
     function render() {
         var camera            = CFG.camera,
@@ -923,32 +928,39 @@ function isFunction(value) {
 
 
     function renderObject(x, y, h1, h2) {
-        var vanishingTile     = getVanishingTile(),
+        var vanishingTile = getVanishingTile(),
             backPath, frontPath,
             eastPath, westPath, southPath, northPath;
 
         backPath  = getFrontPath(x, y, h1);
         frontPath = getFrontPath(x, y, h2);
 
-        if (CFG.render.wireFrame || x < vanishingTile.x) {
-            eastPath = getEastPath(backPath, frontPath);
-            renderShape(eastPath, mod_Color.getEast());
-        }
-        if (CFG.render.wireFrame || x > vanishingTile.x) {
-            westPath = getWestPath(backPath, frontPath);
-            renderShape(westPath, mod_Color.getWest());
+        if (CFG.render.back) {
+            renderShape(backPath, mod_Color.getBack());
         }
 
-        if (CFG.render.wireFrame || y < vanishingTile.y) {
-            southPath = getSouthPath(backPath, frontPath);
-            renderShape(southPath, mod_Color.getSouth());
-        }
-        if (CFG.render.wireFrame || y > vanishingTile.y) {
-            northPath = getNorthPath(backPath, frontPath);
-            renderShape(northPath, mod_Color.getNorth());
+        if (CFG.render.walls) {
+            if (CFG.render.wireFrame || CFG.render.hiddenWalls || x < vanishingTile.x) {
+                eastPath = getEastPath(backPath, frontPath);
+                renderShape(eastPath, mod_Color.getEast());
+            }
+            if (CFG.render.wireFrame || CFG.render.hiddenWalls || x > vanishingTile.x) {
+                westPath = getWestPath(backPath, frontPath);
+                renderShape(westPath, mod_Color.getWest());
+            }
+            if (CFG.render.wireFrame || CFG.render.hiddenWalls || y < vanishingTile.y) {
+                southPath = getSouthPath(backPath, frontPath);
+                renderShape(southPath, mod_Color.getSouth());
+            }
+            if (CFG.render.wireFrame || CFG.render.hiddenWalls || y > vanishingTile.y) {
+                northPath = getNorthPath(backPath, frontPath);
+                renderShape(northPath, mod_Color.getNorth());
+            }
         }
 
-        renderShape(frontPath, mod_Color.getFront(h2));
+        if (CFG.render.front) {
+            renderShape(frontPath, mod_Color.getFront(h2));
+        }
     }
 
 

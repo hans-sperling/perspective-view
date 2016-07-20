@@ -45,17 +45,21 @@ jQuery(document).ready(function() {
                 }
             },
             render : {
-                mode      : 'default', // flat, default, uniform
-                wireFrame : false,
-                grid      : false,
-                camera    : false
+                back        : false,
+                camera      : false,
+                front       : true,
+                grid        : false,
+                hiddenWalls : false,
+                mode        : 'default', // flat, uniform, default
+                walls       : true,
+                wireFrame   : false
             },
             color : {
                 mode        : 'default', // default, w.i.p
                 objectColor : {r: 200, g: 200, b: 200, a: 1},
                 spaceColor  : {r: 255, g: 255, b: 255, a: 0},
                 lighting    : {
-                    base   : 0,
+                    back   : -20,
                     east   : -10,
                     front  : 0,
                     height : 2,

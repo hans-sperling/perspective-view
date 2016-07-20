@@ -81,6 +81,7 @@
         }
     }
 
+    // ------------------------------------------------------------------------------------------------ RENDER
 
     function render() {
         var camera            = CFG.camera,
@@ -129,32 +130,39 @@
 
 
     function renderObject(x, y, h1, h2) {
-        var vanishingTile     = getVanishingTile(),
+        var vanishingTile = getVanishingTile(),
             backPath, frontPath,
             eastPath, westPath, southPath, northPath;
 
         backPath  = getFrontPath(x, y, h1);
         frontPath = getFrontPath(x, y, h2);
 
-        if (CFG.render.wireFrame || x < vanishingTile.x) {
-            eastPath = getEastPath(backPath, frontPath);
-            renderShape(eastPath, mod_Color.getEast());
-        }
-        if (CFG.render.wireFrame || x > vanishingTile.x) {
-            westPath = getWestPath(backPath, frontPath);
-            renderShape(westPath, mod_Color.getWest());
+        if (CFG.render.back) {
+            renderShape(backPath, mod_Color.getBack());
         }
 
-        if (CFG.render.wireFrame || y < vanishingTile.y) {
-            southPath = getSouthPath(backPath, frontPath);
-            renderShape(southPath, mod_Color.getSouth());
-        }
-        if (CFG.render.wireFrame || y > vanishingTile.y) {
-            northPath = getNorthPath(backPath, frontPath);
-            renderShape(northPath, mod_Color.getNorth());
+        if (CFG.render.walls) {
+            if (CFG.render.wireFrame || CFG.render.hiddenWalls || x < vanishingTile.x) {
+                eastPath = getEastPath(backPath, frontPath);
+                renderShape(eastPath, mod_Color.getEast());
+            }
+            if (CFG.render.wireFrame || CFG.render.hiddenWalls || x > vanishingTile.x) {
+                westPath = getWestPath(backPath, frontPath);
+                renderShape(westPath, mod_Color.getWest());
+            }
+            if (CFG.render.wireFrame || CFG.render.hiddenWalls || y < vanishingTile.y) {
+                southPath = getSouthPath(backPath, frontPath);
+                renderShape(southPath, mod_Color.getSouth());
+            }
+            if (CFG.render.wireFrame || CFG.render.hiddenWalls || y > vanishingTile.y) {
+                northPath = getNorthPath(backPath, frontPath);
+                renderShape(northPath, mod_Color.getNorth());
+            }
         }
 
-        renderShape(frontPath, mod_Color.getFront(h2));
+        if (CFG.render.front) {
+            renderShape(frontPath, mod_Color.getFront(h2));
+        }
     }
 
 
