@@ -55,13 +55,13 @@ jQuery(document).ready(function() {
                 objectColor : {r: 200, g: 200, b: 200, a: 1},
                 spaceColor  : {r: 255, g: 255, b: 255, a: 0},
                 lighting    : {
-                    back   : 0,
-                    front  : 0,
+                    base   : 0,
                     east   : -10,
+                    front  : 0,
+                    height : 2,
                     north  : -20,
                     south  : 0,
-                    west   : -15,
-                    height : 2
+                    west   : -15
                 }
             }
         },
