@@ -1,4 +1,4 @@
-/*! perspective-view - Delivers a simple javascript methods pool for rendering grid based (array) maps into a virtual, perspective, 3d top view with canvas. - Version: 1.3.0 */
+/*! perspective-view - Delivers a simple javascript methods pool for rendering grid based (array) maps into a virtual, perspective, 3d top view with canvas. - Version: 1.3.1 */
 function PerspectiveView(configuration) {
     return window.PPV.init(configuration);
 }
