@@ -42,7 +42,7 @@ window.PPV = (function() {
                 objectColor : {r: 200, g: 200, b: 200, a: 1},
                 spaceColor  : {r: 255, g: 255, b: 255, a: 0},
                 lighting    : {
-                    base   : 0,
+                    back   : 0,
                     east   : -10,
                     height : 2,
                     front  : 10,

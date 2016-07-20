@@ -129,12 +129,14 @@
 
 
     function renderObject(x, y, h1, h2) {
-        var vanishingTile     = getVanishingTile(),
+        var vanishingTile = getVanishingTile(),
             backPath, frontPath,
             eastPath, westPath, southPath, northPath;
 
         backPath  = getFrontPath(x, y, h1);
         frontPath = getFrontPath(x, y, h2);
+
+        //renderShape(backPath, mod_Color.getBack());
 
         if (CFG.render.wireFrame || x < vanishingTile.x) {
             eastPath = getEastPath(backPath, frontPath);

@@ -62,7 +62,7 @@ var config = {
         objectColor : {r: 200, g: 200, b: 200, a: 1}, // RGBA-color of an object
         spaceColor  : {r: 255, g: 255, b: 255, a: 0}, // RGBA-color of empty space
         lighting    : {                               // Lighting describes how much percent a specific shape will
-            base   : 0,                               // be deviates from the objectColor
+            back   : 0,                               // be deviates from the objectColor
             east   : -10,
             front  : 0,
             height : 2,                               // Special - The higher an object is the brighter/darker the
@@ -173,7 +173,7 @@ ppv.render();                          // Render the perspective-view of the giv
   - Property `object` **color.objectColor**: RGBA-Color-Object of an object
   - Property `object` **color.spaceColor**: RGBA-Color-Object of empty space
   - Property `object` **color.lighting**: Percentage deviation of the objectColor for the shapes
-    - Property `number` **color.lighting.base**: Percentage deviation of the base shape
+    - Property `number` **color.lighting.back**: Percentage deviation of the back shape
     - Property `number` **color.lighting.east**: Percentage deviation of the east shape
     - Property `number` **color.lighting.front**: Percentage deviation of the front shape
     - Property `number` **color.lighting.height**: Percentage deviation of the front shape plus the height of an object
@@ -193,7 +193,7 @@ ppv.render();                          // Render the perspective-view of the giv
             objectColor : {r: 200, g: 200, b: 200, a: 1},
             spaceColor  : {r: 255, g: 255, b: 255, a: 0},
             lighting    : {
-                base   : 0,
+                back   : 0,
                 east   : -10,
                 front  : 0,
                 height : 2,

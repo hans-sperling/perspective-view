@@ -52,10 +52,10 @@ jQuery(document).ready(function() {
             },
             color : {
                 mode        : 'default', // default, w.i.p
-                objectColor : {r: 200, g: 200, b: 200, a: 1},
+                objectColor : {r: 200, g: 200, b: 200, a: 0.5},
                 spaceColor  : {r: 255, g: 255, b: 255, a: 0},
                 lighting    : {
-                    base   : 0,
+                    back   : -20,
                     east   : -10,
                     front  : 0,
                     height : 2,

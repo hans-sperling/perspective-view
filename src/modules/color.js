@@ -35,8 +35,8 @@
     }
 
 
-    function getBase() {
-        var lighting = CFG.color.lighting.base;
+    function getBack() {
+        var lighting = CFG.color.lighting.back;
 
         return getColor(lighting);
     }
@@ -94,7 +94,7 @@
         init     : init,
         run      : run,
         update   : update,
-        getBase  : getBase,
+        getBack  : getBack,
         getEast  : getEast,
         getFront : getFront,
         getNorth : getNorth,
