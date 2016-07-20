@@ -32,7 +32,7 @@ window.PPV = (function() {
                 }
             },
             render : {
-                mode      : 'normal', // flat, normal, uniform
+                mode      : 'default', // flat, uniform, default
                 wireFrame : false,
                 grid      : false,
                 camera    : false
