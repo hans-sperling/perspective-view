@@ -104,7 +104,7 @@
                     renderObject(x, y, 0, 1);
                 }
             }
-            else { // if (CFG.render.mode.toLowerCase() === 'normal') {
+            else { // if (CFG.render.mode.toLowerCase() === 'default') {
                 if (isNumber(item) && item > 0) {
                     renderObject(x, y, 0, item);
                 }

@@ -34,7 +34,7 @@ var config = {
         }
     },
     render : {
-        mode      : 'normal',                        // [flat, normal, uniform]
+        mode      : 'default',                       // [flat, default, uniform]
         wireFrame : false,                           // Show map as wire frame
         grid      : false,                           // Display a grid for better map view
         camera    : false                            // Draw the camera into the canvas
@@ -237,18 +237,18 @@ ppv.render();                                        // Render the perspective-v
 ### render
 - Description: Config to change the render option
 - Type: `object`
-  - Property `string` **render.mode**: [flat, uniform, normal] _flat_ will draw shapes in unitSize, _uniform_ will draw 
-    objects in the same height, and in _normal_ mode the objects will be drawn as high as they are declared in the map 
+  - Property `string` **render.mode**: [flat, uniform, default] _flat_ will draw shapes in unitSize, _uniform_ will draw
+    objects in the same height, and in _default_ mode the objects will be drawn as high as they are declared in the map
   - Property `boolean` **render.wireFrame**: Renders all objects as wire frame object instead of filling them 
   - Property `boolean` **render.grid**: Draws a grid in unitSize into the canvas
   - Property `boolean` **render.camera**: Draws the camera into the canvas
 
 **Example**:
 ```javascript
-    // Render in normal mode as wire frame
+    // Render in default mode as wire frame
     ppv.update({
         render : {
-            mode      : 'normal',
+            // mode   : 'default', // Defaults must not be set, so the render mode will be set by default
             wireFrame : true
         },
     });

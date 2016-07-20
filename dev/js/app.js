@@ -45,7 +45,7 @@ jQuery(document).ready(function() {
                 }
             },
             render : {
-                mode      : 'normal', // flat, normal, uniform
+                mode      : 'default', // flat, default, uniform
                 wireFrame : false,
                 grid      : false,
                 camera    : false
