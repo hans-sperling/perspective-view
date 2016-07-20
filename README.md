@@ -3,7 +3,7 @@
 Delivers a simple javascript methods pool for rendering grid based (array) maps into a virtual, perspective, 3d top view
 with canvas.
 
-[![Visual description](https://raw.githubusercontent.com/hans-sperling/perspective-view/master/dev/img/visual-description.png "Click to try a demo of the latest perspective-view version")](https://hans-sperling.github.io/perspective-view/)
+[![Visual description](https://raw.githubusercontent.com/hans-sperling/perspective-view/master/dev/img/visual-description.jpg "Click to try a demo of the latest perspective-view version")](https://hans-sperling.github.io/perspective-view/)
 [Click to try a demo of the latest perspective-view version](https://hans-sperling.github.io/perspective-view/)
 
 
