@@ -32,13 +32,14 @@ window.PPV = (function() {
                 }
             },
             render : {
-                mode        : 'default', // flat, uniform, default
                 back        : false,
+                camera      : false,
                 front       : true,
-                hiddenWalls : false,
-                wireFrame   : false,
                 grid        : false,
-                camera      : false
+                hiddenWalls : false,
+                mode        : 'default',
+                walls       : true,
+                wireFrame   : false
             },
             color : {
                 mode        : 'default',
