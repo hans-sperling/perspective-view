@@ -61,8 +61,8 @@ var config = {
         mode        : 'default',                      // [default] - other modes will be following
         objectColor : {r: 200, g: 200, b: 200, a: 1}, // RGBA-color of an object
         spaceColor  : {r: 255, g: 255, b: 255, a: 0}, // RGBA-color of empty space
-        lighting    : {                               // Lighting describes how much percent a specific shape will be
-            base   : 0,                               // deviates from the objectColor
+        lighting    : {                               // Lighting describes how much percent a specific shape will
+            base   : 0,                               // be deviates from the objectColor
             east   : -10,
             front  : 0,
             height : 2,                               // Special - The higher an object is the brighter/darker the
