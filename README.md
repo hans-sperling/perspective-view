@@ -38,6 +38,15 @@ var config = {
         wireFrame : false,                           // Show map as wire frame
         grid      : false,                           // Display a grid for better map view
         camera    : false                            // Draw the camera into the canvas
+    },
+    color : {                                        // Colors of all sides of the objects
+        back  : {r: 150, g: 150, b: 150, a: 1}, 
+        east  : {r: 159, g: 159, b: 159, a: 1},
+        front : {r: 207, g: 207, b: 207, a: 1},
+        north : {r: 127, g: 127, b: 127, a: 1},
+        south : {r: 223, g: 223, b: 223, a: 1},
+        space : {r: 255, g: 255, b: 255, a: 0}, 
+        west  : {r: 191, g: 191, b: 191, a: 1}
     }
 }
 
@@ -83,10 +92,82 @@ ppv.render();                                        // Render the perspective-v
 
 ## Configuration
 
+### camera
+- Description: Properties of the camera (the visible part of the map in the canvas).
+- Type: `object`
+  - Property `number` **camera.width**: A regular value is i.e. _canvas.width_
+  - Property `number` **camera.height**: A regular value is i.e. _canvas.height_
+  - Property `object` **camera.position**: Position of the cameras center in the canvas
+    - Property `number` **camera.position.x**: A regular value is i.e. _canvas.width / 2_
+    - Property `number` **camera.position.y**: A regular value is i.e. _canvas.height / 2_
+- _recommended_
+
+**Example**:
+```javascript
+    // Fixed values
+    ppv.update({
+        camera : {
+            width    : 800,
+            height   : 600,
+            position : {
+                x : 400,
+                y : 300
+            }
+        }
+    });
+    
+    // Regular use case
+    ppv.update({
+        camera : {
+            width    : canvas.width,
+            height   : canvas.height,
+            position : {
+                x : (canvas.width  / 2),
+                y : (canvas.height / 2)
+            }
+        }
+    });
+```
+
+
 ### canvas
 - Description: HTML Object of the canvas where to draw to.
 - Type: `html-object`
 - **necessary!**
+
+**Example**:
+```javascript
+    ppv.update({
+        canvas : document.getElementById('myCanvas')
+    });
+```
+
+
+### color
+- Description: Sets the colors of the objects, to provide a 3d lightning illusion
+- Type: `object`
+  - Property `object` **color.back**: RGBA-Color-Object for the back/base shape of an object
+  - Property `object` **color.east**: RGBA-Color-Object for the east shape of an object
+  - Property `object` **color.front**: RGBA-Color-Object for the front shape of an object
+  - Property `object` **color.north**: RGBA-Color-Object for the north shape of an object
+  - Property `object` **color.south**: RGBA-Color-Object for the south shape of an object
+  - Property `object` **color.space**: RGBA-Color-Object for the space shape of an object
+  - Property `object` **color.west**: RGBA-Color-Object for the west shape of an object
+
+**Example**:
+```javascript
+    ppv.update({
+        color : {
+        back  : {r: 150, g: 150, b: 150, a: 1}, 
+        east  : {r: 159, g: 159, b: 159, a: 1},
+        front : {r: 207, g: 207, b: 207, a: 1},
+        north : {r: 127, g: 127, b: 127, a: 1},
+        south : {r: 223, g: 223, b: 223, a: 1},
+        space : {r: 255, g: 255, b: 255, a: 0}, 
+        west  : {r: 191, g: 191, b: 191, a: 1}
+    }
+});
+```
 
 
 ### context
@@ -94,17 +175,102 @@ ppv.render();                                        // Render the perspective-v
 - Type: `html-object`
 - **necessary!**
 
+**Example**:
+```javascript
+    ppv.update({
+        context : canvas.getContext('2d'),
+    });
+```
+
 
 ### map
 - Description: 2d-Array of the map, where 0 represents space and 1 or higher for an object with the given height.
 - Type: `array`
 - **necessary!**
 
+**Example**:
+```javascript
+    // Simple map - Objects from base to given height
+    ppv.update({
+        map : [
+            [2, 0, 1, 0, 2], 
+            [0, 0, 0, 0, 0],
+            [1, 0, 3, 0, 1],
+            [0, 0, 0, 0, 0],
+            [2, 0, 1, 0, 2]
+        ],
+    });
+    
+    // Advanced map - Some objects are floating
+    ppv.update({
+        map : [
+            [2, 1,   1,     2,     1,   1, 2],
+            [1, 0,   0,     0,     0,   0, 1],
+            [1, 0,   2,   [1,2],   2,   0, 1],
+            [2, 0, [1,2],   0,   [1,2], 0, 2],
+            [1, 0,   2,   [1,2],   2,   0, 1],
+            [1, 0,   0,     0,     0,   0  1],
+            [2, 1,   1,     2,     1,   1, 2]
+        ],
+    });
+```
 
-### unitSize
-- Description: X any Y size of an unit (single object) in your mal given in px.
-- Type: `number`
-- _recommended_ 
+
+### position
+- Description: Position in the map the camera position will be set
+- Type: `object`
+  - Property `number` **position.x**: Position on x axis
+  - Property `number` **position.y**: Position on y axis
+- _recommended_
+
+**Example**:
+```javascript
+    ppv.update({
+        position : {
+            x : 250,
+            y : 250
+        },
+    });
+```
+
+
+### render
+- Description: Config to change the render option
+- Type: `object`
+  - Property `string` **render.mode**: [flat, uniform, normal] _flat_ will draw shapes in unitSize, _uniform_ will draw 
+    objects in the same height, and in _normal_ mode the objects will be drawn as high as they are declared in the map 
+  - Property `boolean` **render.wireFrame**: Renders all objects as wire frame object instead of filling them 
+  - Property `boolean` **render.grid**: Draws a grid in unitSize into the canvas
+  - Property `boolean` **render.camera**: Draws the camera into the canvas
+
+**Example**:
+```javascript
+    // Render in normal mode as wire frame
+    ppv.update({
+        render : {
+            mode      : 'normal',
+            wireFrame : true
+        },
+    });
+    
+    // Render all object flat and show an grid
+    ppv.update({
+        render : {
+            mode : 'flat',
+            grid : true
+        },
+    });
+    
+    // Render all object in the same height as wire fram and draw a grid and show camera
+    ppv.update({
+        render : {
+            mode      : 'uniform',
+            wireFrame : true,
+            grid      : true,
+            camera    : true
+        },
+});
+```
 
 
 ### unitDepth
@@ -113,31 +279,29 @@ ppv.render();                                        // Render the perspective-v
 - Type: `number`
 - _recommended_
 
-
-### position
-- Description: Position in the map the camera position will be set
-- Type: `object`
-  - Property `number` **position.x**
-  - Property `number` **position.y**
-- _recommended_
-
-
-### camera
-- Description: Properties of the camera (the visible part of the map in the canvas).
-- Type: `object`
-  - Property `number` **camera.width** A regular value is i.e. _canvas.width_
-  - Property `number` **camera.height** A regular value is i.e. _canvas.height_
-  - Property `object` **camera.position** Position of the cameras center in the canvas
-    - Property `number` **camera.position.x** A regular value is i.e. _canvas.width / 2_
-    - Property `number` **camera.position.y** A regular value is i.e. _canvas.height / 2_
-- _recommended_
+**Example**:
+```javascript
+    // Regular use case
+    ppv.update({
+        unitDepth : 1.1
+    });
+    
+    // Objects width no height (flat), same as render-mode flat
+    ppv.update({
+        unitDepth : 1
+    });
+```
 
 
-### render
-- Description: Config to change the render option
-- Type: `object`
-  - Property `string` **render.mode** [flat, uniform, normal] _flat_ will draw shapes in unitSize, _uniform_ will draw 
-    objects in the same height, and in _normal_ mode the objects will be drawn as high as they are declared in the map 
-  - Property `boolean` **render.wireFrame** Renders all objects as wire frame object instead of filling them 
-  - Property `boolean` **render.grid** Draws a grid in unitSize into the canvas
-  - Property `boolean` **render.camera** Draws the camera into the canvas
+### unitSize
+- Description: X any Y size of an unit (single object) in your mal given in px.
+- Type: `number`
+- _recommended_ 
+
+**Example**:
+```javascript
+    // The size of all object bases are 100x100 pixel
+    ppv.update({
+        unitSize : 100
+    });
+```

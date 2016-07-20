@@ -48,6 +48,15 @@ jQuery(document).ready(function() {
                 wireFrame : false,
                 grid      : false,
                 camera    : false
+            },
+            color : {
+                back  : {r: 150, g: 150, b: 150, a: 1}, // Not necessary but useful in wireFrame mode for coloring
+                east  : {r: 159, g: 159, b: 159, a: 1},
+                front : {r: 207, g: 207, b: 207, a: 1},
+                north : {r: 127, g: 127, b: 127, a: 1},
+                south : {r: 223, g: 223, b: 223, a: 1},
+                space : {r: 255, g: 255, b: 255, a: 0}, // Not necessary because we won't show any color in space
+                west  : {r: 191, g: 191, b: 191, a: 1}
             }
         },
         ppv = new PerspectiveView(config);

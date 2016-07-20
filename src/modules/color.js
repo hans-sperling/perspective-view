@@ -3,13 +3,7 @@
 
     // ------------------------------------------------------------------------------------------------------ PROPERTIES
 
-    var back  = {r: 150, g: 150, b: 150, a: 1},
-        east  = {r: 159, g: 159, b: 159, a: 1},
-        front = {r: 207, g: 207, b: 207, a: 1},
-        north = {r: 127, g: 127, b: 127, a: 1},
-        south = {r: 223, g: 223, b: 223, a: 1},
-        space = {r: 255, g: 255, b: 255, a: 0},
-        west  = {r: 191, g: 191, b: 191, a: 1};
+    var CFG = {};
 
     // ------------------------------------------------------------------------------------------------ MODULE INTERFACE
 
@@ -24,71 +18,71 @@
 
 
     function update(config) {
-        // Nothing to do yet
+        CFG = config;
     }
 
     // --------------------------------------------------------------------------------------------------------- METHODS
 
     function getBase() {
         return 'rgba('+
-            back.r + ', ' +
-            back.g + ', ' +
-            back.b + ', ' +
-            back.a + ')';
+            CFG.color.back.r + ', ' +
+            CFG.color.back.g + ', ' +
+            CFG.color.back.b + ', ' +
+            CFG.color.back.a + ')';
     }
 
 
     function getSpace() {
         return 'rgba('+
-            space.r + ', ' +
-            space.g + ', ' +
-            space.b + ', ' +
-            space.a + ')';
+            CFG.color.space.r + ', ' +
+            CFG.color.space.g + ', ' +
+            CFG.color.space.b + ', ' +
+            CFG.color.space.a + ')';
     }
 
 
     function getFront() {
         return 'rgba('+
-            front.r + ', ' +
-            front.g + ', ' +
-            front.b + ', ' +
-            front.a + ')';
+            CFG.color.front.r + ', ' +
+            CFG.color.front.g + ', ' +
+            CFG.color.front.b + ', ' +
+            CFG.color.front.a + ')';
     }
 
 
     function getNorth() {
         return 'rgba('+
-            north.r + ', ' +
-            north.g + ', ' +
-            north.b + ', ' +
-            north.a + ')';
+            CFG.color.north.r + ', ' +
+            CFG.color.north.g + ', ' +
+            CFG.color.north.b + ', ' +
+            CFG.color.north.a + ')';
     }
 
 
     function getEast() {
         return 'rgba('+
-            east.r + ', ' +
-            east.g + ', ' +
-            east.b + ', ' +
-            east.a + ')';
+            CFG.color.east.r + ', ' +
+            CFG.color.east.g + ', ' +
+            CFG.color.east.b + ', ' +
+            CFG.color.east.a + ')';
     }
 
 
     function getSouth() {
         return 'rgba('+
-            south.r + ', ' +
-            south.g + ', ' +
-            south.b + ', ' +
-            south.a + ')';
+            CFG.color.south.r + ', ' +
+            CFG.color.south.g + ', ' +
+            CFG.color.south.b + ', ' +
+            CFG.color.south.a + ')';
     }
 
 
     function getWest() {
         return 'rgba('+
-            west.r + ', ' +
-            west.g + ', ' +
-            west.b + ', ' +
-            west.a + ')';
+            CFG.color.west.r + ', ' +
+            CFG.color.west.g + ', ' +
+            CFG.color.west.b + ', ' +
+            CFG.color.west.a + ')';
     }
 
     // --------------------------------------------------------------------------------------------------------- RETURNS
