@@ -15,6 +15,8 @@ window.PPV = (function() {
             util         : {}
         },
         defaults = {
+            colorModule : {},
+            // -------------
             canvas    : null,
             context   : null,
             map       : [[1]],
@@ -36,13 +38,18 @@ window.PPV = (function() {
                 camera    : false
             },
             color : {
-                back  : {r: 150, g: 150, b: 150, a: 0},
-                east  : {r: 159, g: 159, b: 159, a: 1},
-                front : {r: 207, g: 207, b: 207, a: 1},
-                north : {r: 127, g: 127, b: 127, a: 1},
-                south : {r: 223, g: 223, b: 223, a: 1},
-                space : {r: 255, g: 255, b: 255, a: 0},
-                west  : {r: 191, g: 191, b: 191, a: 1}
+                mode        : 'default',
+                objectColor : {r: 200, g: 200, b: 200, a: 1},
+                spaceColor  : {r: 255, g: 255, b: 255, a: 0},
+                lighting    : {
+                    base   : 0,
+                    east   : -10,
+                    height : 2,
+                    front  : 10,
+                    north  : -20,
+                    south  : 0,
+                    west   : -15
+                }
             }
         };
 
@@ -112,6 +119,10 @@ window.PPV = (function() {
 
     function init(config) {
         CFG = mod.merge.deep(defaults, config);
+
+        if (CFG.color.mode.toLowerCase() === 'default') {
+            CFG.colorModule = 'color';
+        }
 
         initModules(CFG);
         runModules();

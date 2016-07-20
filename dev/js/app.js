@@ -2,19 +2,19 @@ jQuery(document).ready(function() {
     'use strict';
 
     var map     = [
-            [2, 1, 1,     1,     1, 1,      2,     1,     1,     1, 1, 1, 3],
-            [1, 0, 0,     0,     0, 0,      [1,2], 0,     0,     0, 0, 0, 1],
-            [1, 0, 1,     1,     0, 1,      2,     1,     0,     1, 1, 0, 1],
-            [1, 0, 2,     0,     0, 0,      0,     0,     0,     0, 0, 0, 1],
-            [1, 0, [1,3], 0,     2, 0,      2,     2,     [1,2], 2, 2, 0, 2],
-            [1, 0, 2,     0,     0, 0,      0,     0,     0,     0, 2, 0, 1],
-            [1, 0, 1,     1,     0, 2,      [1,2], 2,     0,     0, 0, 0, 1],
-            [1, 0, 0,     0,     0, [1,2], 0,      [1,2], 0,     2, 3, 0, 3],
-            [2, 0, 2,     2,     2, 2,      [1,2], 2,     0,     1, 2, 0, 1],
-            [1, 0, 0,     0,     0, 0,      0,     0,     0,     0, 1, 0, 1],
-            [1, 0, 2,     [1,3], 2, 1,      0,     1,     2,     0, 1, 0, 1],
-            [1, 0, 0,     0,     0, 0,      0,     0,     [1,2], 0, 0, 0, 1],
-            [3, 1, 1,     2,     1, 1,      1,     1,     2,     1, 1, 1, 3]
+            [2,   1,   1,   1,   1,   1,   2,   1,   1,   1,   1,   1,   3],
+            [1,   0,   0,   0,   0,   0, [1,2], 0,   0,   0,   0,   0,   1],
+            [1,   0,   1,   1,   0,   1,   2,   1,   0,   1,   1,   0,   1],
+            [1,   0,   2,   0,   0,   0,   0,   0,   0,   0,   0,   0,   1],
+            [1,   0, [1,3], 0,   2,   0,   2,   3, [1,4], 3,   4,   0,   2],
+            [1,   0,   2,   0,   0,   0,   0,   0,   0,   0,   3,   0,   1],
+            [1,   0,   1,   1,   0,   1,   2,   3,   0,   0, [2,3], 0,   1],
+            [1,   0,   0,   0,   0,   2,   4,   5,   0,   2,   3,   0,   3],
+            [2,   0,   2,   2,   2,   3,   5,   6,   0,   1,   2,   0,   1],
+            [1,   0,   0,   0,   0, [2,3], 0,   0,   0,   0,   1,   0,   1],
+            [1,   0,   2, [1,3], 2,   3,   0,   1,   2,   0,   1,   0,   1],
+            [1,   0,   0,   0,   0,   0,   0,   0, [1,2], 0,   0,   0,   1],
+            [3,   1,   1,   2,   1,   1,   1,   1,   2,   1,   1,   1,   3]
         ],
         $canvas = $('#PerspectiveView'),
         canvas  = $canvas[0],
@@ -24,6 +24,7 @@ jQuery(document).ready(function() {
     canvas.height = canvas.offsetHeight;
 
     var position = { x : 650, y : 750 },
+        looping  = 1,
         c        = 0.0027777777777778, // 1 / 360
         m        = 1,                  // multiplier to rotate faster
         i        = -(c * m),           // Initial circle position x
@@ -44,19 +45,24 @@ jQuery(document).ready(function() {
                 }
             },
             render : {
-                mode      : 'normal', // flat, normal, uniform
+                mode      : 'default', // flat, default, uniform
                 wireFrame : false,
                 grid      : false,
                 camera    : false
             },
             color : {
-                back  : {r: 150, g: 150, b: 150, a: 1}, // Not necessary but useful in wireFrame mode for coloring
-                east  : {r: 159, g: 159, b: 159, a: 1},
-                front : {r: 207, g: 207, b: 207, a: 1},
-                north : {r: 127, g: 127, b: 127, a: 1},
-                south : {r: 223, g: 223, b: 223, a: 1},
-                space : {r: 255, g: 255, b: 255, a: 0}, // Not necessary because we won't show any color in space
-                west  : {r: 191, g: 191, b: 191, a: 1}
+                mode        : 'default', // default, w.i.p
+                objectColor : {r: 200, g: 200, b: 200, a: 1},
+                spaceColor  : {r: 255, g: 255, b: 255, a: 0},
+                lighting    : {
+                    base   : 0,
+                    east   : -10,
+                    front  : 0,
+                    height : 2,
+                    north  : -20,
+                    south  : 0,
+                    west   : -15
+                }
             }
         },
         ppv = new PerspectiveView(config);
@@ -66,16 +72,19 @@ jQuery(document).ready(function() {
         j += (c * m);
 
 
-        ppv.update({
-            position : {
-                x : position.x + Math.floor(Math.cos(Math.PI * i) * 200),
-                y : position.y + Math.floor(Math.sin(Math.PI * j) * 200)
-            }
-        });
-        /**/
+        if (looping) {
+            ppv.update({
+                position : {
+                    x : position.x + Math.floor(Math.cos(Math.PI * i) * 200),
+                    y : position.y + Math.floor(Math.sin(Math.PI * j) * 200)
+                }
+            });
+        }
 
         ppv.render();
 
-        window.requestAnimFrame(loop);
+        if (looping) {
+            window.requestAnimFrame(loop);
+        }
     })();
 });

@@ -23,66 +23,68 @@
 
     // --------------------------------------------------------------------------------------------------------- METHODS
 
-    function getBase() {
+
+    function getColor(lighting) {
+        var color = CFG.color.objectColor;
+
         return 'rgba('+
-            CFG.color.back.r + ', ' +
-            CFG.color.back.g + ', ' +
-            CFG.color.back.b + ', ' +
-            CFG.color.back.a + ')';
+            Math.round(color.r + (2.55 * lighting)) + ', ' +
+            Math.round(color.g + (2.55 * lighting)) + ', ' +
+            Math.round(color.b + (2.55 * lighting)) + ', ' +
+            color.a + ')';
+    }
+
+
+    function getBase() {
+        var lighting = CFG.color.lighting.base;
+
+        return getColor(lighting);
     }
 
 
     function getSpace() {
+        var color = CFG.color.lightingColor.spaceColor;
+
         return 'rgba('+
-            CFG.color.space.r + ', ' +
-            CFG.color.space.g + ', ' +
-            CFG.color.space.b + ', ' +
-            CFG.color.space.a + ')';
+            color.r + ', ' +
+            color.g + ', ' +
+            color.b + ', ' +
+            color.a + ')';
     }
 
 
-    function getFront() {
-        return 'rgba('+
-            CFG.color.front.r + ', ' +
-            CFG.color.front.g + ', ' +
-            CFG.color.front.b + ', ' +
-            CFG.color.front.a + ')';
+    function getFront(h) {
+        var lighting = CFG.color.lighting.front + (h * CFG.color.lighting.height);
+
+        return getColor(lighting);
     }
 
 
     function getNorth() {
-        return 'rgba('+
-            CFG.color.north.r + ', ' +
-            CFG.color.north.g + ', ' +
-            CFG.color.north.b + ', ' +
-            CFG.color.north.a + ')';
+        var lighting = CFG.color.lighting.north;
+
+        return getColor(lighting);
     }
 
 
     function getEast() {
-        return 'rgba('+
-            CFG.color.east.r + ', ' +
-            CFG.color.east.g + ', ' +
-            CFG.color.east.b + ', ' +
-            CFG.color.east.a + ')';
+        var lighting = CFG.color.lighting.east;
+
+        return getColor(lighting);
     }
 
 
     function getSouth() {
-        return 'rgba('+
-            CFG.color.south.r + ', ' +
-            CFG.color.south.g + ', ' +
-            CFG.color.south.b + ', ' +
-            CFG.color.south.a + ')';
+        var lighting = CFG.color.lighting.south;
+
+        return getColor(lighting);
     }
 
 
     function getWest() {
-        return 'rgba('+
-            CFG.color.west.r + ', ' +
-            CFG.color.west.g + ', ' +
-            CFG.color.west.b + ', ' +
-            CFG.color.west.a + ')';
+        var lighting = CFG.color.lighting.west;
+
+        return getColor(lighting);
     }
 
     // --------------------------------------------------------------------------------------------------------- RETURNS
