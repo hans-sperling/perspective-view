@@ -11,10 +11,10 @@ with canvas.
 
 The fast and simple way:
 ```javascript
-    var ppv = new PerspectiveView({                                       // HTML Object of the canvas
-        canvas    : document.getElementById('myCanvas'),                  // The 2d context of the canvas
-        context   : document.getElementById('myCanvas').getContext('2d'), // Your complete map
-        map       : [
+    var ppv = new PerspectiveView({
+        canvas    : document.getElementById('myCanvas'),                  // HTML Object of the canvas
+        context   : document.getElementById('myCanvas').getContext('2d'), // The 2d context of the canvas
+        map       : [                                                     // Your complete map
             [2, 0, 1, 0, 2],
             [0, 0, 0, 0, 0],
             [1, 0, 3, 0, 1],
