@@ -53,8 +53,8 @@
     }
 
 
-    function getFront() {
-        var lighting = CFG.color.lighting.front;
+    function getFront(h) {
+        var lighting = CFG.color.lighting.front + (h * CFG.color.lighting.height);
 
         return getColor(lighting);
     }

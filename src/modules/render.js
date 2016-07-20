@@ -96,7 +96,7 @@
 
             if (CFG.render.mode.toLowerCase() === 'flat') {
                 if (isNumber(item) && item > 0 || isArray(item)) {
-                    renderShape(getFrontPath(x, y, 0), mod_Color.getFront());
+                    renderShape(getFrontPath(x, y, 0), mod_Color.getFront(0));
                 }
             }
             else if (CFG.render.mode.toLowerCase() === 'uniform') {
@@ -154,7 +154,7 @@
             renderShape(northPath, mod_Color.getNorth());
         }
 
-        renderShape(frontPath, mod_Color.getFront());
+        renderShape(frontPath, mod_Color.getFront(h2));
     }
 
 
