@@ -3,7 +3,8 @@
 
     // ------------------------------------------------------------------------------------------------------ PROPERTIES
 
-    var CFG = {};
+    var CFG      = {},
+        lighting = {};
 
     // ------------------------------------------------------------------------------------------------ MODULE INTERFACE
 
@@ -19,6 +20,8 @@
 
     function update(config) {
         CFG = config;
+
+        lighting = CFG.color.lighting;
     }
 
     // --------------------------------------------------------------------------------------------------------- METHODS
@@ -36,14 +39,12 @@
 
 
     function getBack() {
-        var lighting = CFG.color.lighting.back;
-
-        return getColor(lighting);
+        return getColor(lighting.back);
     }
 
 
     function getSpace() {
-        var color = CFG.color.lightingColor.spaceColor;
+        var color = CFG.color.spaceColor;
 
         return 'rgba('+
             color.r + ', ' +
@@ -54,37 +55,27 @@
 
 
     function getFront(h) {
-        var lighting = CFG.color.lighting.front + (h * CFG.color.lighting.height);
-
-        return getColor(lighting);
+        return getColor(lighting.front + (h * lighting.height));
     }
 
 
     function getNorth() {
-        var lighting = CFG.color.lighting.north;
-
-        return getColor(lighting);
+        return getColor(lighting.north);
     }
 
 
     function getEast() {
-        var lighting = CFG.color.lighting.east;
-
-        return getColor(lighting);
+        return getColor(lighting.east);
     }
 
 
     function getSouth() {
-        var lighting = CFG.color.lighting.south;
-
-        return getColor(lighting);
+        return getColor(lighting.south);
     }
 
 
     function getWest() {
-        var lighting = CFG.color.lighting.west;
-
-        return getColor(lighting);
+        return getColor(lighting.west);
     }
 
     // --------------------------------------------------------------------------------------------------------- RETURNS
