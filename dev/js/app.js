@@ -29,47 +29,47 @@ jQuery(document).ready(function() {
         m        = 1,                  // multiplier to rotate faster
         i        = -(c * m),           // Initial circle position x
         j        = -(c * m),           // Initial circle position y
-            config   = {
-            canvas    : canvas,
-            context   : context,
-            map       : map,
-            unitSize  : 100,
-            unitDepth : 1.1,
-            position  : position,
-            camera    : {
-                width    : canvas.width,
-                height   : canvas.height,
-                position : {
-                    x : canvas.width  / 2,
-                    y : canvas.height / 2
-                }
-            },
-            render : {
-                back        : false,
-                camera      : false,
-                front       : true,
-                grid        : false,
-                hiddenWalls : false,
-                mode        : 'default', // flat, uniform, default
-                walls       : true,
-                wireFrame   : false
-            },
-            color : {
-                mode        : 'default', // default, w.i.p
-                objectColor : {r: 200, g: 200, b: 200, a: 1},
-                spaceColor  : {r: 255, g: 255, b: 255, a: 0},
-                lighting    : {
-                    back   : -20,
-                    east   : -10,
-                    front  : 0,
-                    height : 2,
-                    north  : -20,
-                    south  : 0,
-                    west   : -15
-                }
+        config   = {
+        canvas    : canvas,
+        context   : context,
+        map       : map,
+        unitSize  : 100,
+        unitDepth : 1.1,
+        position  : position,
+        camera    : {
+            width    : canvas.width,
+            height   : canvas.height,
+            position : {
+                x : canvas.width  / 2,
+                y : canvas.height / 2
             }
         },
-        ppv = new PerspectiveView(config);
+        render : {
+            back        : false,
+            camera      : false,
+            front       : true,
+            grid        : false,
+            hiddenWalls : false,
+            mode        : 'default', // flat, uniform, default
+            walls       : true,
+            wireFrame   : false
+        },
+        color : {
+            mode        : 'default', // default, w.i.p
+            objectColor : {r: 200, g: 200, b: 200, a: 1},
+            spaceColor  : {r: 255, g: 255, b: 255, a: 0},
+            lighting    : {
+                back   : -20,
+                east   : -10,
+                front  : 0,
+                height : 2,
+                north  : -20,
+                south  : 0,
+                west   : -15
+            }
+        }
+    },
+    ppv = new PerspectiveView(config);
 
     (function loop() {
         i += (c * m);

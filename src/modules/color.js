@@ -1,3 +1,6 @@
+/**
+ * Simple color module to provide a pseudo 3d lighting of an object
+ */
 ;(function color(ppv) {
     'use strict';
 
