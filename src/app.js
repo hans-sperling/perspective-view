@@ -16,7 +16,7 @@ window.PPV = (function() {
         },
         defaults = {
             colorModule : {},
-            // -------------
+            // ----------------------------------------------------------------------------------- Default configuration
             canvas    : null,
             context   : null,
             map       : [[1]],
@@ -59,6 +59,12 @@ window.PPV = (function() {
 
     // --------------------------------------------------------------------------------------------------------- MODULES
 
+    /**
+     * Appends a given module object.
+     *
+     * @param   {object} module
+     * @returns {void}
+     */
     function appendModule(module) {
         var id;
 
@@ -77,10 +83,16 @@ window.PPV = (function() {
                 mod[id] = module[id];
             }
         }
-
     }
 
 
+    /**
+     * Initializes all appended modules. Will call all init methods of the appended modules with the given
+     * configuration.
+     *
+     * @param   config
+     * @returns {void}
+     */
     function initModules(config) {
         var i;
 
@@ -94,6 +106,11 @@ window.PPV = (function() {
     }
 
 
+    /**
+     * Calls all run methods of the appended modules.
+     *
+     * @returns {void}
+     */
     function runModules() {
         var i;
 
@@ -107,6 +124,12 @@ window.PPV = (function() {
     }
 
 
+    /**
+     * Updates all appended modules. Will call all update methods of the appended modules with the given configuration.
+     *
+     * @param   config
+     * @returns {void}
+     */
     function updateModules(config) {
         var i;
 
@@ -119,14 +142,26 @@ window.PPV = (function() {
         }
     }
 
+    /**
+     * todo - Create method like getModule(moduleType) including logic for deciding which module will be returned
+     * depended on the configuration like color-module: 'default' -> load colorModule: simpleColor
+     */
+
     // ------------------------------------------------------------------------------------------------------------ INIT
 
+    /**
+     * Initialize this app.
+     *
+     * @param   {object} config
+     * @returns {{render: render, update: update}}
+     */
     function init(config) {
         CFG = mod.merge.deep(defaults, config);
 
-        if (CFG.color.mode.toLowerCase() === 'default') {
+        // todo - Will be "decommented" if there are mor than only one color mode
+        //if (CFG.color.mode.toLowerCase() === 'default') {
             CFG.colorModule = 'color';
-        }
+        //}
 
         initModules(CFG);
         runModules();
@@ -139,12 +174,24 @@ window.PPV = (function() {
 
     // ---------------------------------------------------------------------------------------------------------- PUBLIC
 
+    /**
+     * Public method to render the map
+     *
+     * @public
+     * @returns {void}
+     */
     function render() {
-        // mod.render.update(CFG);
         mod.render.render();
     }
 
 
+    /**
+     * Public method to update configuration
+     *
+     * @public
+     * @param   {object} config
+     * @returns {void}
+     */
     function update(config) {
         CFG =  mod.merge.deep(CFG, config);
 
@@ -157,8 +204,8 @@ window.PPV = (function() {
         DEV           : DEV,
         configuration : CFG,
         appendModule  : appendModule,
+        // todo - getModule : getModule,
         init          : init,
         modules       : mod
     };
-
 })();
