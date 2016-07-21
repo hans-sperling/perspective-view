@@ -6,13 +6,13 @@
 
     // ------------------------------------------------------------------------------------------------------ PROPERTIES
 
-    var CFG      = {},
-        lighting = {};
+    var CFG      = {}, // Stores the global config
+        lighting = {}; // Stores the lighting configuration
 
     // ------------------------------------------------------------------------------------------------ MODULE INTERFACE
 
     /**
-     * Initializes this module; will be called at the beginning from the app. Updates the module with the given config.
+     * Initializes this module - will be called at the beginning from the app. Updates the module with the given config.
      *
      * @public
      * @param {object} config
