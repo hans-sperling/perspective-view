@@ -142,10 +142,24 @@ window.PPV = (function() {
         }
     }
 
+
     /**
-     * todo - Create method like getModule(moduleType) including logic for deciding which module will be returned
-     * depended on the configuration like color-module: 'default' -> load colorModule: simpleColor
+     * Returns a requested module by the module.mode in the config.
+     *
+     * @param   {string} type - Type of module [color, render, map]
+     * @returns {object}
      */
+    function getModule(type) {
+        if (type == 'color') {
+            switch (CFG[type].mode) {
+                case 'default':
+                default:
+                    return mod.color;
+            }
+        }
+
+        return {};
+    }
 
     // ------------------------------------------------------------------------------------------------------------ INIT
 
@@ -204,7 +218,7 @@ window.PPV = (function() {
         DEV           : DEV,
         configuration : CFG,
         appendModule  : appendModule,
-        // todo - getModule : getModule,
+        getModule     : getModule,
         init          : init,
         modules       : mod
     };

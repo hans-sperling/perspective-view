@@ -22,7 +22,7 @@
      */
     function init(config) {
         mod_Map          = ppv.modules.map;
-        mod_Color        = ppv.modules[config.colorModule];
+        mod_Color        = ppv.getModule('color');
         mod_canvasHelper = ppv.modules.canvasHelper;
 
         update(config);
