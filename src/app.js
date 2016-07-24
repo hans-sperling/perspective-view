@@ -181,8 +181,9 @@ window.PPV = (function() {
         runModules();
 
         return {
-            render : render,
-            update : update
+            render    : render,
+            update    : update,
+            getConfig : getConfig
         }
     }
 
@@ -210,6 +211,10 @@ window.PPV = (function() {
         CFG =  mod.merge.deep(CFG, config);
 
         updateModules(CFG);
+    }
+
+    function getConfig() {
+        return CFG;
     }
 
     // ----------------------------------------------------------------------------------------------------- DEV RETURNS
