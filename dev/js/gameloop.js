@@ -2,8 +2,8 @@
 function GameLoop(ppv) {
     var config = {
             isLooping : true,
-            maxFrames : 25,
-            desiredFrameRate : 25
+            maxFrames : -1,
+            desiredFrameRate : 60
         },
         frameStep    = 0,
         frameCounter = 0,
@@ -43,20 +43,24 @@ function GameLoop(ppv) {
     }
 
 
-    function getCircleShiftPosition(degPerSec, dt) {
+    function getCircleShiftPositionX(sec, dt) {
+        var degPerFrame = 360 / (((config.desiredFrameRate) / (frameStep * sec)) );
 
-        //i = ((360 / config.desiredFrameRate) + (frameStep * (360 / config.desiredFrameRate)));
-        i =  (1/360) * 1;
+        // cos(RAD_0) = 1, cos(RAD_90) = 0; cos(RAD_180) = -1, cos(RAD_270) = 0
+        // console.log(Math.cos(Math.radians(0)));
+        // console.log(Math.cos(Math.radians(360)));
 
-console.log(i);
-
-        // i += (c * m);
-
-        return (Math.floor(Math.cos(Math.PI * i)));
-        //    x = position.x + Math.floor(Math.cos(Math.PI * i) * radius),
+        //console.log(Math.round(Math.cos(Math.radians(270))));
 
 
+        return Math.cos(Math.radians(degPerFrame));
+    }
 
+
+    function getCircleShiftPositionY(sec, dt) {
+        var degPerFrame = 360 / ((config.desiredFrameRate / frameStep) * sec);
+
+        return Math.sin(Math.radians(degPerFrame));
     }
 
 
@@ -69,7 +73,8 @@ console.log(i);
 
 
 
-
+var n = 0, m = 0;
+    var startPosition = ppv.getConfig().position;
 
 
     /*var int = setInterval*/(function frame() {
@@ -94,10 +99,9 @@ console.log(i);
             //renderConfig.position.x += getShiftPosition(100, dt);
             //renderConfig.position.y += getShiftPosition(0, dt);
 
-            renderConfig.position.x += getCircleShiftPosition(1/360, dt);
-            renderConfig.position.y += getCircleShiftPosition(1/360, dt);
+            n = getCircleShiftPositionX(4, dt);
+            m = getCircleShiftPositionY(dt);
 
-           // console.log(frameStep);
 /*
             renderConfig = {
                 position: getRotatePosition(renderConfig.position, dt)
@@ -106,17 +110,19 @@ console.log(i);
         }
 
 
-
+      //  x = position.x + Math.floor(Math.cos(Math.PI * i) * 200),
         renderConfig = {
             position : {
-                x: ppv.getConfig().position
+                x: startPosition.x + (n * 50),
+                //y: startPosition.y + (m * 50)
             }
         };
 
 
 
+        //console.log(n);
 
-
+        //n = 0;
         ppv.update(renderConfig);
         ppv.render();
 

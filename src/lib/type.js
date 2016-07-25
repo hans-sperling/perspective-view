@@ -83,3 +83,13 @@ function isObject(value) {
 function isFunction(value) {
     return Object.prototype.toString.call(value) == "[object Function]";
 }
+
+
+Math.radians = function(degrees) {
+    return degrees * Math.PI / 180;
+};
+
+// Converts from radians to degrees.
+Math.degrees = function(radians) {
+    return radians * 180 / Math.PI;
+};
