@@ -67,7 +67,7 @@ jQuery(document).ready(function() {
     ppv      = new PerspectiveView(config),
     gameLoop = new GameLoop(ppv, config);
 
-
+    gameLoop.run();
 
 
 

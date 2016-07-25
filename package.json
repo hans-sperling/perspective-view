@@ -16,7 +16,7 @@
         "grunt-contrib-concat" : "latest"
     },
     "bugs" : {
-        "url"   : "https://github.com/hans-sperling/urlSplit/perspective-view",
+        "url"   : "https://github.com/hans-sperling/perspective-view/issues",
         "email" : "info@bluejade.de"
     },
     "contributors" : [{

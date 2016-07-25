@@ -84,6 +84,7 @@ function isFunction(value) {
     return Object.prototype.toString.call(value) == "[object Function]";
 }
 
+// ---------------------------------------------------------------------------------------------------------------------
 
 Math.radians = function(degrees) {
     return degrees * Math.PI / 180;
@@ -93,3 +94,7 @@ Math.radians = function(degrees) {
 Math.degrees = function(radians) {
     return radians * 180 / Math.PI;
 };
+
+function timestamp() {
+    return window.performance && window.performance.timeNow ? window.performance.timeNow() : new Date().getTime();
+}

@@ -1,150 +1,111 @@
 
 function GameLoop(ppv) {
-    var config = {
-            isLooping : true,
-            maxFrames : -1,
-            desiredFrameRate : 60
-        },
+    var isLooping = true,
+        frameRate    = 60,
         frameStep    = 0,
-        frameCounter = 0,
-        desiredFrameCounter = 0,
-        now,
+
+        timeLast         = timestamp(),
+        timeNow,
         dt           = 0,
-        last         = timestamp(),
-        c            = 0.0027777777777778, // 1 / 360
-        i            = -(c),
+        delta        = 0,
+        fps          = 0,
         renderConfig = {
             position : ppv.getConfig().position
         },
-        stats =  {
-            fps : new Stats(),
-            ms  : new Stats()
-        };
+        stats = new Stats(),
+        statsDOM = document.body.appendChild(stats.dom);
 
+    var n = 0, m = 0;
+    var startPosition = ppv.getConfig().position;
 
-        stats.fps.showPanel(0); // 0: fps, 1: ms, 2: mb, 3+: custom
-        stats.ms.showPanel(1); // 0: fps, 1: ms, 2: mb, 3+: custom
+    // ---------------------------------------------------------------------------------------------------------- PUBLIC
 
+    function run() {
+        stats.showPanel(0); // 0: fps, 1: ms, 2: mb, 3+: custom
+        requestAnimFrame(frame);
+    }
 
-        var DOM_A = document.body.appendChild(stats.fps.dom);
-        var DOM_B = document.body.appendChild(stats.ms.dom);
+    // --------------------------------------------------------------------------------------------------------- METHODS
 
-    DOM_A.style.top ='0px';
-    DOM_B.style.top ='50px';
-
-
-    function timestamp() {
-        return window.performance && window.performance.now ? window.performance.now() : new Date().getTime();
+    function FrameCounter (counter) {
+        return counter;
     }
 
 
     function getShiftPosition(pxPerSec, dt) {
-        return (pxPerSec / config.desiredFrameRate) + ((pxPerSec / config.desiredFrameRate) * dt);
+        return (pxPerSec / frameRate) + ((pxPerSec / frameRate) * dt);
     }
 
 
-    function getCircleShiftPositionX(sec, dt) {
-        var degPerFrame = 360 / (((config.desiredFrameRate) / (frameStep * sec)) );
+    /*function getCircleShiftPositionX(dt) {
+        var degPerFrame = 360 / (frameRate / frameStep);
 
         // cos(RAD_0) = 1, cos(RAD_90) = 0; cos(RAD_180) = -1, cos(RAD_270) = 0
-        // console.log(Math.cos(Math.radians(0)));
-        // console.log(Math.cos(Math.radians(360)));
-
-        //console.log(Math.round(Math.cos(Math.radians(270))));
-
-
         return Math.cos(Math.radians(degPerFrame));
+    }*/
+
+
+    function getCircleShiftPositionX(rotPos, radius, sec, dt) {
+        var degPerFrame           = 360 / frameRate / sec;  // 6°
+        var degOnCurrentFrameStep = degPerFrame * (frameStep);        // [1, ..., 25] * 6°
+
+
+        // cos(RAD_0) = 1, cos(RAD_90) = 0; cos(RAD_180) = -1, cos(RAD_270) = 0
+        return rotPos.x + (Math.cos(Math.radians(degOnCurrentFrameStep)) * radius);
+        //return Math.cos(Math.radians(degOnCurrentFrameStep));
     }
 
 
-    function getCircleShiftPositionY(sec, dt) {
-        var degPerFrame = 360 / ((config.desiredFrameRate / frameStep) * sec);
+    function getCircleShiftPositionY(dt) {
+        var degPerFrame = 360 / (frameRate / frameStep);
 
         return Math.sin(Math.radians(degPerFrame));
     }
 
 
+    function frame() {
+        timeNow = timestamp();
+        delta   = ((timeNow - timeLast) / 1000);
+        dt      = (dt + Math.min(1, delta));
+        fps     = (1 / delta);
 
+        stats.begin();
 
+        // Update config in desired frame rate
+        while (dt > (1 / frameRate)) {
+            dt        = dt - (1 / frameRate);
+            frameStep = (frameStep + 1) % frameRate;
 
-
-
-
-
-
-
-var n = 0, m = 0;
-    var startPosition = ppv.getConfig().position;
-
-
-    /*var int = setInterval*/(function frame() {
-        now   = timestamp();
-        delta = ((now - last) / 1000);
-        dt    = (dt + Math.min(1, delta));
-        fps   = (1 / delta);
-
-        stats.fps.begin();
-        stats.ms.begin();
-
-        frameCounter++;
-
-
-
-
-        while (dt > (1 / config.desiredFrameRate)) {
-            dt = dt - (1 / config.desiredFrameRate);
-            frameStep  = (frameStep + 1) % config.desiredFrameRate;
-            desiredFrameCounter++;
-
-            //renderConfig.position.x += getShiftPosition(100, dt);
-            //renderConfig.position.y += getShiftPosition(0, dt);
-
-            n = getCircleShiftPositionX(4, dt);
+            n = getCircleShiftPositionX(startPosition, 50, 2,dt);
             m = getCircleShiftPositionY(dt);
-
-/*
-            renderConfig = {
-                position: getRotatePosition(renderConfig.position, dt)
-            };
-*/
         }
 
-
-      //  x = position.x + Math.floor(Math.cos(Math.PI * i) * 200),
         renderConfig = {
             position : {
-                x: startPosition.x + (n * 50),
+                x: n
                 //y: startPosition.y + (m * 50)
             }
         };
 
 
 
-        //console.log(n);
-
-        //n = 0;
+        // Update and render ppv in original frame rate
         ppv.update(renderConfig);
         ppv.render();
 
 
-        stats.fps.end();
-        stats.ms.end();
-        if ((config.isLooping && config.maxFrames == -1) || (desiredFrameCounter < config.maxFrames)) {
+        stats.end();
 
-            last = now;
+        if (isLooping) {
+            timeLast = timeNow;
 
-            //console.log(frameCounter, ' :: ', delta, ' :: ' , Math.round(fps));
-            //console.log(frameCounter, ' ::');
             requestAnimFrame(frame);
-
         }
-        else {
-            console.log(ppv.getConfig().position.x);
-            //clearTimeout(int);
-            //int = null;
+    }
 
-        }
-    }/*, 1000 / 25*/)();
+    // --------------------------------------------------------------------------------------------------------- RETURNS
 
-    
+    return {
+        run : run
+    }
 }
