@@ -10,21 +10,19 @@ function GameLoop(ppv) {
         dt                = 0,
         delta             = 0,
         fps               = 0,
+        stats             = new Stats(),
         renderConfig      = {
             position : ppv.getConfig().position
         },
         position,
         rotationPosition,
-        newPosition,
-        stats = new Stats(),
-        statsDOM = document.body.appendChild(stats.dom);
-
-    var x = 0, y = 0, t = 0;
+        newPosition;
 
 
     // ---------------------------------------------------------------------------------------------------------- PUBLIC
 
     function run() {
+        document.body.appendChild(stats.dom);
         stats.showPanel(0); // 0: fps, 1: ms, 2: mb, 3+: custom
         requestAnimFrame(frame);
     }
@@ -82,161 +80,155 @@ function GameLoop(ppv) {
             sceneFrameCounter++;
 
 
-            if (frameCounter == 1) {
-                sceneFrameCounter = frameCounter - 1 + 1;
-                position          = { x: 850, y : 750 };
-
-                x = position.x;
-                y = position.y;
+            if (frameCounter ==    1) {
+                sceneFrameCounter       = frameCounter - 1 + 1;
+                position                = { x: 850, y : 750 };
+                newPosition             = position;
+                
+                renderConfig.position.x = newPosition.x;
+                renderConfig.position.y = newPosition.y;
             }
             else if (frameCounter >     1 && frameCounter <   91) {
-                sceneFrameCounter = frameCounter - 1 + 1;
-                position          = { x: 850, y : 750 };
-                newPosition       = getShiftPosition(position, { x : 850, y : 850 }, 60, dt);
+                sceneFrameCounter       = frameCounter - 1 + 1;
+                position                = { x: 850, y : 750 };
+                newPosition             = getShiftPosition(position, { x : 850, y : 850 }, 60, dt);
 
-                x = newPosition.x;
-                y = newPosition.y;
+                renderConfig.position.x = newPosition.x;
+                renderConfig.position.y = newPosition.y;
             }
             else if (frameCounter >=   91 && frameCounter <  151) {
-                sceneFrameCounter = frameCounter - 91 + 1;
-                rotationPosition  = { x: 800, y : 900 };
-                newPosition       = getCirclePosition(rotationPosition, 50, 0, 90, 60, false);
+                sceneFrameCounter       = frameCounter - 91 + 1;
+                rotationPosition        = { x: 800, y : 900 };
+                newPosition             = getCirclePosition(rotationPosition, 50, 0, 90, 60, false);
 
-                x = newPosition.x;
-                y = newPosition.y;
+                renderConfig.position.x = newPosition.x;
+                renderConfig.position.y = newPosition.y;
             }
             else if (frameCounter >=  151 && frameCounter <  211) {
-                sceneFrameCounter = frameCounter - 151 + 1;
-                position          = { x: 800, y : 950 };
-                newPosition       = getShiftPosition(position, { x : 700, y : 950 }, 60, dt);
+                sceneFrameCounter       = frameCounter - 151 + 1;
+                position                = { x: 800, y : 950 };
+                newPosition             = getShiftPosition(position, { x : 700, y : 950 }, 60, dt);
 
-                x = newPosition.x;
-                y = newPosition.y;
+                renderConfig.position.x = newPosition.x;
+                renderConfig.position.y = newPosition.y;
             }
             else if (frameCounter >=  211 && frameCounter <  271) {
-                sceneFrameCounter = frameCounter - 211 + 1;
-                rotationPosition  = { x: 700, y : 1000 };
-                newPosition       = getCirclePosition(rotationPosition, 50, 180, 270, 60, true);
+                sceneFrameCounter       = frameCounter - 211 + 1;
+                rotationPosition        = { x: 700, y : 1000 };
+                newPosition             = getCirclePosition(rotationPosition, 50, 180, 270, 60, true);
 
-                x = newPosition.x;
-                y = newPosition.y;
+                renderConfig.position.x = newPosition.x;
+                renderConfig.position.y = newPosition.y;
             }
             else if (frameCounter >=  271 && frameCounter <  331) {
-                sceneFrameCounter = frameCounter - 271 + 1;
-                position          = { x: 650, y : 1000 };
-                newPosition       = getShiftPosition(position, { x : 650, y : 1100 }, 60, dt);
+                sceneFrameCounter       = frameCounter - 271 + 1;
+                position                = { x: 650, y : 1000 };
+                newPosition             = getShiftPosition(position, { x : 650, y : 1100 }, 60, dt);
 
-                x = newPosition.x;
-                y = newPosition.y;
+                renderConfig.position.x = newPosition.x;
+                renderConfig.position.y = newPosition.y;
             }
             else if (frameCounter >=  331 && frameCounter <  391) {
-                sceneFrameCounter = frameCounter - 331 + 1;
-                rotationPosition  = { x: 600, y : 1100 };
-                newPosition       = getCirclePosition(rotationPosition, 50, 0, 90, 60, false);
+                sceneFrameCounter       = frameCounter - 331 + 1;
+                rotationPosition        = { x: 600, y : 1100 };
+                newPosition             = getCirclePosition(rotationPosition, 50, 0, 90, 60, false);
 
-                x = newPosition.x;
-                y = newPosition.y;
+                renderConfig.position.x = newPosition.x;
+                renderConfig.position.y = newPosition.y;
             }
             else if (frameCounter >=  391 && frameCounter <  631) {
-                sceneFrameCounter = frameCounter - 391 + 1;
-                position          = { x: 600, y : 1150 };
-                newPosition       = getShiftPosition(position, { x : 200, y : 1150 }, 240, dt);
+                sceneFrameCounter       = frameCounter - 391 + 1;
+                position                = { x: 600, y : 1150 };
+                newPosition             = getShiftPosition(position, { x : 200, y : 1150 }, 240, dt);
 
-                x = newPosition.x;
-                y = newPosition.y;
+                renderConfig.position.x = newPosition.x;
+                renderConfig.position.y = newPosition.y;
             }
             else if (frameCounter >=  631 && frameCounter <  691) {
-                sceneFrameCounter = frameCounter - 631 + 1;
-                rotationPosition  = { x: 200, y : 1100 };
-                newPosition       = getCirclePosition(rotationPosition, 50, 90, 180, 60, false);
+                sceneFrameCounter       = frameCounter - 631 + 1;
+                rotationPosition        = { x: 200, y : 1100 };
+                newPosition             = getCirclePosition(rotationPosition, 50, 90, 180, 60, false);
 
-                x = newPosition.x;
-                y = newPosition.y;
+                renderConfig.position.x = newPosition.x;
+                renderConfig.position.y = newPosition.y;
             }
             else if (frameCounter >=  691 && frameCounter <  871) {
-                sceneFrameCounter = frameCounter - 691 + 1;
-                position          = { x: 150, y : 1100 };
-                newPosition       = getShiftPosition(position, { x : 150, y : 800 }, 180, dt);
+                sceneFrameCounter       = frameCounter - 691 + 1;
+                position                = { x: 150, y : 1100 };
+                newPosition             = getShiftPosition(position, { x : 150, y : 800 }, 180, dt);
 
-                x = newPosition.x;
-                y = newPosition.y;
+                renderConfig.position.x = newPosition.x;
+                renderConfig.position.y = newPosition.y;
             }
             else if (frameCounter >=  871 && frameCounter <  931) {
-                sceneFrameCounter = frameCounter - 871 + 1;
-                rotationPosition  = { x: 200, y : 800 };
-                newPosition       = getCirclePosition(rotationPosition, 50, 180, 270, 60, false);
+                sceneFrameCounter       = frameCounter - 871 + 1;
+                rotationPosition        = { x: 200, y : 800 };
+                newPosition             = getCirclePosition(rotationPosition, 50, 180, 270, 60, false);
 
-                x = newPosition.x;
-                y = newPosition.y;
+                renderConfig.position.x = newPosition.x;
+                renderConfig.position.y = newPosition.y;
             }
             else if (frameCounter >=  931 && frameCounter < 1051) {
-                sceneFrameCounter = frameCounter - 931 + 1;
-                position          = { x: 200, y : 750 };
-                newPosition       = getShiftPosition(position, { x : 400, y : 750 }, 120, dt);
+                sceneFrameCounter       = frameCounter - 931 + 1;
+                position                = { x: 200, y : 750 };
+                newPosition             = getShiftPosition(position, { x : 400, y : 750 }, 120, dt);
 
-                x = newPosition.x;
-                y = newPosition.y;
+                renderConfig.position.x = newPosition.x;
+                renderConfig.position.y = newPosition.y;
             }
             else if (frameCounter >= 1051 && frameCounter < 1111) {
-                sceneFrameCounter = frameCounter - 1051 + 1;
-                rotationPosition  = { x: 400, y : 700 };
-                newPosition       = getCirclePosition(rotationPosition, 50, 0, 90, 60, true);
+                sceneFrameCounter       = frameCounter - 1051 + 1;
+                rotationPosition        = { x: 400, y : 700 };
+                newPosition             = getCirclePosition(rotationPosition, 50, 0, 90, 60, true);
 
-                x = newPosition.x;
-                y = newPosition.y;
+                renderConfig.position.x = newPosition.x;
+                renderConfig.position.y = newPosition.y;
             }
             else if (frameCounter >= 1111 && frameCounter < 1171) {
-                sceneFrameCounter = frameCounter - 1111 + 1;
-                position          = { x: 450, y : 700 };
-                newPosition       = getShiftPosition(position, { x : 450, y : 600 }, 60, dt);
+                sceneFrameCounter       = frameCounter - 1111 + 1;
+                position                = { x: 450, y : 700 };
+                newPosition             = getShiftPosition(position, { x : 450, y : 600 }, 60, dt);
 
-                x = newPosition.x;
-                y = newPosition.y;
+                renderConfig.position.x = newPosition.x;
+                renderConfig.position.y = newPosition.y;
             }
             else if (frameCounter >= 1171 && frameCounter < 1231) {
-                sceneFrameCounter = frameCounter - 1171 + 1;
-                rotationPosition  = { x: 500, y : 600 };
-                newPosition       = getCirclePosition(rotationPosition, 50, 180, 270, 60, false);
+                sceneFrameCounter       = frameCounter - 1171 + 1;
+                rotationPosition        =   { x: 500, y : 600 };
+                newPosition             = getCirclePosition(rotationPosition, 50, 180, 270, 60, false);
 
-                x = newPosition.x;
-                y = newPosition.y;
+                renderConfig.position.x = newPosition.x;
+                renderConfig.position.y = newPosition.y;
             }
             else if (frameCounter >= 1231 && frameCounter < 1411) {
-                sceneFrameCounter = frameCounter - 1231 + 1;
-                position          = { x: 500, y : 550 };
-                newPosition       = getShiftPosition(position, { x : 800, y : 550 }, 180, dt);
+                sceneFrameCounter       = frameCounter - 1231 + 1;
+                position                = { x: 500, y : 550 };
+                newPosition             = getShiftPosition(position, { x : 800, y : 550 }, 180, dt);
 
-                x = newPosition.x;
-                y = newPosition.y;
+                renderConfig.position.x = newPosition.x;
+                renderConfig.position.y = newPosition.y;
             }
             else if (frameCounter >= 1411 && frameCounter < 1471) {
-                sceneFrameCounter = frameCounter - 1411 + 1;
+                sceneFrameCounter       = frameCounter - 1411 + 1;
                 rotationPosition = { x: 800, y : 600 };
-                newPosition       = getCirclePosition(rotationPosition, 50, -90, 0, 60, false);
+                newPosition             = getCirclePosition(rotationPosition, 50, -90, 0, 60, false);
 
-                x = newPosition.x;
-                y = newPosition.y;
+                renderConfig.position.x = newPosition.x;
+                renderConfig.position.y = newPosition.y;
             }
             else if (frameCounter >= 1471 && frameCounter < 1561) {
-                sceneFrameCounter = frameCounter - 1471 + 1;
-                position          = { x: 850, y : 600 };
-                newPosition       = getShiftPosition(position, { x : 850, y : 700 }, 60, dt);
+                sceneFrameCounter       = frameCounter - 1471 + 1;
+                position                = { x: 850, y : 600 };
+                newPosition             = getShiftPosition(position, { x : 850, y : 700 }, 60, dt);
 
-                x = newPosition.x;
-                y = newPosition.y;
+                renderConfig.position.x = newPosition.x;
+                renderConfig.position.y = newPosition.y;
             }
             else if (frameCounter >= 1561) {
                 sceneFrameCounter = 0;
                 frameCounter = 0;
             }
         }
-
-        renderConfig = {
-            position : {
-                x : x,
-                y : y
-            }
-        };
 
         // Update and render ppv in original frame rate
         ppv.update(renderConfig);
