@@ -41,11 +41,11 @@ jQuery(document).ready(function() {
             },
             render : {
                 back        : false,
-                camera      : false,
+                camera      : true,
                 front       : true,
-                grid        : false,
+                grid        : true,
                 hiddenWalls : false,
-                mode        : 'default', // flat, uniform, default
+                mode        : 'flat', // flat, uniform, default
                 walls       : true,
                 wireFrame   : false
             },

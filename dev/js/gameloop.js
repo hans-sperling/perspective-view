@@ -13,11 +13,14 @@ function GameLoop(ppv) {
         renderConfig      = {
             position : ppv.getConfig().position
         },
+        position,
+        rotationPosition,
+        newPosition,
         stats = new Stats(),
         statsDOM = document.body.appendChild(stats.dom);
 
     var x = 0, y = 0, t = 0;
-    var position = ppv.getConfig().position;
+
 
     // ---------------------------------------------------------------------------------------------------------- PUBLIC
 
@@ -42,37 +45,62 @@ function GameLoop(ppv) {
     }
 
 
-    function getCircleShiftPositionX(rotPos, radius, sec, startAngle, dt) {
-        var degPerFrame           = 360 / frameRate / sec;
+    function getCirclePosition(rotationPosition, radius, startAngle, endAngle, frames, reversed, dt) {
+        var degPerFrame           = (endAngle - startAngle) / frameRate / (frames / frameRate);
         var degOnCurrentFrameStep = degPerFrame * (sceneFrameCounter);
+        var vectorX               = 0;
+        var vectorY               = 0;
 
-        return rotPos.x + (Math.cos(Math.radians(degOnCurrentFrameStep + startAngle)) * radius);
-    }
-
-    function getCircleShiftPositionXReversed(rotPos, radius, sec, startAngle, dt) {
-        var degPerFrame           = 360 / frameRate / sec;
-        var degOnCurrentFrameStep = degPerFrame * (sceneFrameCounter);
-
-        return rotPos.x + (Math.cos(Math.radians(360 - degOnCurrentFrameStep + startAngle)) * radius);
-    }
-
-
-    function getCircleShiftPositionY(rotPos, radius, sec, startAngle, dt) {
-        var degPerFrame           = 360 / frameRate / sec;
-        var degOnCurrentFrameStep = degPerFrame * (sceneFrameCounter);
-
-        return rotPos.y + (Math.sin(Math.radians(degOnCurrentFrameStep + startAngle)) * radius);
-    }
+        if (reversed) {
+            vectorX = (Math.cos(Math.radians((endAngle - startAngle) - degOnCurrentFrameStep + startAngle)));
+            vectorY = (Math.sin(Math.radians((endAngle - startAngle) - degOnCurrentFrameStep + startAngle)));
+        }
+        else {
+            vectorX = (Math.cos(Math.radians(degOnCurrentFrameStep + startAngle)));
+            vectorY = (Math.sin(Math.radians(degOnCurrentFrameStep + startAngle)));
+        }
 
 
-    function getCircleShiftPositionYReversed(rotPos, radius, sec, startAngle, dt) {
-        var degPerFrame           = 360 / frameRate / sec;
-        var degOnCurrentFrameStep = degPerFrame * (sceneFrameCounter);
-
-        return rotPos.y + (Math.sin(Math.radians(360 - degOnCurrentFrameStep + startAngle)) * radius);
+        return {
+            x : (rotationPosition.x + (vectorX * radius)),
+            y : (rotationPosition.y + (vectorY * radius))
+        }
     }
 
 
+    function getCircleShiftPositionX(rotationPosition, radius, sec, startAngle, dt) {
+        var degPerFrame           = 360 / frameRate / sec;
+        var degOnCurrentFrameStep = degPerFrame * (sceneFrameCounter);
+
+
+        return rotationPosition.x + (Math.cos(Math.radians(degOnCurrentFrameStep + startAngle)) * radius);
+    }
+
+    function getCircleShiftPositionXReversed(rotationPosition, radius, sec, startAngle, dt) {
+        var degPerFrame           = 360 / frameRate / sec;
+        var degOnCurrentFrameStep = degPerFrame * (sceneFrameCounter);
+
+        return rotationPosition.x + (Math.cos(Math.radians(360 - degOnCurrentFrameStep + startAngle)) * radius);
+    }
+
+
+    function getCircleShiftPositionY(rotationPosition, radius, sec, startAngle, dt) {
+        var degPerFrame           = 360 / frameRate / sec;
+        var degOnCurrentFrameStep = degPerFrame * (sceneFrameCounter);
+
+        return rotationPosition.y + (Math.sin(Math.radians(degOnCurrentFrameStep + startAngle)) * radius);
+    }
+
+
+    function getCircleShiftPositionYReversed(rotationPosition, radius, sec, startAngle, dt) {
+        var degPerFrame           = 360 / frameRate / sec;
+        var degOnCurrentFrameStep = degPerFrame * (sceneFrameCounter);
+
+        return rotationPosition.y + (Math.sin(Math.radians(360 - degOnCurrentFrameStep + startAngle)) * radius);
+    }
+
+
+        frameCounter = 1171;
     function frame() {
         timeNow = timestamp();
         delta   = ((timeNow - timeLast) / 1000);
@@ -88,9 +116,23 @@ function GameLoop(ppv) {
             frameCounter++;
             sceneFrameCounter++;
 
+            /*
+            sceneFrameCounter = frameCounter - 1 + 1;
+            position          = { x: 800, y : 900 };
+
+            newPosition = getCirclePosition(position, 50, 0, 90, 60, false);
+
+            x = newPosition.x;
+            y = newPosition.y;
+
+            if (frameCounter >= 120) {
+                frameCounter = 0;
+            }
+            */
+
             if (frameCounter == 1) {
                 sceneFrameCounter = frameCounter - 1 + 1;
-                position = { x: 850, y : 750 };
+                position          = { x: 850, y : 750 };
 
                 x = position.x;
                 y = position.y;
@@ -104,10 +146,11 @@ function GameLoop(ppv) {
             }
             else if (frameCounter >= 91 && frameCounter < 151) {
                 sceneFrameCounter = frameCounter - 91 + 1;
-                position          = { x: 800, y : 900 };
+                rotationPosition  = { x: 800, y : 900 };
+                newPosition       = getCirclePosition(rotationPosition, 50, 0, 90, 60, false);
 
-                x = getCircleShiftPositionX(position, 50, 4, 0, dt);
-                y = getCircleShiftPositionY(position, 50, 4, 0, dt);
+                x = newPosition.x;
+                y = newPosition.y;
             }
             else if (frameCounter >= 151 && frameCounter < 211) {
                 sceneFrameCounter = frameCounter - 151 + 1;
@@ -118,10 +161,11 @@ function GameLoop(ppv) {
             }
             else if (frameCounter >= 211 && frameCounter < 271) {
                 sceneFrameCounter = frameCounter - 211 + 1;
-                position = { x: 700, y : 1000 };
+                rotationPosition  = { x: 700, y : 1000 };
+                newPosition       = getCirclePosition(rotationPosition, 50, 180, 270, 60, true);
 
-                x = getCircleShiftPositionXReversed(position, 50, 4, -90, dt);
-                y = getCircleShiftPositionYReversed(position, 50, 4, -90, dt);
+                x = newPosition.x;
+                y = newPosition.y;
             }
             else if (frameCounter >= 271 && frameCounter < 331) {
                 sceneFrameCounter = frameCounter - 271 + 1;
@@ -132,10 +176,11 @@ function GameLoop(ppv) {
             }
             else if (frameCounter >= 331 && frameCounter < 391) {
                 sceneFrameCounter = frameCounter - 331 + 1;
-                position = { x: 600, y : 1100 };
+                rotationPosition  = { x: 600, y : 1100 };
+                newPosition       = getCirclePosition(rotationPosition, 50, 0, 90, 60, false);
 
-                x = getCircleShiftPositionX(position, 50, 4, 0, dt);
-                y = getCircleShiftPositionY(position, 50, 4, 0, dt);
+                x = newPosition.x;
+                y = newPosition.y;
             }
             else if (frameCounter >= 391 && frameCounter < 631) {
                 sceneFrameCounter = frameCounter - 391 + 1;
@@ -146,10 +191,11 @@ function GameLoop(ppv) {
             }
             else if (frameCounter >= 631 && frameCounter < 691) {
                 sceneFrameCounter = frameCounter - 631 + 1;
-                position = { x: 200, y : 1100 };
+                rotationPosition  = { x: 200, y : 1100 };
+                newPosition       = getCirclePosition(rotationPosition, 50, 90, 180, 60, false);
 
-                x = getCircleShiftPositionX(position, 50, 4, 90, dt);
-                y = getCircleShiftPositionY(position, 50, 4, 90, dt);
+                x = newPosition.x;
+                y = newPosition.y;
             }
             else if (frameCounter >= 691 && frameCounter < 871) {
                 sceneFrameCounter = frameCounter - 691 + 1;
@@ -160,10 +206,11 @@ function GameLoop(ppv) {
             }
             else if (frameCounter >= 871 && frameCounter < 931) {
                 sceneFrameCounter = frameCounter - 871 + 1;
-                position = { x: 200, y : 800 };
+                rotationPosition  = { x: 200, y : 800 };
+                newPosition       = getCirclePosition(rotationPosition, 50, 180, 270, 60, false);
 
-                x = getCircleShiftPositionX(position, 50, 4, 180, dt);
-                y = getCircleShiftPositionY(position, 50, 4, 180, dt);
+                x = newPosition.x;
+                y = newPosition.y;
             }
             else if (frameCounter >= 931 && frameCounter < 1051) {
                 sceneFrameCounter = frameCounter - 931 + 1;
@@ -174,10 +221,11 @@ function GameLoop(ppv) {
             }
             else if (frameCounter >= 1051 && frameCounter < 1111) {
                 sceneFrameCounter = frameCounter - 1051 + 1;
-                position = { x: 400, y : 700 };
+                rotationPosition  = { x: 400, y : 700 };
+                newPosition       = getCirclePosition(rotationPosition, 50, 0, 90, 60, true);
 
-                x = getCircleShiftPositionXReversed(position, 50, 4, 90, dt);
-                y = getCircleShiftPositionYReversed(position, 50, 4, 90, dt);
+                x = newPosition.x;
+                y = newPosition.y;
             }
             else if (frameCounter >= 1111 && frameCounter < 1171) {
                 sceneFrameCounter = frameCounter - 1111 + 1;
@@ -188,24 +236,27 @@ function GameLoop(ppv) {
             }
             else if (frameCounter >= 1171 && frameCounter < 1231) {
                 sceneFrameCounter = frameCounter - 1171 + 1;
-                position = { x: 500, y : 600 };
+                rotationPosition  = { x: 500, y : 600 };
+                newPosition       = getCirclePosition(rotationPosition, 50, 180, 270, 60, false);
 
-                x = getCircleShiftPositionX(position, 50, 4, 180, dt);
-                y = getCircleShiftPositionY(position, 50, 4, 180, dt);
+                x = newPosition.x;
+                y = newPosition.y;
             }
             else if (frameCounter >= 1231 && frameCounter < 1411) {
                 sceneFrameCounter = frameCounter - 1231 + 1;
                 position          = { x: 500, y : 550 };
+
 
                 x = getShiftPosition(position.x, position.x + 300, 3, dt);
                 y = position.y;
             }
             else if (frameCounter >= 1411 && frameCounter < 1471) {
                 sceneFrameCounter = frameCounter - 1411 + 1;
-                position = { x: 800, y : 600 };
+                rotationPosition = { x: 800, y : 600 };
+                newPosition       = getCirclePosition(rotationPosition, 50, -90, 0, 60, false);
 
-                x = getCircleShiftPositionX(position, 50, 4, -90, dt);
-                y = getCircleShiftPositionY(position, 50, 4, -90, dt);
+                x = newPosition.x;
+                y = newPosition.y;
             }
             else if (frameCounter >= 1471 && frameCounter < 1561) {
                 sceneFrameCounter = frameCounter - 1471 + 1;
