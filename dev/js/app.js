@@ -23,7 +23,7 @@ jQuery(document).ready(function() {
     canvas.width  = canvas.offsetWidth;
     canvas.height = canvas.offsetHeight;
 
-    var position = { x : 650, y : 750 },
+    var position = { x : 850, y : 750 },
         config   = {
             canvas    : canvas,
             context   : context,
@@ -42,12 +42,12 @@ jQuery(document).ready(function() {
             render : {
                 back        : false,
                 camera      : !false,
-                front       :   true,
-                grid        : false,
+                front       : true,
+                grid        : !false,
                 hiddenWalls : false,
-                mode        : 'default', // flat, uniform, default
+                mode        : 'flat', // flat, uniform, default
                 walls       : true,
-                wireFrame   : !false
+                wireFrame   : false
             },
             color : {
                 mode        : 'default', // default, w.i.p

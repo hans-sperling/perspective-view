@@ -27,32 +27,17 @@ function GameLoop(ppv) {
 
     // --------------------------------------------------------------------------------------------------------- METHODS
 
-    function FrameCounter (counter) {
-        return counter;
-    }
-
 
     function getShiftPosition(pxPerSec, dt) {
         return (pxPerSec / frameRate) + ((pxPerSec / frameRate) * dt);
     }
 
 
-    /*function getCircleShiftPositionX(dt) {
-        var degPerFrame = 360 / (frameRate / frameStep);
-
-        // cos(RAD_0) = 1, cos(RAD_90) = 0; cos(RAD_180) = -1, cos(RAD_270) = 0
-        return Math.cos(Math.radians(degPerFrame));
-    }*/
-
-
     function getCircleShiftPositionX(rotPos, radius, sec, dt) {
-        var degPerFrame           = 360 / frameRate / sec;  // 6°
-        var degOnCurrentFrameStep = degPerFrame * (frameCounter);        // [1, ..., 25] * 6°
+        var degPerFrame           = 360 / frameRate / sec;
+        var degOnCurrentFrameStep = degPerFrame * (frameCounter);
 
-
-        // cos(RAD_0) = 1, cos(RAD_90) = 0; cos(RAD_180) = -1, cos(RAD_270) = 0
         return rotPos.x + (Math.cos(Math.radians(degOnCurrentFrameStep)) * radius);
-        //return Math.cos(Math.radians(degOnCurrentFrameStep));
     }
 
 
@@ -78,10 +63,21 @@ function GameLoop(ppv) {
             frameStep = (frameStep + 1) % frameRate;
             frameCounter++;
 
+
+
+            if (frameCounter == 1) {
+                n = startPosition.x;
+                m = startPosition.y;
+            }
+            else if (frameCounter > 1 && frameCounter < 91) {
+                n = getShiftPosition(100, dt);
+            }
+            //}
+            /*
             t = 8;
             n = getCircleShiftPositionX(startPosition, 200, t, dt);
             m = getCircleShiftPositionY(startPosition, 200, t, dt);
-
+*/
             if (frameCounter == t * frameRate) {
                 frameCounter = 0;
             }
@@ -94,12 +90,9 @@ function GameLoop(ppv) {
             }
         };
 
-
-
         // Update and render ppv in original frame rate
         ppv.update(renderConfig);
         ppv.render();
-
 
         stats.end();
 
