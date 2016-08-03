@@ -3,9 +3,9 @@ function GameLoop(ppv) {
     var isLooping = true,
         frameRate    = 60,
         frameStep    = 0,
-
-        timeLast         = timestamp(),
-        timeNow,
+        frameCounter = 0,
+        timeLast     = timestamp(),
+        timeNow      = 0,
         dt           = 0,
         delta        = 0,
         fps          = 0,
@@ -15,7 +15,7 @@ function GameLoop(ppv) {
         stats = new Stats(),
         statsDOM = document.body.appendChild(stats.dom);
 
-    var n = 0, m = 0;
+    var n = 0, m = 0, t = 0;
     var startPosition = ppv.getConfig().position;
 
     // ---------------------------------------------------------------------------------------------------------- PUBLIC
@@ -47,7 +47,7 @@ function GameLoop(ppv) {
 
     function getCircleShiftPositionX(rotPos, radius, sec, dt) {
         var degPerFrame           = 360 / frameRate / sec;  // 6°
-        var degOnCurrentFrameStep = degPerFrame * (frameStep);        // [1, ..., 25] * 6°
+        var degOnCurrentFrameStep = degPerFrame * (frameCounter);        // [1, ..., 25] * 6°
 
 
         // cos(RAD_0) = 1, cos(RAD_90) = 0; cos(RAD_180) = -1, cos(RAD_270) = 0
@@ -56,10 +56,11 @@ function GameLoop(ppv) {
     }
 
 
-    function getCircleShiftPositionY(dt) {
-        var degPerFrame = 360 / (frameRate / frameStep);
+    function getCircleShiftPositionY(rotPos, radius, sec, dt) {
+        var degPerFrame           = 360 / frameRate / sec;
+        var degOnCurrentFrameStep = degPerFrame * (frameCounter);
 
-        return Math.sin(Math.radians(degPerFrame));
+        return rotPos.y + (Math.sin(Math.radians(degOnCurrentFrameStep)) * radius);
     }
 
 
@@ -75,15 +76,21 @@ function GameLoop(ppv) {
         while (dt > (1 / frameRate)) {
             dt        = dt - (1 / frameRate);
             frameStep = (frameStep + 1) % frameRate;
+            frameCounter++;
 
-            n = getCircleShiftPositionX(startPosition, 50, 2,dt);
-            m = getCircleShiftPositionY(dt);
+            t = 8;
+            n = getCircleShiftPositionX(startPosition, 200, t, dt);
+            m = getCircleShiftPositionY(startPosition, 200, t, dt);
+
+            if (frameCounter == t * frameRate) {
+                frameCounter = 0;
+            }
         }
 
         renderConfig = {
             position : {
-                x: n
-                //y: startPosition.y + (m * 50)
+                x : n,
+                y : m
             }
         };
 

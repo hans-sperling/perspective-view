@@ -42,12 +42,12 @@ jQuery(document).ready(function() {
             render : {
                 back        : false,
                 camera      : !false,
-                front       : true,
-                grid        : !false,
+                front       :   true,
+                grid        : false,
                 hiddenWalls : false,
-                mode        : 'flat', // flat, uniform, default
+                mode        : 'default', // flat, uniform, default
                 walls       : true,
-                wireFrame   : false
+                wireFrame   : !false
             },
             color : {
                 mode        : 'default', // default, w.i.p
@@ -68,7 +68,4 @@ jQuery(document).ready(function() {
     gameLoop = new GameLoop(ppv, config);
 
     gameLoop.run();
-
-
-
 });
