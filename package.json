@@ -1,6 +1,6 @@
 {
     "name"        : "perspective-view",
-    "version"     : "1.2.0",
+    "version"     : "1.4.1",
     "description" : "Delivers a simple javascript methods pool for rendering grid based (array) maps into a virtual, perspective, 3d top view with canvas.",
     "keywords" : [
         "javascript"
@@ -16,7 +16,7 @@
         "grunt-contrib-concat" : "latest"
     },
     "bugs" : {
-        "url"   : "https://github.com/hans-sperling/urlSplit/perspective-view",
+        "url"   : "https://github.com/hans-sperling/perspective-view/issues",
         "email" : "info@bluejade.de"
     },
     "contributors" : [{

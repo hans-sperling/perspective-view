@@ -1,88 +1,153 @@
+/**
+ * Simple color module to provide a pseudo 3d lighting of an object
+ */
 ;(function color(ppv) {
     'use strict';
 
     // ------------------------------------------------------------------------------------------------------ PROPERTIES
 
-    var CFG = {};
+    var CFG      = {}, // Stores the global config
+        lighting = {}; // Stores the lighting configuration
 
     // ------------------------------------------------------------------------------------------------ MODULE INTERFACE
 
+    /**
+     * Initializes this module - will be called at the beginning from the app. Updates the module with the given config.
+     *
+     * @public
+     * @param {object} config
+     * @return {void}
+     */
     function init(config) {
         update(config);
     }
 
 
+    /**
+     * Will be called from app if all other modules has been loaded.
+     *
+     * @public
+     * @return {void}
+     */
     function run() {
         // Nothing to do yet
     }
 
 
+    /**
+     * Updates this module, will be called on init and on general updating the app.
+     *
+     * @public
+     * @pram {object} config
+     * @return {void}
+     */
     function update(config) {
         CFG = config;
+
+        lighting = CFG.color.lighting;
     }
 
     // --------------------------------------------------------------------------------------------------------- METHODS
 
-    function getBase() {
+    /**
+     * Returns the rgba-color string of the base color computed with the given lightning percentage.
+     *
+     * @private
+     * @param {number} lighting - Percentage number to compute with the base color
+     * @returns {string} - 'rgba(r, g, b, a)'
+     */
+    function getColor(lighting) {
+        var color = CFG.color.objectColor;
+
         return 'rgba('+
-            CFG.color.back.r + ', ' +
-            CFG.color.back.g + ', ' +
-            CFG.color.back.b + ', ' +
-            CFG.color.back.a + ')';
+            Math.round(color.r + (2.55 * lighting)) + ', ' +
+            Math.round(color.g + (2.55 * lighting)) + ', ' +
+            Math.round(color.b + (2.55 * lighting)) + ', ' +
+            color.a + ')';
     }
 
 
+    /**
+     * Returns the rgba-color string of the back shape of an object.
+     *
+     * @public
+     * @returns {string}
+     */
+    function getBack() {
+        return getColor(lighting.back);
+    }
+
+
+    /**
+     * Returns the rgba-color string of the empty space shape .
+     *
+     * @public
+     * @returns {string}
+     */
     function getSpace() {
+        var color = CFG.color.spaceColor;
+
         return 'rgba('+
-            CFG.color.space.r + ', ' +
-            CFG.color.space.g + ', ' +
-            CFG.color.space.b + ', ' +
-            CFG.color.space.a + ')';
+            color.r + ', ' +
+            color.g + ', ' +
+            color.b + ', ' +
+            color.a + ')';
     }
 
 
-    function getFront() {
-        return 'rgba('+
-            CFG.color.front.r + ', ' +
-            CFG.color.front.g + ', ' +
-            CFG.color.front.b + ', ' +
-            CFG.color.front.a + ')';
+    /**
+     * Returns the rgba-color string of the front shape of an object computed with a current given height.
+     *
+     * @public
+     * @param {number} height
+     * @returns {string}
+     */
+    function getFront(height) {
+        return getColor(lighting.front + (height * lighting.height));
     }
 
 
+    /**
+     * Returns the rgba-color string of the north shape of an object.
+     *
+     * @public
+     * @returns {string}
+     */
     function getNorth() {
-        return 'rgba('+
-            CFG.color.north.r + ', ' +
-            CFG.color.north.g + ', ' +
-            CFG.color.north.b + ', ' +
-            CFG.color.north.a + ')';
+        return getColor(lighting.north);
     }
 
 
+    /**
+     * Returns the rgba-color string of the east shape of an object.
+     *
+     * @public
+     * @returns {string}
+     */
     function getEast() {
-        return 'rgba('+
-            CFG.color.east.r + ', ' +
-            CFG.color.east.g + ', ' +
-            CFG.color.east.b + ', ' +
-            CFG.color.east.a + ')';
+        return getColor(lighting.east);
     }
 
 
+    /**
+     * Returns the rgba-color string of the south shape of an object.
+     *
+     * @public
+     * @returns {string}
+     */
     function getSouth() {
-        return 'rgba('+
-            CFG.color.south.r + ', ' +
-            CFG.color.south.g + ', ' +
-            CFG.color.south.b + ', ' +
-            CFG.color.south.a + ')';
+        return getColor(lighting.south);
     }
 
 
+    /**
+     * Returns the rgba-color string of the west shape of an object.
+     *
+     * @public
+     * @returns {string}
+     */
     function getWest() {
-        return 'rgba('+
-            CFG.color.west.r + ', ' +
-            CFG.color.west.g + ', ' +
-            CFG.color.west.b + ', ' +
-            CFG.color.west.a + ')';
+        return getColor(lighting.west);
     }
 
     // --------------------------------------------------------------------------------------------------------- RETURNS
@@ -92,7 +157,7 @@
         init     : init,
         run      : run,
         update   : update,
-        getBase  : getBase,
+        getBack  : getBack,
         getEast  : getEast,
         getFront : getFront,
         getNorth : getNorth,

@@ -15,6 +15,8 @@ window.PPV = (function() {
             util         : {}
         },
         defaults = {
+            colorModule : {},
+            // ----------------------------------------------------------------------------------- Default configuration
             canvas    : null,
             context   : null,
             map       : [[1]],
@@ -30,24 +32,39 @@ window.PPV = (function() {
                 }
             },
             render : {
-                mode      : 'normal', // flat, normal, uniform
-                wireFrame : false,
-                grid      : false,
-                camera    : false
+                back        : false,
+                camera      : false,
+                front       : true,
+                grid        : false,
+                hiddenWalls : false,
+                mode        : 'default',
+                walls       : true,
+                wireFrame   : false
             },
             color : {
-                back  : {r: 150, g: 150, b: 150, a: 0},
-                east  : {r: 159, g: 159, b: 159, a: 1},
-                front : {r: 207, g: 207, b: 207, a: 1},
-                north : {r: 127, g: 127, b: 127, a: 1},
-                south : {r: 223, g: 223, b: 223, a: 1},
-                space : {r: 255, g: 255, b: 255, a: 0},
-                west  : {r: 191, g: 191, b: 191, a: 1}
+                mode        : 'default',
+                objectColor : {r: 200, g: 200, b: 200, a: 1},
+                spaceColor  : {r: 255, g: 255, b: 255, a: 0},
+                lighting    : {
+                    back   : 0,
+                    east   : -10,
+                    height : 2,
+                    front  : 10,
+                    north  : -20,
+                    south  : 0,
+                    west   : -15
+                }
             }
         };
 
     // --------------------------------------------------------------------------------------------------------- MODULES
 
+    /**
+     * Appends a given module object.
+     *
+     * @param   {object} module
+     * @returns {void}
+     */
     function appendModule(module) {
         var id;
 
@@ -66,10 +83,16 @@ window.PPV = (function() {
                 mod[id] = module[id];
             }
         }
-
     }
 
 
+    /**
+     * Initializes all appended modules. Will call all init methods of the appended modules with the given
+     * configuration.
+     *
+     * @param   config
+     * @returns {void}
+     */
     function initModules(config) {
         var i;
 
@@ -83,6 +106,11 @@ window.PPV = (function() {
     }
 
 
+    /**
+     * Calls all run methods of the appended modules.
+     *
+     * @returns {void}
+     */
     function runModules() {
         var i;
 
@@ -96,6 +124,12 @@ window.PPV = (function() {
     }
 
 
+    /**
+     * Updates all appended modules. Will call all update methods of the appended modules with the given configuration.
+     *
+     * @param   config
+     * @returns {void}
+     */
     function updateModules(config) {
         var i;
 
@@ -108,32 +142,79 @@ window.PPV = (function() {
         }
     }
 
+
+    /**
+     * Returns a requested module by the module.mode in the config.
+     *
+     * @param   {string} type - Type of module [color, render, map]
+     * @returns {object}
+     */
+    function getModule(type) {
+        if (type == 'color') {
+            switch (CFG[type].mode) {
+                case 'default':
+                default:
+                    return mod.color;
+            }
+        }
+
+        return {};
+    }
+
     // ------------------------------------------------------------------------------------------------------------ INIT
 
+    /**
+     * Initialize this app.
+     *
+     * @param   {object} config
+     * @returns {{render: render, update: update}}
+     */
     function init(config) {
         CFG = mod.merge.deep(defaults, config);
+
+        // todo - Will be "decommented" if there are mor than only one color mode
+        //if (CFG.color.mode.toLowerCase() === 'default') {
+            CFG.colorModule = 'color';
+        //}
 
         initModules(CFG);
         runModules();
 
         return {
-            render : render,
-            update : update
+            render    : render,
+            update    : update,
+            getConfig : getConfig
         }
     }
 
     // ---------------------------------------------------------------------------------------------------------- PUBLIC
 
+    /**
+     * Public method to render the map
+     *
+     * @public
+     * @returns {void}
+     */
     function render() {
-        // mod.render.update(CFG);
         mod.render.render();
     }
 
 
+    /**
+     * Public method to update configuration
+     *
+     * @public
+     * @param   {object} config
+     * @returns {void}
+     */
     function update(config) {
         CFG =  mod.merge.deep(CFG, config);
 
         updateModules(CFG);
+    }
+
+    function getConfig() {
+        return CFG;
     }
 
     // ----------------------------------------------------------------------------------------------------- DEV RETURNS
@@ -142,8 +223,8 @@ window.PPV = (function() {
         DEV           : DEV,
         configuration : CFG,
         appendModule  : appendModule,
+        getModule     : getModule,
         init          : init,
         modules       : mod
     };
-
 })();

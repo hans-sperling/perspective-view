@@ -1,4 +1,4 @@
-/*! perspective-view - Delivers a simple javascript methods pool for rendering grid based (array) maps into a virtual, perspective, 3d top view with canvas. - Version: 1.2.0 */
+/*! perspective-view - Delivers a simple javascript methods pool for rendering grid based (array) maps into a virtual, perspective, 3d top view with canvas. - Version: 1.4.1 */
 function PerspectiveView(configuration) {
     return window.PPV.init(configuration);
 }
@@ -16,6 +16,8 @@ window.PPV = (function() {
             util         : {}
         },
         defaults = {
+            colorModule : {},
+            // ----------------------------------------------------------------------------------- Default configuration
             canvas    : null,
             context   : null,
             map       : [[1]],
@@ -31,24 +33,39 @@ window.PPV = (function() {
                 }
             },
             render : {
-                mode      : 'normal', // flat, normal, uniform
-                wireFrame : false,
-                grid      : false,
-                camera    : false
+                back        : false,
+                camera      : false,
+                front       : true,
+                grid        : false,
+                hiddenWalls : false,
+                mode        : 'default',
+                walls       : true,
+                wireFrame   : false
             },
             color : {
-                back  : {r: 150, g: 150, b: 150, a: 0},
-                east  : {r: 159, g: 159, b: 159, a: 1},
-                front : {r: 207, g: 207, b: 207, a: 1},
-                north : {r: 127, g: 127, b: 127, a: 1},
-                south : {r: 223, g: 223, b: 223, a: 1},
-                space : {r: 255, g: 255, b: 255, a: 0},
-                west  : {r: 191, g: 191, b: 191, a: 1}
+                mode        : 'default',
+                objectColor : {r: 200, g: 200, b: 200, a: 1},
+                spaceColor  : {r: 255, g: 255, b: 255, a: 0},
+                lighting    : {
+                    back   : 0,
+                    east   : -10,
+                    height : 2,
+                    front  : 10,
+                    north  : -20,
+                    south  : 0,
+                    west   : -15
+                }
             }
         };
 
     // --------------------------------------------------------------------------------------------------------- MODULES
 
+    /**
+     * Appends a given module object.
+     *
+     * @param   {object} module
+     * @returns {void}
+     */
     function appendModule(module) {
         var id;
 
@@ -67,10 +84,16 @@ window.PPV = (function() {
                 mod[id] = module[id];
             }
         }
-
     }
 
 
+    /**
+     * Initializes all appended modules. Will call all init methods of the appended modules with the given
+     * configuration.
+     *
+     * @param   config
+     * @returns {void}
+     */
     function initModules(config) {
         var i;
 
@@ -84,6 +107,11 @@ window.PPV = (function() {
     }
 
 
+    /**
+     * Calls all run methods of the appended modules.
+     *
+     * @returns {void}
+     */
     function runModules() {
         var i;
 
@@ -97,6 +125,12 @@ window.PPV = (function() {
     }
 
 
+    /**
+     * Updates all appended modules. Will call all update methods of the appended modules with the given configuration.
+     *
+     * @param   config
+     * @returns {void}
+     */
     function updateModules(config) {
         var i;
 
@@ -109,32 +143,79 @@ window.PPV = (function() {
         }
     }
 
+
+    /**
+     * Returns a requested module by the module.mode in the config.
+     *
+     * @param   {string} type - Type of module [color, render, map]
+     * @returns {object}
+     */
+    function getModule(type) {
+        if (type == 'color') {
+            switch (CFG[type].mode) {
+                case 'default':
+                default:
+                    return mod.color;
+            }
+        }
+
+        return {};
+    }
+
     // ------------------------------------------------------------------------------------------------------------ INIT
 
+    /**
+     * Initialize this app.
+     *
+     * @param   {object} config
+     * @returns {{render: render, update: update}}
+     */
     function init(config) {
         CFG = mod.merge.deep(defaults, config);
+
+        // todo - Will be "decommented" if there are mor than only one color mode
+        //if (CFG.color.mode.toLowerCase() === 'default') {
+            CFG.colorModule = 'color';
+        //}
 
         initModules(CFG);
         runModules();
 
         return {
-            render : render,
-            update : update
+            render    : render,
+            update    : update,
+            getConfig : getConfig
         }
     }
 
     // ---------------------------------------------------------------------------------------------------------- PUBLIC
 
+    /**
+     * Public method to render the map
+     *
+     * @public
+     * @returns {void}
+     */
     function render() {
-        // mod.render.update(CFG);
         mod.render.render();
     }
 
 
+    /**
+     * Public method to update configuration
+     *
+     * @public
+     * @param   {object} config
+     * @returns {void}
+     */
     function update(config) {
         CFG =  mod.merge.deep(CFG, config);
 
         updateModules(CFG);
+    }
+
+    function getConfig() {
+        return CFG;
     }
 
     // ----------------------------------------------------------------------------------------------------- DEV RETURNS
@@ -143,10 +224,10 @@ window.PPV = (function() {
         DEV           : DEV,
         configuration : CFG,
         appendModule  : appendModule,
+        getModule     : getModule,
         init          : init,
         modules       : mod
     };
-
 })();
 
 ;(function canvasHelper(ppv) {
@@ -154,59 +235,28 @@ window.PPV = (function() {
 
     // ------------------------------------------------------------------------------------------------------ PROPERTIES
 
-    /**
-     * Stores the context of the canvas.
-     *
-     * @private
-     * @memberof canvasHelper
-     * @type {object}
-     */
-    var _context = {},
-
-
-    /**
-     * Stores the canvas element in which the helpers are rendered.
-     *
-     * @private
-     * @memberof canvasHelper
-     * @type {object}
-     */
-    _canvas  = {},
-
-
-    /**
-     * Stores the config for all helpers.
-     *
-     * @private
-     * @memberof canvasHelper
-     * @type     {object}
-     * @property {object} camera           - Config of the camera helper
-     * @property {string} camera.color     - Color of the camera lines
-     * @property {number} camera.lineWidth - Line width of the camera lines
-     * @property {object} grid             - Config of the grid helper
-     * @property {string} grid.color       - Color of the grid lines
-     * @property {number} grid.lineWidth   - Line width of the grid lines
-     */
-    _config = {
-        camera: {
-            color: 'rgba(0, 255, 127, 0.5)',
-            lineWidth: 1
-        },
-        grid: {
-            color: 'rgba(0, 127, 255, 0.5)',
-            lineWidth: 1
-        },
-        path: {
-            color: 'rgba(255, 0, 127, 0.5)',
-            fillcolor: '#fff',
-            lineWidth: 1
-        },
-        point: {
-            color: 'rgba(255, 127, 0, 0.5)',
-            width: 5,
-            height: 5
-        }
-    };
+    var context = {},
+        canvas  = {},
+        _config = {
+            camera: {
+                color: 'rgba(0, 255, 127, 0.5)',
+                lineWidth: 1
+            },
+            grid: {
+                color: 'rgba(0, 127, 255, 0.5)',
+                lineWidth: 1
+            },
+            path: {
+                color: 'rgba(255, 0, 127, 0.5)',
+                fillcolor: '#fff',
+                lineWidth: 1
+            },
+            point: {
+                color: 'rgba(255, 127, 0, 0.5)',
+                width: 5,
+                height: 5
+            }
+        };
 
     // ------------------------------------------------------------------------------------------------ MODULE INTERFACE
 
@@ -221,17 +271,17 @@ window.PPV = (function() {
 
 
     function update(config) {
-        _canvas  = config.canvas;
-        _context = config.context;
+        canvas  = config.canvas;
+        context = config.context;
     }
 
     // --------------------------------------------------------------------------------------------------------- METHODS
 
     function clean() {
-        _context.save();
-        _context.setTransform(1, 0, 0, 1, 0, 0);
-        _context.clearRect(0, 0, _canvas.width, _canvas.height);
-        _context.restore();
+        context.save();
+        context.setTransform(1, 0, 0, 1, 0, 0);
+        context.clearRect(0, 0, canvas.width, canvas.height);
+        context.restore();
     }
 
 
@@ -242,39 +292,36 @@ window.PPV = (function() {
             bl = { x : c.x - (camera.width / 2), y : c.y + (camera.height / 2)},
             br = { x : c.x + (camera.width / 2), y : c.y + (camera.height / 2)};
 
-        _context.save();
+        context.save();
 
-        _context.strokeStyle = _config.camera.color;
-        _context.lineWidth   = _config.camera.lineWidth;
+        context.strokeStyle = _config.camera.color;
+        context.lineWidth   = _config.camera.lineWidth;
 
+        context.rect(tl.x, tl.y, camera.width, camera.height);
+        context.stroke();
 
-        _context.rect(tl.x, tl.y, camera.width, camera.height);
-        _context.stroke();
+        context.beginPath();
+        context.moveTo(tl.x, tl.y);
+        context.lineTo(c.x,  c.y);
+        context.stroke();
 
-        _context.beginPath();
-        _context.moveTo(tl.x, tl.y);
-        _context.lineTo(c.x,  c.y);
-        _context.stroke();
+        context.beginPath();
+        context.moveTo(tr.x, tr.y);
+        context.lineTo(c.x,  c.y);
+        context.stroke();
 
-        _context.beginPath();
-        _context.moveTo(tr.x, tr.y);
-        _context.lineTo(c.x,  c.y);
-        _context.stroke();
+        context.beginPath();
+        context.moveTo(br.x, br.y);
+        context.lineTo(c.x,  c.y);
+        context.stroke();
 
-        _context.beginPath();
-        _context.moveTo(br.x, br.y);
-        _context.lineTo(c.x,  c.y);
-        _context.stroke();
+        context.beginPath();
+        context.moveTo(bl.x, bl.y);
+        context.lineTo(c.x,  c.y);
+        context.stroke();
 
-        _context.beginPath();
-        _context.moveTo(bl.x, bl.y);
-        _context.lineTo(c.x,  c.y);
-        _context.stroke();
-
-
-        _context.restore();
+        context.restore();
     }
-
 
 
     function drawCanvasGrid(camera, unitSize, shift) {
@@ -282,25 +329,25 @@ window.PPV = (function() {
             startY = (camera.position.y % unitSize) - shift.y,
             x, y;
 
-        _context.save();
-        _context.strokeStyle = _config.grid.color;
-        _context.lineWidth   = _config.grid.lineWidth;
+        context.save();
+        context.strokeStyle = _config.grid.color;
+        context.lineWidth   = _config.grid.lineWidth;
 
-        _context.beginPath();
+        context.beginPath();
 
-        for (x = startX; x <= _canvas.width; x += unitSize) {
-            _context.moveTo(x, 0);
-            _context.lineTo(x, _canvas.height);
+        for (x = startX; x <= canvas.width; x += unitSize) {
+            context.moveTo(x, 0);
+            context.lineTo(x, canvas.height);
         }
 
-        for (y = startY; y <= _canvas.height; y += unitSize) {
-            _context.moveTo(0, y);
-            _context.lineTo(_canvas.width, y);
+        for (y = startY; y <= canvas.height; y += unitSize) {
+            context.moveTo(0, y);
+            context.lineTo(canvas.width, y);
         }
 
-        _context.closePath();
-        _context.stroke();
-        _context.restore();
+        context.closePath();
+        context.stroke();
+        context.restore();
     }
 
 
@@ -313,25 +360,25 @@ window.PPV = (function() {
             stopY        = cameraStartY + camera.height,
             x, y;
 
-        _context.save();
-        _context.strokeStyle = _config.grid.color;
-        _context.lineWidth   = _config.grid.lineWidth;
+        context.save();
+        context.strokeStyle = _config.grid.color;
+        context.lineWidth   = _config.grid.lineWidth;
 
-        _context.beginPath();
+        context.beginPath();
 
         for (x = startX; x <= stopX; x += unit.width) {
-            _context.moveTo(x, cameraStartY);
-            _context.lineTo(x, stopY);
+            context.moveTo(x, cameraStartY);
+            context.lineTo(x, stopY);
         }
 
         for (y = startY; y <= stopY; y += unit.height) {
-            _context.moveTo(cameraStartX, y);
-            _context.lineTo(stopX, y);
+            context.moveTo(cameraStartX, y);
+            context.lineTo(stopX, y);
         }
 
-        _context.closePath();
-        _context.stroke();
-        _context.restore();
+        context.closePath();
+        context.stroke();
+        context.restore();
     }
 
 
@@ -344,15 +391,15 @@ window.PPV = (function() {
             height = _config.point.height;
         }
 
-        _context.save();
-        _context.fillStyle = _config.point.color;
-        _context.fillRect(
+        context.save();
+        context.fillStyle = _config.point.color;
+        context.fillRect(
             x - width/2,
             y - height/2,
             width,
             height
         );
-        _context.restore();
+        context.restore();
     }
 
 
@@ -361,27 +408,27 @@ window.PPV = (function() {
             filled = parameters.filled || false,
             i, pathAmount = path.length;
 
-        _context.save();
+        context.save();
 
-        _context.strokeStyle = _config.path.color;
-        _context.fillStyle   = _config.path.fillcolor;
-        _context.lineWidth   = _config.path.lineWidth;
+        context.strokeStyle = _config.path.color;
+        context.fillStyle   = _config.path.fillcolor;
+        context.lineWidth   = _config.path.lineWidth;
 
-        _context.beginPath();
-        _context.moveTo(path[0].x, path[0].y);
+        context.beginPath();
+        context.moveTo(path[0].x, path[0].y);
 
         for (i = 1; i < pathAmount; i++) {
-            _context.lineTo(path[i].x, path[i].y);
+            context.lineTo(path[i].x, path[i].y);
         }
 
-        _context.closePath();
-        _context.stroke();
+        context.closePath();
+        context.stroke();
 
         if (!filled) {
-            _context.fill();
+            context.fill();
         }
 
-        _context.restore();
+        context.restore();
     }
 
     // --------------------------------------------------------------------------------------------------------- RETURNS
@@ -561,91 +608,170 @@ function isFunction(value) {
     return Object.prototype.toString.call(value) == "[object Function]";
 }
 
+// ---------------------------------------------------------------------------------------------------------------------
+
+Math.radians = function(degrees) {
+    return degrees * Math.PI / 180;
+};
+
+// Converts from radians to degrees.
+Math.degrees = function(radians) {
+    return radians * 180 / Math.PI;
+};
+
+function timestamp() {
+    return window.performance && window.performance.timeNow ? window.performance.timeNow() : new Date().getTime();
+}
+/**
+ * Simple color module to provide a pseudo 3d lighting of an object
+ */
 ;(function color(ppv) {
     'use strict';
 
     // ------------------------------------------------------------------------------------------------------ PROPERTIES
 
-    var CFG = {};
+    var CFG      = {}, // Stores the global config
+        lighting = {}; // Stores the lighting configuration
 
     // ------------------------------------------------------------------------------------------------ MODULE INTERFACE
 
+    /**
+     * Initializes this module - will be called at the beginning from the app. Updates the module with the given config.
+     *
+     * @public
+     * @param {object} config
+     * @return {void}
+     */
     function init(config) {
         update(config);
     }
 
 
+    /**
+     * Will be called from app if all other modules has been loaded.
+     *
+     * @public
+     * @return {void}
+     */
     function run() {
         // Nothing to do yet
     }
 
 
+    /**
+     * Updates this module, will be called on init and on general updating the app.
+     *
+     * @public
+     * @pram {object} config
+     * @return {void}
+     */
     function update(config) {
         CFG = config;
+
+        lighting = CFG.color.lighting;
     }
 
     // --------------------------------------------------------------------------------------------------------- METHODS
 
-    function getBase() {
+    /**
+     * Returns the rgba-color string of the base color computed with the given lightning percentage.
+     *
+     * @private
+     * @param {number} lighting - Percentage number to compute with the base color
+     * @returns {string} - 'rgba(r, g, b, a)'
+     */
+    function getColor(lighting) {
+        var color = CFG.color.objectColor;
+
         return 'rgba('+
-            CFG.color.back.r + ', ' +
-            CFG.color.back.g + ', ' +
-            CFG.color.back.b + ', ' +
-            CFG.color.back.a + ')';
+            Math.round(color.r + (2.55 * lighting)) + ', ' +
+            Math.round(color.g + (2.55 * lighting)) + ', ' +
+            Math.round(color.b + (2.55 * lighting)) + ', ' +
+            color.a + ')';
     }
 
 
+    /**
+     * Returns the rgba-color string of the back shape of an object.
+     *
+     * @public
+     * @returns {string}
+     */
+    function getBack() {
+        return getColor(lighting.back);
+    }
+
+
+    /**
+     * Returns the rgba-color string of the empty space shape .
+     *
+     * @public
+     * @returns {string}
+     */
     function getSpace() {
+        var color = CFG.color.spaceColor;
+
         return 'rgba('+
-            CFG.color.space.r + ', ' +
-            CFG.color.space.g + ', ' +
-            CFG.color.space.b + ', ' +
-            CFG.color.space.a + ')';
+            color.r + ', ' +
+            color.g + ', ' +
+            color.b + ', ' +
+            color.a + ')';
     }
 
 
-    function getFront() {
-        return 'rgba('+
-            CFG.color.front.r + ', ' +
-            CFG.color.front.g + ', ' +
-            CFG.color.front.b + ', ' +
-            CFG.color.front.a + ')';
+    /**
+     * Returns the rgba-color string of the front shape of an object computed with a current given height.
+     *
+     * @public
+     * @param {number} height
+     * @returns {string}
+     */
+    function getFront(height) {
+        return getColor(lighting.front + (height * lighting.height));
     }
 
 
+    /**
+     * Returns the rgba-color string of the north shape of an object.
+     *
+     * @public
+     * @returns {string}
+     */
     function getNorth() {
-        return 'rgba('+
-            CFG.color.north.r + ', ' +
-            CFG.color.north.g + ', ' +
-            CFG.color.north.b + ', ' +
-            CFG.color.north.a + ')';
+        return getColor(lighting.north);
     }
 
 
+    /**
+     * Returns the rgba-color string of the east shape of an object.
+     *
+     * @public
+     * @returns {string}
+     */
     function getEast() {
-        return 'rgba('+
-            CFG.color.east.r + ', ' +
-            CFG.color.east.g + ', ' +
-            CFG.color.east.b + ', ' +
-            CFG.color.east.a + ')';
+        return getColor(lighting.east);
     }
 
 
+    /**
+     * Returns the rgba-color string of the south shape of an object.
+     *
+     * @public
+     * @returns {string}
+     */
     function getSouth() {
-        return 'rgba('+
-            CFG.color.south.r + ', ' +
-            CFG.color.south.g + ', ' +
-            CFG.color.south.b + ', ' +
-            CFG.color.south.a + ')';
+        return getColor(lighting.south);
     }
 
 
+    /**
+     * Returns the rgba-color string of the west shape of an object.
+     *
+     * @public
+     * @returns {string}
+     */
     function getWest() {
-        return 'rgba('+
-            CFG.color.west.r + ', ' +
-            CFG.color.west.g + ', ' +
-            CFG.color.west.b + ', ' +
-            CFG.color.west.a + ')';
+        return getColor(lighting.west);
     }
 
     // --------------------------------------------------------------------------------------------------------- RETURNS
@@ -655,7 +781,7 @@ function isFunction(value) {
         init     : init,
         run      : run,
         update   : update,
-        getBase  : getBase,
+        getBack  : getBack,
         getEast  : getEast,
         getFront : getFront,
         getNorth : getNorth,
@@ -665,17 +791,18 @@ function isFunction(value) {
     }});
 })(window.PPV);
 
+/**
+ * Map module to provide basic map operation for rendering.
+ */
 ;(function map(ppv) {
     'use strict';
 
     // ------------------------------------------------------------------------------------------------------ PROPERTIES
 
-    var CFG       = {},
+    var CFG       = {},             // Stores the global config
         map       = [],             // Stores the map
-        area      = [],             // Stores the map part to be rendered
         size      = {x : 0, y : 0}, // Stores the size of the map in px
         dimension = {x : 0, y : 0}, // Stores the x- and y-amount of the map - amount of tiles in the map
-        position  = {x : 0, y : 0}, // Stores the current position on the map in px
         tile      = {x : 0, y : 0}, // Stores the current position on the map as tile
         defaults  = {
             mapItem : 0             // Default value for cells with no content
@@ -683,37 +810,65 @@ function isFunction(value) {
 
     // ------------------------------------------------------------------------------------------------ MODULE INTERFACE
 
+    /**
+     * Initializes this module - will be called at the beginning from the app. Updates the module with the given config.
+     *
+     * @public
+     * @param {object} config
+     * @return {void}
+     */
     function init(config) {
         update(config);
     }
 
 
+    /**
+     * Will be called from app if all other modules has been loaded.
+     *
+     * @public
+     * @return {void}
+     */
     function run() {
         // Nothing to do yet
     }
 
 
+    /**
+     * Updates this module, will be called on init and on general updating the app.
+     *
+     * @public
+     * @pram {object} config
+     * @return {void}
+     */
     function update(config) {
         CFG       = config;
         map       = config.map;
         dimension = getDimension();
-        position  = getPosition();
         size      = getSize(dimension);
-        tile      = getPositionTile(position);
+        tile      = getPositionTile(CFG.position);
     }
 
     // --------------------------------------------------------------------------------------------------------- METHODS
 
+    /**
+     * Returns the part of the map as array of the given position which is visible in the camera plus the given buffer
+     * tiles.
+     *
+     * @param {object} position - X/Y position object
+     * @param {number} buffer   - Tiles around the visible part - Could be useful
+     * @returns {Array}
+     */
     function getArea(position, buffer) {
-        var camera       = CFG.camera,
-            unitSize     = CFG.unitSize,
-            positionTile = getPositionTile(position),
-            sizeX        = Math.ceil(((camera.width / 2) / unitSize)),
-            sizeY        = Math.ceil(((camera.height / 2) / unitSize)),
-            startX       = positionTile.x - sizeX - buffer,
-            stopX        = positionTile.x + sizeX + buffer,
-            startY       = positionTile.y - sizeY - buffer,
-            stopY        = positionTile.y + sizeY + buffer,
+        var camera   = CFG.camera,
+            unitSize = CFG.unitSize,
+            tile     = getPositionTile(position),
+            sizeX    = Math.ceil(((camera.width / 2) / unitSize)),
+            sizeY    = Math.ceil(((camera.height / 2) / unitSize)),
+            startX   = tile.x - sizeX - buffer,
+            stopX    = tile.x + sizeX + buffer,
+            startY   = tile.y - sizeY - buffer,
+            stopY    = tile.y + sizeY + buffer,
+            area     = [],
             a, b, x, y;
 
         for (y = startY, b = 0; y <= stopY; y++, b++) {
@@ -733,7 +888,13 @@ function isFunction(value) {
     }
 
 
+    /**
+     * Returns the sizes of the map in tiles.
+     *
+     * @returns {{x: number, y: number}}
+     */
     function getDimension() {
+        // todo - check if map[0] is an array
         return {
             x : map[0].length,
             y : map.length
@@ -741,6 +902,12 @@ function isFunction(value) {
     }
 
 
+    /**
+     * Returns the sizes of the map in px.
+     *
+     * @param  {object} dimension
+     * @returns {{x: number, y: number}}
+     */
     function getSize(dimension) {
         return {
             x : CFG.unitSize * dimension.x,
@@ -749,14 +916,12 @@ function isFunction(value) {
     }
 
 
-    function getPosition() {
-        return {
-            x : CFG.position.x,
-            y : CFG.position.y
-        };
-    }
-
-
+    /**
+     * Returns the tile in the map of the given position.
+     *
+     * @param {object} position - X/Y position in px
+     * @returns {{x: number, y: number}}
+     */
     function getPositionTile(position) {
         return {
             x : Math.floor(position.x / CFG.unitSize),
@@ -773,7 +938,6 @@ function isFunction(value) {
         update           : update,
         getArea          : getArea,
         getDimension     : getDimension,
-        getPosition      : getPosition,
         getSize          : getSize,
         getPositionTile  : getPositionTile
     }});
@@ -794,28 +958,56 @@ function isFunction(value) {
 
     // ------------------------------------------------------------------------------------------------ MODULE INTERFACE
 
+    /**
+     * Initializes this module - will be called at the beginning from the app. Updates the module with the given config.
+     *
+     * @public
+     * @param {object} config
+     * @return {void}
+     */
     function init(config) {
         mod_Map          = ppv.modules.map;
-        mod_Color        = ppv.modules.color;
+        mod_Color        = ppv.getModule('color');
         mod_canvasHelper = ppv.modules.canvasHelper;
 
         update(config);
     }
 
 
+    /**
+     * Will be called from app if all other modules has been loaded.
+     *
+     * @public
+     * @return {void}
+     */
     function run() {
         // Nothing to do yet
     }
 
 
+    /**
+     * Updates this module, will be called on init and on general updating the app.
+     *
+     * @public
+     * @pram {object} config
+     * @return {void}
+     */
     function update(config) {
         CFG         = config;
+
+        // todo - Optimize - Get mapArea only if the position has changed and a new position tile has been reached
         renderMap   = mod_Map.getArea(CFG.position, buffer);
         renderOrder = getRenderOrder(renderMap);
     }
 
     // --------------------------------------------------------------------------------------------------------- METHODS
 
+    /**
+     * Fast way to clean the complete canvas.
+     *
+     * @private
+     * @return {void}
+     */
     function cleanCanvas() {
         CFG.context.save();
         CFG.context.setTransform(1, 0, 0, 1, 0, 0);
@@ -824,21 +1016,34 @@ function isFunction(value) {
     }
 
 
+    /**
+     * Returns the vanishing tile - Regular value is the middle tile of the renderMap.
+     *
+     * @returns {{x: number, y: number}}
+     */
     function getVanishingTile() {
+        // todo - Check if map[0] is an array
         return { x : Math.floor(renderMap[0].length / 2), y : Math.floor(renderMap.length / 2)};
     }
 
 
-    function getShiftByHeight(h) {
+    /**
+     * Returns the shift of a (front) tile in px depended on a given height in px.
+     *
+     * @private
+     * @param   {number} height
+     * @returns {{x: number, y: number}}
+     */
+    function getShiftByHeight(height) {
         var position    = CFG.position,
             unitSize    = CFG.unitSize,
-            newUnitSize = getUnitSizeByHeight(h),
+            newUnitSize = getUnitSizeByHeight(height),
             baseShift   = {
                 x : (position.x % unitSize),
                 y : (position.y % unitSize)
             };
 
-        if (h == 0) {
+        if (height == 0) {
             return baseShift;
         }
         else {
@@ -850,19 +1055,33 @@ function isFunction(value) {
     }
 
 
-    function getUnitSizeByHeight(h) {
+    /**
+     * Returns the size of an unit by a given height.
+     *
+     * @private
+     * @param   {number} height
+     * @returns {number}
+     */
+    function getUnitSizeByHeight(height) {
         var unitSize  = CFG.unitSize,
             unitDepth = CFG.unitDepth;
 
-        if (h == 0) {
+        if (height == 0) {
             return unitSize;
         }
         else {
-            return Math.round(unitSize + (Math.round(((unitSize * unitDepth) - unitSize)) * h));
+            return Math.round(unitSize + (Math.round(((unitSize * unitDepth) - unitSize)) * height));
         }
     }
 
+    // ------------------------------------------------------------------------------------------------ RENDER
 
+    /**
+     * Main method to render the map
+     *
+     * @public
+     * @returns {void}
+     */
     function render() {
         var camera            = CFG.camera,
             renderOrderAmount = renderOrder.length,
@@ -877,7 +1096,7 @@ function isFunction(value) {
 
             if (CFG.render.mode.toLowerCase() === 'flat') {
                 if (isNumber(item) && item > 0 || isArray(item)) {
-                    renderShape(getFrontPath(x, y, 0), mod_Color.getFront());
+                    renderShape(getFrontPath(x, y, 0), mod_Color.getFront(0));
                 }
             }
             else if (CFG.render.mode.toLowerCase() === 'uniform') {
@@ -885,7 +1104,7 @@ function isFunction(value) {
                     renderObject(x, y, 0, 1);
                 }
             }
-            else { // if (CFG.render.mode.toLowerCase() === 'normal') {
+            else { // if (CFG.render.mode.toLowerCase() === 'default') {
                 if (isNumber(item) && item > 0) {
                     renderObject(x, y, 0, item);
                 }
@@ -909,36 +1128,59 @@ function isFunction(value) {
     }
 
 
+    /**
+     * Renders one object at the given tile position and from given height h1 to given height h2.
+     *
+     * @param   {number} x  - X position of the tile
+     * @param   {number} y  - Y position of the tile
+     * @param   {number} h1 - Smaller height to start from
+     * @param   {number} h2 - Higher height to end with
+     * @returns {void}
+     */
     function renderObject(x, y, h1, h2) {
-        var vanishingTile     = getVanishingTile(),
+        var vanishingTile = getVanishingTile(),
             backPath, frontPath,
             eastPath, westPath, southPath, northPath;
 
         backPath  = getFrontPath(x, y, h1);
         frontPath = getFrontPath(x, y, h2);
 
-        if (CFG.render.wireFrame || x < vanishingTile.x) {
-            eastPath = getEastPath(backPath, frontPath);
-            renderShape(eastPath, mod_Color.getEast());
-        }
-        if (CFG.render.wireFrame || x > vanishingTile.x) {
-            westPath = getWestPath(backPath, frontPath);
-            renderShape(westPath, mod_Color.getWest());
+        if (CFG.render.back) {
+            renderShape(backPath, mod_Color.getBack());
         }
 
-        if (CFG.render.wireFrame || y < vanishingTile.y) {
-            southPath = getSouthPath(backPath, frontPath);
-            renderShape(southPath, mod_Color.getSouth());
-        }
-        if (CFG.render.wireFrame || y > vanishingTile.y) {
-            northPath = getNorthPath(backPath, frontPath);
-            renderShape(northPath, mod_Color.getNorth());
+        if (CFG.render.walls) {
+            if (CFG.render.wireFrame || CFG.render.hiddenWalls || x < vanishingTile.x) {
+                eastPath = getEastPath(backPath, frontPath);
+                renderShape(eastPath, mod_Color.getEast());
+            }
+            if (CFG.render.wireFrame || CFG.render.hiddenWalls || x > vanishingTile.x) {
+                westPath = getWestPath(backPath, frontPath);
+                renderShape(westPath, mod_Color.getWest());
+            }
+            if (CFG.render.wireFrame || CFG.render.hiddenWalls || y < vanishingTile.y) {
+                southPath = getSouthPath(backPath, frontPath);
+                renderShape(southPath, mod_Color.getSouth());
+            }
+            if (CFG.render.wireFrame || CFG.render.hiddenWalls || y > vanishingTile.y) {
+                northPath = getNorthPath(backPath, frontPath);
+                renderShape(northPath, mod_Color.getNorth());
+            }
         }
 
-        renderShape(frontPath, mod_Color.getFront());
+        if (CFG.render.front) {
+            renderShape(frontPath, mod_Color.getFront(h2));
+        }
     }
 
 
+    /**
+     * Renders a shape given bei its path and color. Through config your could choose to fill the shape or not.
+     *
+     * @param   {Array} path
+     * @param   {string} color - rgb-color-sting
+     * @returns {void}
+     */
     function renderShape(path, color) {
         var i = 0;
 
@@ -961,6 +1203,12 @@ function isFunction(value) {
     }
 
 
+    /**
+     * Returns the order of tiles to render.
+     *
+     * @param   {Array} map
+     * @returns {Array}
+     */
     function getRenderOrder(map) {
         var vanishingCell = getVanishingTile(),
             mapAmountX    = map[0].length,
@@ -1003,6 +1251,15 @@ function isFunction(value) {
 
     // ------------------------------------------------------------------------------------------------- Paths
 
+    /**
+     * Returns the path/edges of a back/front shape depended on a given height
+     *
+     * @private
+     * @param   {number} x - x position of the shape
+     * @param   {number} y - y position of the shape
+     * @param   {number} h - height of the shape
+     * @returns {{x: number, y: number}[]}
+     */
     function getFrontPath(x, y, h) {
         var vanishingTile = getVanishingTile(),
             shift         = getShiftByHeight(h),
@@ -1024,6 +1281,14 @@ function isFunction(value) {
     }
 
 
+    /**
+     * Returns the path/edges of the north shape depended on a given back- and front path/edges/shape
+     *
+     * @private
+     * @param   {object} backPath
+     * @param   {object} frontPath
+     * @returns {Array} - List of x/y positions
+     */
     function getNorthPath(backPath, frontPath) {
         return [
             { x : backPath[0].x,  y : backPath[0].y  },
@@ -1034,6 +1299,14 @@ function isFunction(value) {
     }
 
 
+    /**
+     * Returns the path/edges of the east shape depended on a given back- and front path/edges/shape
+     *
+     * @private
+     * @param   {object} backPath
+     * @param   {object} frontPath
+     * @returns {Array} - List of x/y positions
+     */
     function getEastPath(backPath, frontPath) {
         return [
             { x : frontPath[1].x, y : frontPath[1].y },
@@ -1044,6 +1317,14 @@ function isFunction(value) {
     }
 
 
+    /**
+     * Returns the path/edges of the south shape depended on a given back- and front path/edges/shape
+     *
+     * @private
+     * @param   {object} backPath
+     * @param   {object} frontPath
+     * @returns {Array} - List of x/y positions
+     */
     function getSouthPath(backPath, frontPath) {
         return [
             { x : frontPath[3].x, y : frontPath[3].y },
@@ -1054,6 +1335,14 @@ function isFunction(value) {
     }
 
 
+    /**
+     * Returns the path/edges of the west shape depended on a given back- and front path/edges/shape
+     *
+     * @private
+     * @param   {object} backPath
+     * @param   {object} frontPath
+     * @returns {Array} - List of x/y positions
+     */
     function getWestPath(backPath, frontPath) {
         return [
             { x : frontPath[0].x, y : frontPath[0].y },

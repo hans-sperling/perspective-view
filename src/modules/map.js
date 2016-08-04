@@ -1,14 +1,15 @@
+/**
+ * Map module to provide basic map operation for rendering.
+ */
 ;(function map(ppv) {
     'use strict';
 
     // ------------------------------------------------------------------------------------------------------ PROPERTIES
 
-    var CFG       = {},
+    var CFG       = {},             // Stores the global config
         map       = [],             // Stores the map
-        area      = [],             // Stores the map part to be rendered
         size      = {x : 0, y : 0}, // Stores the size of the map in px
         dimension = {x : 0, y : 0}, // Stores the x- and y-amount of the map - amount of tiles in the map
-        position  = {x : 0, y : 0}, // Stores the current position on the map in px
         tile      = {x : 0, y : 0}, // Stores the current position on the map as tile
         defaults  = {
             mapItem : 0             // Default value for cells with no content
@@ -16,37 +17,65 @@
 
     // ------------------------------------------------------------------------------------------------ MODULE INTERFACE
 
+    /**
+     * Initializes this module - will be called at the beginning from the app. Updates the module with the given config.
+     *
+     * @public
+     * @param {object} config
+     * @return {void}
+     */
     function init(config) {
         update(config);
     }
 
 
+    /**
+     * Will be called from app if all other modules has been loaded.
+     *
+     * @public
+     * @return {void}
+     */
     function run() {
         // Nothing to do yet
     }
 
 
+    /**
+     * Updates this module, will be called on init and on general updating the app.
+     *
+     * @public
+     * @pram {object} config
+     * @return {void}
+     */
     function update(config) {
         CFG       = config;
         map       = config.map;
         dimension = getDimension();
-        position  = getPosition();
         size      = getSize(dimension);
-        tile      = getPositionTile(position);
+        tile      = getPositionTile(CFG.position);
     }
 
     // --------------------------------------------------------------------------------------------------------- METHODS
 
+    /**
+     * Returns the part of the map as array of the given position which is visible in the camera plus the given buffer
+     * tiles.
+     *
+     * @param {object} position - X/Y position object
+     * @param {number} buffer   - Tiles around the visible part - Could be useful
+     * @returns {Array}
+     */
     function getArea(position, buffer) {
-        var camera       = CFG.camera,
-            unitSize     = CFG.unitSize,
-            positionTile = getPositionTile(position),
-            sizeX        = Math.ceil(((camera.width / 2) / unitSize)),
-            sizeY        = Math.ceil(((camera.height / 2) / unitSize)),
-            startX       = positionTile.x - sizeX - buffer,
-            stopX        = positionTile.x + sizeX + buffer,
-            startY       = positionTile.y - sizeY - buffer,
-            stopY        = positionTile.y + sizeY + buffer,
+        var camera   = CFG.camera,
+            unitSize = CFG.unitSize,
+            tile     = getPositionTile(position),
+            sizeX    = Math.ceil(((camera.width / 2) / unitSize)),
+            sizeY    = Math.ceil(((camera.height / 2) / unitSize)),
+            startX   = tile.x - sizeX - buffer,
+            stopX    = tile.x + sizeX + buffer,
+            startY   = tile.y - sizeY - buffer,
+            stopY    = tile.y + sizeY + buffer,
+            area     = [],
             a, b, x, y;
 
         for (y = startY, b = 0; y <= stopY; y++, b++) {
@@ -66,7 +95,13 @@
     }
 
 
+    /**
+     * Returns the sizes of the map in tiles.
+     *
+     * @returns {{x: number, y: number}}
+     */
     function getDimension() {
+        // todo - check if map[0] is an array
         return {
             x : map[0].length,
             y : map.length
@@ -74,6 +109,12 @@
     }
 
 
+    /**
+     * Returns the sizes of the map in px.
+     *
+     * @param  {object} dimension
+     * @returns {{x: number, y: number}}
+     */
     function getSize(dimension) {
         return {
             x : CFG.unitSize * dimension.x,
@@ -82,14 +123,12 @@
     }
 
 
-    function getPosition() {
-        return {
-            x : CFG.position.x,
-            y : CFG.position.y
-        };
-    }
-
-
+    /**
+     * Returns the tile in the map of the given position.
+     *
+     * @param {object} position - X/Y position in px
+     * @returns {{x: number, y: number}}
+     */
     function getPositionTile(position) {
         return {
             x : Math.floor(position.x / CFG.unitSize),
@@ -106,7 +145,6 @@
         update           : update,
         getArea          : getArea,
         getDimension     : getDimension,
-        getPosition      : getPosition,
         getSize          : getSize,
         getPositionTile  : getPositionTile
     }});

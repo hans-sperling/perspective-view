@@ -13,28 +13,56 @@
 
     // ------------------------------------------------------------------------------------------------ MODULE INTERFACE
 
+    /**
+     * Initializes this module - will be called at the beginning from the app. Updates the module with the given config.
+     *
+     * @public
+     * @param {object} config
+     * @return {void}
+     */
     function init(config) {
         mod_Map          = ppv.modules.map;
-        mod_Color        = ppv.modules.color;
+        mod_Color        = ppv.getModule('color');
         mod_canvasHelper = ppv.modules.canvasHelper;
 
         update(config);
     }
 
 
+    /**
+     * Will be called from app if all other modules has been loaded.
+     *
+     * @public
+     * @return {void}
+     */
     function run() {
         // Nothing to do yet
     }
 
 
+    /**
+     * Updates this module, will be called on init and on general updating the app.
+     *
+     * @public
+     * @pram {object} config
+     * @return {void}
+     */
     function update(config) {
         CFG         = config;
+
+        // todo - Optimize - Get mapArea only if the position has changed and a new position tile has been reached
         renderMap   = mod_Map.getArea(CFG.position, buffer);
         renderOrder = getRenderOrder(renderMap);
     }
 
     // --------------------------------------------------------------------------------------------------------- METHODS
 
+    /**
+     * Fast way to clean the complete canvas.
+     *
+     * @private
+     * @return {void}
+     */
     function cleanCanvas() {
         CFG.context.save();
         CFG.context.setTransform(1, 0, 0, 1, 0, 0);
@@ -43,21 +71,34 @@
     }
 
 
+    /**
+     * Returns the vanishing tile - Regular value is the middle tile of the renderMap.
+     *
+     * @returns {{x: number, y: number}}
+     */
     function getVanishingTile() {
+        // todo - Check if map[0] is an array
         return { x : Math.floor(renderMap[0].length / 2), y : Math.floor(renderMap.length / 2)};
     }
 
 
-    function getShiftByHeight(h) {
+    /**
+     * Returns the shift of a (front) tile in px depended on a given height in px.
+     *
+     * @private
+     * @param   {number} height
+     * @returns {{x: number, y: number}}
+     */
+    function getShiftByHeight(height) {
         var position    = CFG.position,
             unitSize    = CFG.unitSize,
-            newUnitSize = getUnitSizeByHeight(h),
+            newUnitSize = getUnitSizeByHeight(height),
             baseShift   = {
                 x : (position.x % unitSize),
                 y : (position.y % unitSize)
             };
 
-        if (h == 0) {
+        if (height == 0) {
             return baseShift;
         }
         else {
@@ -69,19 +110,33 @@
     }
 
 
-    function getUnitSizeByHeight(h) {
+    /**
+     * Returns the size of an unit by a given height.
+     *
+     * @private
+     * @param   {number} height
+     * @returns {number}
+     */
+    function getUnitSizeByHeight(height) {
         var unitSize  = CFG.unitSize,
             unitDepth = CFG.unitDepth;
 
-        if (h == 0) {
+        if (height == 0) {
             return unitSize;
         }
         else {
-            return Math.round(unitSize + (Math.round(((unitSize * unitDepth) - unitSize)) * h));
+            return Math.round(unitSize + (Math.round(((unitSize * unitDepth) - unitSize)) * height));
         }
     }
 
+    // ------------------------------------------------------------------------------------------------ RENDER
 
+    /**
+     * Main method to render the map
+     *
+     * @public
+     * @returns {void}
+     */
     function render() {
         var camera            = CFG.camera,
             renderOrderAmount = renderOrder.length,
@@ -96,7 +151,7 @@
 
             if (CFG.render.mode.toLowerCase() === 'flat') {
                 if (isNumber(item) && item > 0 || isArray(item)) {
-                    renderShape(getFrontPath(x, y, 0), mod_Color.getFront());
+                    renderShape(getFrontPath(x, y, 0), mod_Color.getFront(0));
                 }
             }
             else if (CFG.render.mode.toLowerCase() === 'uniform') {
@@ -104,7 +159,7 @@
                     renderObject(x, y, 0, 1);
                 }
             }
-            else { // if (CFG.render.mode.toLowerCase() === 'normal') {
+            else { // if (CFG.render.mode.toLowerCase() === 'default') {
                 if (isNumber(item) && item > 0) {
                     renderObject(x, y, 0, item);
                 }
@@ -128,36 +183,59 @@
     }
 
 
+    /**
+     * Renders one object at the given tile position and from given height h1 to given height h2.
+     *
+     * @param   {number} x  - X position of the tile
+     * @param   {number} y  - Y position of the tile
+     * @param   {number} h1 - Smaller height to start from
+     * @param   {number} h2 - Higher height to end with
+     * @returns {void}
+     */
     function renderObject(x, y, h1, h2) {
-        var vanishingTile     = getVanishingTile(),
+        var vanishingTile = getVanishingTile(),
             backPath, frontPath,
             eastPath, westPath, southPath, northPath;
 
         backPath  = getFrontPath(x, y, h1);
         frontPath = getFrontPath(x, y, h2);
 
-        if (CFG.render.wireFrame || x < vanishingTile.x) {
-            eastPath = getEastPath(backPath, frontPath);
-            renderShape(eastPath, mod_Color.getEast());
-        }
-        if (CFG.render.wireFrame || x > vanishingTile.x) {
-            westPath = getWestPath(backPath, frontPath);
-            renderShape(westPath, mod_Color.getWest());
+        if (CFG.render.back) {
+            renderShape(backPath, mod_Color.getBack());
         }
 
-        if (CFG.render.wireFrame || y < vanishingTile.y) {
-            southPath = getSouthPath(backPath, frontPath);
-            renderShape(southPath, mod_Color.getSouth());
-        }
-        if (CFG.render.wireFrame || y > vanishingTile.y) {
-            northPath = getNorthPath(backPath, frontPath);
-            renderShape(northPath, mod_Color.getNorth());
+        if (CFG.render.walls) {
+            if (CFG.render.wireFrame || CFG.render.hiddenWalls || x < vanishingTile.x) {
+                eastPath = getEastPath(backPath, frontPath);
+                renderShape(eastPath, mod_Color.getEast());
+            }
+            if (CFG.render.wireFrame || CFG.render.hiddenWalls || x > vanishingTile.x) {
+                westPath = getWestPath(backPath, frontPath);
+                renderShape(westPath, mod_Color.getWest());
+            }
+            if (CFG.render.wireFrame || CFG.render.hiddenWalls || y < vanishingTile.y) {
+                southPath = getSouthPath(backPath, frontPath);
+                renderShape(southPath, mod_Color.getSouth());
+            }
+            if (CFG.render.wireFrame || CFG.render.hiddenWalls || y > vanishingTile.y) {
+                northPath = getNorthPath(backPath, frontPath);
+                renderShape(northPath, mod_Color.getNorth());
+            }
         }
 
-        renderShape(frontPath, mod_Color.getFront());
+        if (CFG.render.front) {
+            renderShape(frontPath, mod_Color.getFront(h2));
+        }
     }
 
 
+    /**
+     * Renders a shape given bei its path and color. Through config your could choose to fill the shape or not.
+     *
+     * @param   {Array} path
+     * @param   {string} color - rgb-color-sting
+     * @returns {void}
+     */
     function renderShape(path, color) {
         var i = 0;
 
@@ -180,6 +258,12 @@
     }
 
 
+    /**
+     * Returns the order of tiles to render.
+     *
+     * @param   {Array} map
+     * @returns {Array}
+     */
     function getRenderOrder(map) {
         var vanishingCell = getVanishingTile(),
             mapAmountX    = map[0].length,
@@ -222,6 +306,15 @@
 
     // ------------------------------------------------------------------------------------------------- Paths
 
+    /**
+     * Returns the path/edges of a back/front shape depended on a given height
+     *
+     * @private
+     * @param   {number} x - x position of the shape
+     * @param   {number} y - y position of the shape
+     * @param   {number} h - height of the shape
+     * @returns {{x: number, y: number}[]}
+     */
     function getFrontPath(x, y, h) {
         var vanishingTile = getVanishingTile(),
             shift         = getShiftByHeight(h),
@@ -243,6 +336,14 @@
     }
 
 
+    /**
+     * Returns the path/edges of the north shape depended on a given back- and front path/edges/shape
+     *
+     * @private
+     * @param   {object} backPath
+     * @param   {object} frontPath
+     * @returns {Array} - List of x/y positions
+     */
     function getNorthPath(backPath, frontPath) {
         return [
             { x : backPath[0].x,  y : backPath[0].y  },
@@ -253,6 +354,14 @@
     }
 
 
+    /**
+     * Returns the path/edges of the east shape depended on a given back- and front path/edges/shape
+     *
+     * @private
+     * @param   {object} backPath
+     * @param   {object} frontPath
+     * @returns {Array} - List of x/y positions
+     */
     function getEastPath(backPath, frontPath) {
         return [
             { x : frontPath[1].x, y : frontPath[1].y },
@@ -263,6 +372,14 @@
     }
 
 
+    /**
+     * Returns the path/edges of the south shape depended on a given back- and front path/edges/shape
+     *
+     * @private
+     * @param   {object} backPath
+     * @param   {object} frontPath
+     * @returns {Array} - List of x/y positions
+     */
     function getSouthPath(backPath, frontPath) {
         return [
             { x : frontPath[3].x, y : frontPath[3].y },
@@ -273,6 +390,14 @@
     }
 
 
+    /**
+     * Returns the path/edges of the west shape depended on a given back- and front path/edges/shape
+     *
+     * @private
+     * @param   {object} backPath
+     * @param   {object} frontPath
+     * @returns {Array} - List of x/y positions
+     */
     function getWestPath(backPath, frontPath) {
         return [
             { x : frontPath[0].x, y : frontPath[0].y },
