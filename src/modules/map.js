@@ -66,7 +66,8 @@
      * @returns {Array}
      */
     function getArea(position, buffer) {
-        var camera   = CFG.camera,
+        var canvas   = CFG.canvas,
+            camera   = CFG.camera,
             unitSize = CFG.unitSize,
             tile     = getPositionTile(position),
             sizeX    = Math.ceil(((camera.width / 2) / unitSize)),
@@ -77,6 +78,22 @@
             stopY    = tile.y + sizeY + buffer,
             area     = [],
             a, b, x, y;
+
+        /*
+        if (camera.warped) {
+            var widthOffset  = ((canvas.width  - camera.width)  / 2),
+                heightOffset = ((canvas.height - camera.height) / 2);
+
+            startX =
+            startY =
+            stopX  =
+            stopY  =
+            tl = { x : widthOffset,                y : heightOffset};
+            tr = { x : widthOffset + camera.width, y : heightOffset};
+            bl = { x : widthOffset + camera.width, y : heightOffset + camera.height};
+            br = { x : widthOffset,                y : heightOffset + camera.height};
+        }
+        */
 
         for (y = startY, b = 0; y <= stopY; y++, b++) {
             area[b] = [];
