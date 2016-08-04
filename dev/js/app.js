@@ -34,6 +34,7 @@ jQuery(document).ready(function() {
             camera    : {
                 width    : canvas.width,
                 height   : canvas.height,
+                warped   : true,
                 position : {
                     x : canvas.width  / 2,
                     y : canvas.height / 2
@@ -41,9 +42,9 @@ jQuery(document).ready(function() {
             },
             render : {
                 back        : false,
-                camera      : false,
+                camera      : true,
                 front       : true,
-                grid        : false,
+                grid        : true,
                 hiddenWalls : false,
                 mode        : 'default', // flat, uniform, default
                 walls       : true,

@@ -26,6 +26,7 @@ window.PPV = (function() {
             camera    : {
                 width    : 800,
                 height   : 600,
+                warped   : false,
                 position : {
                     x : 400,
                     y : 300

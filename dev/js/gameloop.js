@@ -22,7 +22,7 @@ function GameLoop(ppv) {
     function run() {
         document.body.appendChild(stats.dom);
         stats.showPanel(0);
-        requestAnimFrame(frame);
+        requestAnimFrame(staticFrame);
     }
 
     // --------------------------------------------------------------------------------------------------------- METHODS
@@ -95,7 +95,7 @@ function GameLoop(ppv) {
     /**
      * Game loop function that will be called onevery frame.
      */
-    function frame() {
+    function pathFrame() {
         timeNow = timestamp();
         delta   = ((timeNow - timeLast) / 1000);
         dt      = (dt + Math.min(1, delta));
@@ -270,8 +270,13 @@ function GameLoop(ppv) {
         if (isLooping) {
             timeLast = timeNow;
 
-            requestAnimFrame(frame);
+            requestAnimFrame(pathFrame);
         }
+    }
+
+
+    function staticFrame() {
+        ppv.render();
     }
 
     // --------------------------------------------------------------------------------------------------------- RETURNS
