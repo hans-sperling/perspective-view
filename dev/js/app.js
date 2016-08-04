@@ -41,13 +41,13 @@ jQuery(document).ready(function() {
             },
             render : {
                 back        : false,
-                camera      : true,
+                camera      : false,
                 front       : true,
-                grid        : true,
+                grid        : false,
                 hiddenWalls : false,
                 mode        : 'default', // flat, uniform, default
                 walls       : true,
-                wireFrame   : !false
+                wireFrame   : false
             },
             color : {
                 mode        : 'default', // default, w.i.p
