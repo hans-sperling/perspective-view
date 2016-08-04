@@ -11,9 +11,7 @@ function GameLoop(ppv) {
         delta             = 0,
         fps               = 0,
         stats             = new Stats(),
-        renderConfig      = {
-            position : { x : 0, y : 0 }
-        },
+        renderConfig      = { position : { x : 0, y : 0 } },
         position,
         rotationPosition,
         newPosition;
@@ -29,6 +27,16 @@ function GameLoop(ppv) {
 
     // --------------------------------------------------------------------------------------------------------- METHODS
 
+    /**
+     * Splits the vector between start and end position into same parts depended on the given frames and returns the
+     * position at the current scene frame.
+     *
+     * @param   {{x: {number}, y: {number}}} startPosition
+     * @param   {{x: {number}, y: {number}}} endPosition
+     * @param   {number} frames - Amount of frames this scene needs
+     * @param   {number} dt - Offset time in seconds to correct computing on async frame rate
+     * @returns {{x: {number}, y: {number}}}
+     */
     function getShiftPosition(startPosition, endPosition, frames, dt) {
         var seconds    = (frames / frameRate) + dt,
             pxPerFrame = {
@@ -47,6 +55,20 @@ function GameLoop(ppv) {
     }
 
 
+    /**
+     * Splits a a specified circle part set by start and end angle into same parts depended on the given frames and
+     * returns the position depended on the radius and start angle at the current scene frame. To reverse the angle
+     * vector use the reversed parameter.
+     *
+     * @param   {{x: {number}, y: {number}}} rotationPosition
+     * @param   {number} radius - Radius of the circle
+     * @param   {number} startAngle
+     * @param   {number} endAngle
+     * @param   {number} frames - Amount of frames this scene needs
+     * @param   {boolean} reversed - Get the reversed angle vector
+     * @param   {number} dt - Offset time in seconds to correct computing on async frame rate
+     * @returns {{x: {number}, y: {number}}}
+     */
     function getCirclePosition(rotationPosition, radius, startAngle, endAngle, frames, reversed, dt) {
         var angle           = (endAngle - startAngle),
             seconds         = (frames / frameRate) + dt,
@@ -70,6 +92,9 @@ function GameLoop(ppv) {
     }
 
 
+    /**
+     * Game loop function that will be called onevery frame.
+     */
     function frame() {
         timeNow = timestamp();
         delta   = ((timeNow - timeLast) / 1000);
