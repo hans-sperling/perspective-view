@@ -12,7 +12,7 @@ function GameLoop(ppv) {
         fps               = 0,
         stats             = new Stats(),
         renderConfig      = {
-            position : ppv.getConfig().position
+            position : { x : 0, y : 0 }
         },
         position,
         rotationPosition,
@@ -23,43 +23,49 @@ function GameLoop(ppv) {
 
     function run() {
         document.body.appendChild(stats.dom);
-        stats.showPanel(0); // 0: fps, 1: ms, 2: mb, 3+: custom
+        stats.showPanel(0);
         requestAnimFrame(frame);
     }
 
     // --------------------------------------------------------------------------------------------------------- METHODS
 
     function getShiftPosition(startPosition, endPosition, frames, dt) {
-        var pxPerFrameX           = (endPosition.x - startPosition.x) / frameRate / (frames / frameRate);
-        var pxPerFrameY           = (endPosition.y - startPosition.y) / frameRate / (frames / frameRate);
-        var pxOnCurrentFrameStepX = pxPerFrameX * (sceneFrameCounter);
-        var pxOnCurrentFrameStepY = pxPerFrameY * (sceneFrameCounter);
+        var seconds    = (frames / frameRate) + dt,
+            pxPerFrame = {
+                x : (endPosition.x - startPosition.x) / (frameRate * seconds),
+                y : (endPosition.y - startPosition.y) / (frameRate * seconds)
+            },
+            pxOnSceneFrame = {
+                x : (pxPerFrame.x * sceneFrameCounter),
+                y : (pxPerFrame.y * sceneFrameCounter)
+            };
 
         return {
-            x : (startPosition.x + pxOnCurrentFrameStepX),
-            y : (startPosition.y + pxOnCurrentFrameStepY)
+            x : (startPosition.x + pxOnSceneFrame.x),
+            y : (startPosition.y + pxOnSceneFrame.y)
         };
     }
 
 
     function getCirclePosition(rotationPosition, radius, startAngle, endAngle, frames, reversed, dt) {
-        var degPerFrame           = (endAngle - startAngle) / frameRate / (frames / frameRate);
-        var degOnCurrentFrameStep = degPerFrame * (sceneFrameCounter);
-        var vectorX               = 0;
-        var vectorY               = 0;
+        var angle           = (endAngle - startAngle),
+            seconds         = (frames / frameRate) + dt,
+            degPerFrame     = angle / (frameRate * seconds),
+            degOnSceneFrame = degPerFrame * (sceneFrameCounter),
+            vector          = { x : 0, y : 0 };
 
         if (reversed) {
-            vectorX = (Math.cos(Math.radians((endAngle - startAngle) - degOnCurrentFrameStep + startAngle)));
-            vectorY = (Math.sin(Math.radians((endAngle - startAngle) - degOnCurrentFrameStep + startAngle)));
+            vector.x = (Math.cos(Math.radians(angle - degOnSceneFrame + startAngle)));
+            vector.y = (Math.sin(Math.radians(angle - degOnSceneFrame + startAngle)));
         }
         else {
-            vectorX = (Math.cos(Math.radians(degOnCurrentFrameStep + startAngle)));
-            vectorY = (Math.sin(Math.radians(degOnCurrentFrameStep + startAngle)));
+            vector.x = (Math.cos(Math.radians(degOnSceneFrame + startAngle)));
+            vector.y = (Math.sin(Math.radians(degOnSceneFrame + startAngle)));
         }
 
         return {
-            x : (rotationPosition.x + (vectorX * radius)),
-            y : (rotationPosition.y + (vectorY * radius))
+            x : (rotationPosition.x + (vector.x * radius)),
+            y : (rotationPosition.y + (vector.y * radius))
         }
     }
 
@@ -99,7 +105,7 @@ function GameLoop(ppv) {
             else if (frameCounter >=   91 && frameCounter <  151) {
                 sceneFrameCounter       = frameCounter - 91 + 1;
                 rotationPosition        = { x: 800, y : 900 };
-                newPosition             = getCirclePosition(rotationPosition, 50, 0, 90, 60, false);
+                newPosition             = getCirclePosition(rotationPosition, 50, 0, 90, 60, false, dt);
 
                 renderConfig.position.x = newPosition.x;
                 renderConfig.position.y = newPosition.y;
@@ -115,7 +121,7 @@ function GameLoop(ppv) {
             else if (frameCounter >=  211 && frameCounter <  271) {
                 sceneFrameCounter       = frameCounter - 211 + 1;
                 rotationPosition        = { x: 700, y : 1000 };
-                newPosition             = getCirclePosition(rotationPosition, 50, 180, 270, 60, true);
+                newPosition             = getCirclePosition(rotationPosition, 50, 180, 270, 60, true, dt);
 
                 renderConfig.position.x = newPosition.x;
                 renderConfig.position.y = newPosition.y;
@@ -131,7 +137,7 @@ function GameLoop(ppv) {
             else if (frameCounter >=  331 && frameCounter <  391) {
                 sceneFrameCounter       = frameCounter - 331 + 1;
                 rotationPosition        = { x: 600, y : 1100 };
-                newPosition             = getCirclePosition(rotationPosition, 50, 0, 90, 60, false);
+                newPosition             = getCirclePosition(rotationPosition, 50, 0, 90, 60, false, dt);
 
                 renderConfig.position.x = newPosition.x;
                 renderConfig.position.y = newPosition.y;
@@ -147,7 +153,7 @@ function GameLoop(ppv) {
             else if (frameCounter >=  631 && frameCounter <  691) {
                 sceneFrameCounter       = frameCounter - 631 + 1;
                 rotationPosition        = { x: 200, y : 1100 };
-                newPosition             = getCirclePosition(rotationPosition, 50, 90, 180, 60, false);
+                newPosition             = getCirclePosition(rotationPosition, 50, 90, 180, 60, false, dt);
 
                 renderConfig.position.x = newPosition.x;
                 renderConfig.position.y = newPosition.y;
@@ -163,7 +169,7 @@ function GameLoop(ppv) {
             else if (frameCounter >=  871 && frameCounter <  931) {
                 sceneFrameCounter       = frameCounter - 871 + 1;
                 rotationPosition        = { x: 200, y : 800 };
-                newPosition             = getCirclePosition(rotationPosition, 50, 180, 270, 60, false);
+                newPosition             = getCirclePosition(rotationPosition, 50, 180, 270, 60, false, dt);
 
                 renderConfig.position.x = newPosition.x;
                 renderConfig.position.y = newPosition.y;
@@ -179,7 +185,7 @@ function GameLoop(ppv) {
             else if (frameCounter >= 1051 && frameCounter < 1111) {
                 sceneFrameCounter       = frameCounter - 1051 + 1;
                 rotationPosition        = { x: 400, y : 700 };
-                newPosition             = getCirclePosition(rotationPosition, 50, 0, 90, 60, true);
+                newPosition             = getCirclePosition(rotationPosition, 50, 0, 90, 60, true, dt);
 
                 renderConfig.position.x = newPosition.x;
                 renderConfig.position.y = newPosition.y;
@@ -195,7 +201,7 @@ function GameLoop(ppv) {
             else if (frameCounter >= 1171 && frameCounter < 1231) {
                 sceneFrameCounter       = frameCounter - 1171 + 1;
                 rotationPosition        =   { x: 500, y : 600 };
-                newPosition             = getCirclePosition(rotationPosition, 50, 180, 270, 60, false);
+                newPosition             = getCirclePosition(rotationPosition, 50, 180, 270, 60, false, dt);
 
                 renderConfig.position.x = newPosition.x;
                 renderConfig.position.y = newPosition.y;
@@ -211,7 +217,7 @@ function GameLoop(ppv) {
             else if (frameCounter >= 1411 && frameCounter < 1471) {
                 sceneFrameCounter       = frameCounter - 1411 + 1;
                 rotationPosition = { x: 800, y : 600 };
-                newPosition             = getCirclePosition(rotationPosition, 50, -90, 0, 60, false);
+                newPosition             = getCirclePosition(rotationPosition, 50, -90, 0, 60, false, dt);
 
                 renderConfig.position.x = newPosition.x;
                 renderConfig.position.y = newPosition.y;
@@ -226,7 +232,7 @@ function GameLoop(ppv) {
             }
             else if (frameCounter >= 1561) {
                 sceneFrameCounter = 0;
-                frameCounter = 0;
+                frameCounter      = 0;
             }
         }
 
