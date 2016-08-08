@@ -82,7 +82,6 @@
             area     = [],
             a, b, x, y;
 
-        /**/
         if (camera.warped) {
             var widthOffset  = ((canvas.width  - camera.width)  / 2),
                 heightOffset = ((canvas.height - camera.height) / 2);
@@ -92,10 +91,6 @@
             stopX  = tile.x + Math.ceil((camera.width  - camera.position.x)  / unitSize) + buffer;
             stopY  = tile.y + Math.ceil((camera.height - camera.position.y)  / unitSize) + buffer;
         }
-            console.log(tile.x, tile.y);
-            console.log(startX, startY);
-            console.log(stopX, stopY);
-        /**/
 
         for (y = startY, b = 0; y <= stopY; y++, b++) {
             area[b] = [];
@@ -120,11 +115,19 @@
      * @returns {{x: number, y: number}}
      */
     function getDimension() {
-        // todo - check if map[0] is an array
-        return {
-            x : map[0].length,
-            y : map.length
-        };
+
+        if (isArray(map) && isArray(map[0])) {
+            return {
+                x : map[0].length,
+                y : map.length
+            };
+        }
+        else {
+            return {
+                x : 0,
+                y : 0
+            }
+        }
     }
 
 

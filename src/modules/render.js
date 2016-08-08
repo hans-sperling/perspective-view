@@ -77,11 +77,12 @@
      * @returns {{x: number, y: number}}
      */
     function getVanishingTile() {
-        // todo - Check if map[0] is an array
+        var position = CFG.camera.position,
+            unitSize = CFG.unitSize,
+            x = Math.ceil(position.x / unitSize),
+            y = Math.ceil(position.y / unitSize);
 
-        // todo - Bei nicht zentrischen Kamerapositionen, kann der Bezugspunkt nicht die Mitte der Karte sein!!!!!!!!!!!
-
-        return { x : Math.floor(renderMap[0].length / 2), y : Math.floor(renderMap.length / 2)};
+        return { x : x, y : y };
     }
 
 

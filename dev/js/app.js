@@ -36,7 +36,7 @@ jQuery(document).ready(function() {
                 height   : canvas.height,
                 warped   : true,
                 position : {
-                    x : canvas.width  / 4,
+                    x : canvas.width  / 2,
                     y : canvas.height / 2
                 }
             },
@@ -48,7 +48,7 @@ jQuery(document).ready(function() {
                 hiddenWalls : false,
                 mode        : 'default', // flat, uniform, default
                 walls       : true,
-                wireFrame   : !false
+                wireFrame   : false
             },
             color : {
                 mode        : 'default', // default, w.i.p
