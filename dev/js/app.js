@@ -23,7 +23,7 @@ jQuery(document).ready(function() {
     canvas.width  = canvas.offsetWidth;
     canvas.height = canvas.offsetHeight;
 
-    var position = { x : 850, y : 750 },
+    var position = { x : 150, y : 150 },
         config   = {
             canvas    : canvas,
             context   : context,
@@ -36,7 +36,7 @@ jQuery(document).ready(function() {
                 height   : canvas.height,
                 warped   : true,
                 position : {
-                    x : canvas.width  / 2,
+                    x : canvas.width  / 4,
                     y : canvas.height / 2
                 }
             },
@@ -48,7 +48,7 @@ jQuery(document).ready(function() {
                 hiddenWalls : false,
                 mode        : 'default', // flat, uniform, default
                 walls       : true,
-                wireFrame   : false
+                wireFrame   : !false
             },
             color : {
                 mode        : 'default', // default, w.i.p

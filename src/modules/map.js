@@ -70,30 +70,32 @@
             camera   = CFG.camera,
             unitSize = CFG.unitSize,
             tile     = getPositionTile(position),
+
             sizeX    = Math.ceil(((camera.width / 2) / unitSize)),
             sizeY    = Math.ceil(((camera.height / 2) / unitSize)),
+
             startX   = tile.x - sizeX - buffer,
             stopX    = tile.x + sizeX + buffer,
             startY   = tile.y - sizeY - buffer,
             stopY    = tile.y + sizeY + buffer,
+
             area     = [],
             a, b, x, y;
 
-        /*
+        /**/
         if (camera.warped) {
             var widthOffset  = ((canvas.width  - camera.width)  / 2),
                 heightOffset = ((canvas.height - camera.height) / 2);
 
-            startX =
-            startY =
-            stopX  =
-            stopY  =
-            tl = { x : widthOffset,                y : heightOffset};
-            tr = { x : widthOffset + camera.width, y : heightOffset};
-            bl = { x : widthOffset + camera.width, y : heightOffset + camera.height};
-            br = { x : widthOffset,                y : heightOffset + camera.height};
+            startX = tile.x - Math.ceil((camera.position.x - widthOffset)  / unitSize) - buffer;
+            startY = tile.y - Math.ceil((camera.position.y - heightOffset) / unitSize) - buffer;
+            stopX  = tile.x + Math.ceil((camera.width  - camera.position.x)  / unitSize) + buffer;
+            stopY  = tile.y + Math.ceil((camera.height - camera.position.y)  / unitSize) + buffer;
         }
-        */
+            console.log(tile.x, tile.y);
+            console.log(startX, startY);
+            console.log(stopX, stopY);
+        /**/
 
         for (y = startY, b = 0; y <= stopY; y++, b++) {
             area[b] = [];

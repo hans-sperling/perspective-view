@@ -78,6 +78,9 @@
      */
     function getVanishingTile() {
         // todo - Check if map[0] is an array
+
+        // todo - Bei nicht zentrischen Kamerapositionen, kann der Bezugspunkt nicht die Mitte der Karte sein!!!!!!!!!!!
+
         return { x : Math.floor(renderMap[0].length / 2), y : Math.floor(renderMap.length / 2)};
     }
 

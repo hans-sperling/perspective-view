@@ -22,6 +22,7 @@ function GameLoop(ppv) {
     function run() {
         document.body.appendChild(stats.dom);
         stats.showPanel(0);
+        //requestAnimFrame(pathFrame);
         requestAnimFrame(staticFrame);
     }
 
@@ -92,9 +93,6 @@ function GameLoop(ppv) {
     }
 
 
-    /**
-     * Game loop function that will be called onevery frame.
-     */
     function pathFrame() {
         timeNow = timestamp();
         delta   = ((timeNow - timeLast) / 1000);
