@@ -23,12 +23,12 @@ jQuery(document).ready(function() {
     canvas.width  = canvas.offsetWidth;
     canvas.height = canvas.offsetHeight;
 
-    var position = { x : 150, y : 150 },
+    var position = { x : canvas.width  / 2, y : canvas.height  / 2 },
         config   = {
             canvas    : canvas,
             context   : context,
             map       : map,
-            unitSize  : 100,
+            unitSize  : 50,
             unitDepth : 1.1,
             position  : position,
             camera    : {
@@ -44,11 +44,11 @@ jQuery(document).ready(function() {
                 back        : false,
                 camera      : true,
                 front       : true,
-                grid        : true,
+                grid        : !true,
                 hiddenWalls : false,
                 mode        : 'default', // flat, uniform, default
                 walls       : true,
-                wireFrame   : false
+                wireFrame   : !false
             },
             color : {
                 mode        : 'default', // default, w.i.p

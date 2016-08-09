@@ -23,8 +23,8 @@ function GameLoop(ppv) {
         document.body.appendChild(stats.dom);
         stats.showPanel(0);
 
-        requestAnimFrame(pathFrame);/**/
         /*
+        requestAnimFrame(pathFrame);/**/
         requestAnimFrame(staticFrame);/**/
     }
 
