@@ -153,6 +153,21 @@
             y    = renderOrder[i].y;
             item = renderMap[y][x];
 
+            if (isNumber(item) && item > 0) {
+                renderShadowMap(x, y, 0, item);
+            }
+            else if (isArray(item) && item.length >= 2) {
+                renderShadowMap(x, y, item[0], item[1]);
+            }
+
+        }
+
+
+        for (i = renderOrderAmount - 1; i >= 0; i--) {
+            x    = renderOrder[i].x;
+            y    = renderOrder[i].y;
+            item = renderMap[y][x];
+
             if (CFG.render.mode.toLowerCase() === 'flat') {
                 if (isNumber(item) && item > 0 || isArray(item)) {
                     renderShape(getFrontPath(x, y, 0), mod_Color.getFront(0));
@@ -177,8 +192,8 @@
             var shift       = getShiftByHeight(0),
                 newUnitSize = getUnitSizeByHeight(0);
 
-            //mod_canvasHelper.drawCameraGrid(camera, newUnitSize, shift);
             mod_canvasHelper.drawCanvasGrid(camera, newUnitSize, shift);
+            //mod_canvasHelper.drawCameraGrid(camera, newUnitSize, shift);
         }
 
         if (CFG.render.camera) {
@@ -186,6 +201,30 @@
         }
     }
 
+
+    function renderShadowMap(x, y, h1, h2) {
+        var backPath, shadowPath,
+            eastPath, westPath, southPath, northPath;
+
+        backPath   = getFrontPath(x, y, h1);
+        shadowPath = getShadowPath(x, y, h2);
+
+        if (1) {
+            renderShape(shadowPath, mod_Color.getShadow());
+
+            eastPath = getEastPath(backPath, shadowPath);
+            renderShape(eastPath, mod_Color.getShadow());
+
+            westPath = getWestPath(backPath, shadowPath);
+            renderShape(westPath, mod_Color.getShadow());
+
+            southPath = getSouthPath(backPath, shadowPath);
+            renderShape(southPath, mod_Color.getShadow());
+
+            northPath = getNorthPath(backPath, shadowPath);
+            renderShape(northPath, mod_Color.getShadow());
+        }
+    }
 
     /**
      * Renders one object at the given tile position and from given height h1 to given height h2.
@@ -198,11 +237,11 @@
      */
     function renderObject(x, y, h1, h2) {
         var vanishingTile = getVanishingTile(),
-            backPath, frontPath,
+            backPath, frontPath, shadowPath,
             eastPath, westPath, southPath, northPath;
 
-        backPath  = getFrontPath(x, y, h1);
-        frontPath = getFrontPath(x, y, h2);
+        backPath   = getFrontPath(x, y, h1);
+        frontPath  = getFrontPath(x, y, h2);
 
         if (CFG.render.back) {
             renderShape(backPath, mod_Color.getBack());
@@ -326,6 +365,27 @@
             camPosition   = CFG.camera.position,
             shiftX        = shift.x,
             shiftY        = shift.y,
+            startX        = camPosition.x + ((x - vanishingTile.x) * unitSize) - shiftX,
+            startY        = camPosition.y + ((y - vanishingTile.y) * unitSize) - shiftY,
+            stopX         = startX + unitSize,
+            stopY         = startY + unitSize;
+
+        return [
+            { x : startX, y : startY },
+            { x : stopX,  y : startY },
+            { x : stopX,  y : stopY  },
+            { x : startX, y : stopY  }
+        ];
+    }
+
+
+    function getShadowPath(x, y, h) {
+        var vanishingTile = getVanishingTile(),
+            shift         = getShiftByHeight(h),
+            unitSize      = getUnitSizeByHeight(0),
+            camPosition   = CFG.camera.position,
+            shiftX        = shift.x*2,
+            shiftY        = shift.y*2,
             startX        = camPosition.x + ((x - vanishingTile.x) * unitSize) - shiftX,
             startY        = camPosition.y + ((y - vanishingTile.y) * unitSize) - shiftY,
             stopX         = startX + unitSize,

@@ -11,7 +11,7 @@
                 lineWidth: 1
             },
             grid: {
-                color: 'rgba(0, 127, 255, 0.5)',
+                color: 'rgba(127, 127, 127, 0.2)',
                 lineWidth: 1
             },
             path: {
@@ -79,25 +79,20 @@
         context.stroke();
 
         context.beginPath();
+
         context.moveTo(tl.x, tl.y);
         context.lineTo(c.x,  c.y);
-        context.stroke();
 
-        context.beginPath();
         context.moveTo(tr.x, tr.y);
         context.lineTo(c.x,  c.y);
-        context.stroke();
 
-        context.beginPath();
         context.moveTo(br.x, br.y);
         context.lineTo(c.x,  c.y);
-        context.stroke();
 
-        context.beginPath();
         context.moveTo(bl.x, bl.y);
         context.lineTo(c.x,  c.y);
-        context.stroke();
 
+        context.stroke();
         context.restore();
     }
 
@@ -123,7 +118,6 @@
             context.lineTo(canvas.width, y);
         }
 
-        context.closePath();
         context.stroke();
         context.restore();
     }
@@ -154,7 +148,6 @@
             context.lineTo(stopX, y);
         }
 
-        context.closePath();
         context.stroke();
         context.restore();
     }

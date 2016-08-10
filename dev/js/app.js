@@ -19,16 +19,26 @@ jQuery(document).ready(function() {
         $canvas = $('#PerspectiveView'),
         canvas  = $canvas[0],
         context = canvas.getContext('2d');
-
+/**/
+    map = [
+        [1, 0, 1, 0, 1],
+        [0, 0, 0, 0, 0],
+        [1, 0, 1, 0, 1],
+        [0, 0, 0, 0, 0],
+        [1, 0, 1, 0, 1]
+    ];
+/**/
     canvas.width  = canvas.offsetWidth;
     canvas.height = canvas.offsetHeight;
 
-    var position = { x : canvas.width  / 2, y : canvas.height  / 2 },
+    /*
+    var position = { x : canvas.width  / 2 , y : canvas.height  / 2 },/**/
+    var position = { x : 250 , y : 250 },/**/
         config   = {
             canvas    : canvas,
             context   : context,
             map       : map,
-            unitSize  : 50,
+            unitSize  : 100,
             unitDepth : 1.1,
             position  : position,
             camera    : {
@@ -44,15 +54,16 @@ jQuery(document).ready(function() {
                 back        : false,
                 camera      : true,
                 front       : true,
-                grid        : !true,
+                grid        : true,
                 hiddenWalls : false,
                 mode        : 'default', // flat, uniform, default
                 walls       : true,
-                wireFrame   : !false
+                wireFrame   : false
             },
             color : {
                 mode        : 'default', // default, w.i.p
                 objectColor : {r: 200, g: 200, b: 200, a: 1},
+                shadowColor : {r: 0, g: 0, b: 0, a: 1},
                 spaceColor  : {r: 255, g: 255, b: 255, a: 0},
                 lighting    : {
                     back   : -20,

@@ -68,6 +68,23 @@
 
 
     /**
+     * Returns the rgba-color string of the shadow shape of an object.
+     *
+     * @public
+     * @returns {string}
+     */
+    function getShadow() {
+        var color = CFG.color.shadowColor;
+
+        return 'rgba('+
+            color.r + ', ' +
+            color.g + ', ' +
+            color.b + ', ' +
+            color.a + ')';
+    }
+
+
+    /**
      * Returns the rgba-color string of the back shape of an object.
      *
      * @public
@@ -154,15 +171,16 @@
 
     // Append module with public methods and properties
     ppv.appendModule({ color : {
-        init     : init,
-        run      : run,
-        update   : update,
-        getBack  : getBack,
-        getEast  : getEast,
-        getFront : getFront,
-        getNorth : getNorth,
-        getSouth : getSouth,
-        getSpace : getSpace,
-        getWest  : getWest
+        init      : init,
+        run       : run,
+        update    : update,
+        getBack   : getBack,
+        getEast   : getEast,
+        getFront  : getFront,
+        getNorth  : getNorth,
+        getSouth  : getSouth,
+        getShadow : getShadow,
+        getSpace  : getSpace,
+        getWest   : getWest
     }});
 })(window.PPV);
