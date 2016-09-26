@@ -4,6 +4,9 @@ Delivers a simple javascript methods pool for rendering grid based (array) maps 
 with canvas.
 
 [![Visual description](https://raw.githubusercontent.com/hans-sperling/perspective-view/master/dev/img/visual-description.jpg "Click to try a demo of the latest perspective-view version")](https://hans-sperling.github.io/perspective-view/)
+
+## Demo
+
 [Click to try a demo of the latest perspective-view version](https://hans-sperling.github.io/perspective-view/)
 
 
