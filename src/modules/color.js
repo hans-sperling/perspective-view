@@ -7,7 +7,8 @@
     // ------------------------------------------------------------------------------------------------------ PROPERTIES
 
     var CFG      = {}, // Stores the global config
-        lighting = {}; // Stores the lighting configuration
+        lighting = {}, // Stores the lighting configuration
+        objectShapeColor = {}; // Stores the shape colors of the objects
 
     // ------------------------------------------------------------------------------------------------ MODULE INTERFACE
 
@@ -44,7 +45,8 @@
     function update(config) {
         CFG = config;
 
-        lighting = CFG.color.lighting;
+        lighting         = CFG.color.lighting;
+        objectShapeColor = CFG.color.objectColor;
     }
 
     // --------------------------------------------------------------------------------------------------------- METHODS
@@ -54,32 +56,14 @@
      *
      * @private
      * @param {number} lighting - Percentage number to compute with the base color
+     * @param {object} color    - Color-Object of the shape
      * @returns {string} - 'rgba(r, g, b, a)'
      */
-    function getColor(lighting) {
-        var color = CFG.color.objectColor;
-
+    function getColor(lighting, color) {
         return 'rgba('+
             Math.round(color.r + (2.55 * lighting)) + ', ' +
             Math.round(color.g + (2.55 * lighting)) + ', ' +
             Math.round(color.b + (2.55 * lighting)) + ', ' +
-            color.a + ')';
-    }
-
-
-    /**
-     * Returns the rgba-color string of the shadow shape of an object.
-     *
-     * @public
-     * @returns {string}
-     */
-    function getShadow() {
-        var color = CFG.color.shadowColor;
-
-        return 'rgba('+
-            color.r + ', ' +
-            color.g + ', ' +
-            color.b + ', ' +
             color.a + ')';
     }
 
@@ -91,7 +75,7 @@
      * @returns {string}
      */
     function getBack() {
-        return getColor(lighting.back);
+        return getColor(lighting.back, objectShapeColor.back);
     }
 
 
@@ -120,7 +104,7 @@
      * @returns {string}
      */
     function getFront(height) {
-        return getColor(lighting.front + (height * lighting.height));
+        return getColor(lighting.front + (height * lighting.height), objectShapeColor.front);
     }
 
 
@@ -131,7 +115,7 @@
      * @returns {string}
      */
     function getNorth() {
-        return getColor(lighting.north);
+        return getColor(lighting.north, objectShapeColor.north);
     }
 
 
@@ -142,7 +126,7 @@
      * @returns {string}
      */
     function getEast() {
-        return getColor(lighting.east);
+        return getColor(lighting.east, objectShapeColor.east);
     }
 
 
@@ -153,7 +137,7 @@
      * @returns {string}
      */
     function getSouth() {
-        return getColor(lighting.south);
+        return getColor(lighting.south, objectShapeColor.south);
     }
 
 
@@ -164,7 +148,7 @@
      * @returns {string}
      */
     function getWest() {
-        return getColor(lighting.west);
+        return getColor(lighting.west, objectShapeColor.west);
     }
 
     // --------------------------------------------------------------------------------------------------------- RETURNS
@@ -179,7 +163,6 @@
         getFront  : getFront,
         getNorth  : getNorth,
         getSouth  : getSouth,
-        getShadow : getShadow,
         getSpace  : getSpace,
         getWest   : getWest
     }});

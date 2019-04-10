@@ -52,9 +52,9 @@ jQuery(document).ready(function() {
             },
             render : {
                 back        : false,
-                camera      : true,
+                camera      : false,
                 front       : true,
-                grid        : true,
+                grid        : false,
                 hiddenWalls : false,
                 mode        : 'default', // flat, uniform, default
                 walls       : true,
@@ -62,17 +62,23 @@ jQuery(document).ready(function() {
             },
             color : {
                 mode        : 'default', // default, w.i.p
-                objectColor : {r: 200, g: 200, b: 200, a: 1},
-                shadowColor : {r: 0, g: 0, b: 0, a: 1},
+                objectColor : {
+                  north : { r: 100, g: 200, b: 200, a: 1 },
+                  east  : { r: 200, g: 100, b: 200, a: 1 },
+                  south : { r: 200, g: 200, b: 100, a: 1 },
+                  west  : { r: 100, g: 100, b: 200, a: 1 },
+                  front : { r: 200, g: 100, b: 100, a: 1 },
+                  back  : { r: 200, g: 200, b: 200, a: 1 }
+                },
                 spaceColor  : {r: 255, g: 255, b: 255, a: 0},
                 lighting    : {
-                    back   : -20,
-                    east   : -10,
-                    front  : 0,
-                    height : 2,
                     north  : -20,
+                    east   : -10,
                     south  : 0,
-                    west   : -15
+                    west   : -15,
+                    front  : 0,
+                    back   : -20,
+                    height : 2
                 }
             }
         },

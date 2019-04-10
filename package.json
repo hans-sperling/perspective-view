@@ -1,26 +1,28 @@
 {
-    "name"        : "perspective-view",
-    "version"     : "1.4.1",
-    "description" : "Delivers a simple javascript methods pool for rendering grid based (array) maps into a virtual, perspective, 3d top view with canvas.",
-    "keywords" : [
+    "name": "perspective-view",
+    "version": "1.4.1",
+    "description": "Delivers a simple javascript methods pool for rendering grid based (array) maps into a virtual, perspective, 3d top view with canvas.",
+    "keywords": [
         "javascript"
     ],
-    "repository" : {
+    "repository": {
         "type": "git",
         "url": "https://github.com/hans-sperling/perspective-view"
     },
-    "devDependencies" : {
-        "grunt"                : "1.x.x",
-        "grunt-cli"            : "1.2.x",
-        "grunt-contrib-uglify" : "latest",
-        "grunt-contrib-concat" : "latest"
+    "devDependencies": {
+        "grunt": "1.x.x",
+        "grunt-cli": "1.2.x",
+        "grunt-contrib-uglify": "latest",
+        "grunt-contrib-concat": "latest"
     },
-    "bugs" : {
-        "url"   : "https://github.com/hans-sperling/perspective-view/issues",
-        "email" : "info@bluejade.de"
+    "bugs": {
+        "url": "https://github.com/hans-sperling/perspective-view/issues",
+        "email": "info@bluejade.de"
     },
-    "contributors" : [{
-        "name"  : "Danny Grübl",
-        "email" : "info@bluejade.de"
-    }]
+    "contributors": [
+        {
+            "name": "Danny Grübl",
+            "email": "info@bluejade.de"
+        }
+    ]
 }

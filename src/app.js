@@ -44,8 +44,15 @@ window.PPV = (function() {
             },
             color : {
                 mode        : 'default',
-                objectColor : {r: 200, g: 200, b: 200, a: 1},
-                shadowColor : {r: 0, g: 0, b: 0, a: 1},
+                // objectColor : {r: 200, g: 200, b: 200, a: 1},
+                objectColor : {
+                    north : { r: 200, g: 200, b: 200, a: 1 },
+                    east  : { r: 200, g: 200, b: 200, a: 1 },
+                    south : { r: 200, g: 200, b: 200, a: 1 },
+                    west  : { r: 200, g: 200, b: 200, a: 1 },
+                    front : { r: 100, g: 200, b: 200, a: 1 },
+                    back  : { r: 200, g: 200, b: 200, a: 1 }
+                },
                 spaceColor  : {r: 255, g: 255, b: 255, a: 0},
                 lighting    : {
                     back   : 0,
